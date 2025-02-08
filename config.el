@@ -117,6 +117,12 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; some usefule use-packages                                                     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package! company
+  :config
+  (global-company-mode 1))
 
 (use-package! treemacs-projectile
   :after (treemacs projectile))
@@ -140,20 +146,18 @@
 ;; (require 'dap-cpptools)
 ;; (require 'dap-lldb)
 (use-package! dap-mode
-  :defer
-  :custom
-  (dap-auto-configure-mode t                           "Automatically configure dap.")
-  (dap-auto-configure-features
-   '(sessions locals breakpoints expressions tooltip)  "Remove the button panel in the top.")
+  :defer t
+  ;;:custom
+  ;;(dap-auto-configure-mode t                           "Automatically configure dap.")
+  ;;(dap-auto-configure-features
+   ;;'(sessions locals breakpoints expressions tooltip)  "Remove the button panel in the top.")
+
   :config
-  ;;; dap for c++
   (require 'dap-lldb)
   (require 'dap-cpptools)
 
-  ;; later use?
-  ;; (require 'dap-gdb)
-  ;; (require 'dap-cpptools)
-  ;; (setq dap-gdb-lldb-debug-program '("/usr/bin/gdb"))
+  ;; no auto-configure.
+  (setq dap-auto-configure-mode nil)
 
   ;;; set the debugger executable (c++)
   (setq dap-lldb-debug-program '("/usr/bin/lldb-vscode"))
@@ -181,7 +185,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Set the compile command for CMake projects                                    ;;
+;; Set the compgile command for CMake projects                                    ;;
 ;; use projectile
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
@@ -190,7 +194,3 @@
   (setq projectile-project-compilation-cmd "cmake -S . -B build && cmake --build build")
   (setq projectile-project-run-cmd "./build/output_file")
   )
-
-
-
-
