@@ -232,21 +232,43 @@
                               (top . ,y)))))  ;; Position frame on second monitor
     (select-frame frame)))
 
+(defun new-frame-on-second-monitor ()
+  "Create a new frame named 'My Frame' on the second monitor with an empty buffer."
+  (interactive)
+  (let* ((display-geometry (display-monitor-attributes-list))
+         (second-monitor (nth 1 display-geometry)) ; Adjust index if needed
+         (geometry (alist-get 'geometry second-monitor))
+         (x (nth 0 geometry))
+         (y (nth 1 geometry))
+         (frame (make-frame `((name . "Debugger Frame")
+                              (left . ,x)
+                              (top . ,y)
+                              (width . 1368)    ; Adjust frame width if needed
+                              (height . 768))))) ; Adjust frame height if needed
+    (select-frame-set-input-focus frame)
+    (with-current-buffer (generate-new-buffer "*dummy*")
+      (switch-to-buffer (current-buffer)))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bauarbeiten
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-debugger-setting ()
   "Custom function to run when a DAP session is created."
   (interactive)
-  (my-debugger-frame)
+  (new-frame-on-second-monitor)
   (dap-ui-breakpoints)
-  (dap-ui-sessions)
   (dap-ui-locals)
-  (dap-ui-expressions)
+  ;;(dap-ui-sessions)
+  ;;(dap-ui-expressions)
   )
 
 (setq display-buffer-alist
-      '(("\\*dap-ui-breakpoints\\*"  ;; Match debugger buffers (*gud*, *gud-session*, etc.)
+      '(("\\*dap-ui-breakpoints\\*"  ;; obsolete
+         (display-buffer-use-some-frame)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame"))
+        ("\\*dap-ui-locals\\*"  ;; obsolete
          (display-buffer-use-some-frame)
          (inhibit-same-window . t)
          (reusable-frames . "Debugger Frame"))
@@ -267,3 +289,15 @@
   (setq projectile-project-compilation-cmd "cmake -S . -B build && cmake --build build")
   (setq projectile-project-run-cmd "./build/output_file")
   )
+
+
+
+
+;; util functions
+;;
+(defun eval-buffer-by-name (buffer-name)
+  "Evaluate the buffer with the given BUFFER-NAME."
+  (interactive "BBuffer name: ")
+  (when (get-buffer buffer-name)
+    (with-current-buffer buffer-name
+      (eval-buffer))))
