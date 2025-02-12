@@ -216,35 +216,21 @@
         (copy-file default filename))
       (find-file-existing filename))))
 
-
-
-(defun my-debugger-frame ()
-  "Create a dedicated debugger frame on a second monitor."
-  (interactive)
-  (let* ((monitor-attrs (nth 1 (display-monitor-attributes-list)))  ;; Second monitor
-         (geometry (alist-get 'geometry monitor-attrs))
-         (x (nth 0 geometry))  ;; X position of second monitor
-         (y (nth 1 geometry))  ;; Y position of second monitor
-         (frame (make-frame `((name . "Debugger Frame")
-                              (minibuffer . t)
-                              (fullscreen . t)
-                              (left . ,x)
-                              (top . ,y)))))  ;; Position frame on second monitor
-    (select-frame frame)))
-
 (defun new-frame-on-second-monitor ()
   "Create a new frame named 'My Frame' on the second monitor with an empty buffer."
   (interactive)
   (let* ((display-geometry (display-monitor-attributes-list))
-         (second-monitor (nth 1 display-geometry)) ; Adjust index if needed
+         (second-monitor (nth 1 display-geometry)) ; Adjust index if needed, 1: second monitor.
          (geometry (alist-get 'geometry second-monitor))
          (x (nth 0 geometry))
          (y (nth 1 geometry))
          (frame (make-frame `((name . "Debugger Frame")
                               (left . ,x)
                               (top . ,y)
+                              ;;(fullscreen . fullboth)
                               (width . 1368)    ; Adjust frame width if needed
-                              (height . 768))))) ; Adjust frame height if needed
+                              (height . 768)
+                              )))) ; Adjust frame height if needed
     (select-frame-set-input-focus frame)
     (with-current-buffer (generate-new-buffer "*dummy*")
       (switch-to-buffer (current-buffer)))))
@@ -256,22 +242,32 @@
 (defun my-debugger-setting ()
   "Custom function to run when a DAP session is created."
   (interactive)
+  (set-frame-name "main")
   (new-frame-on-second-monitor)
   (dap-ui-breakpoints)
   (dap-ui-locals)
+  (delete-windows-on "*dummy*")
+  (toggle-frame-fullscreen)
+  (select-frame-by-name "main")
   ;;(dap-ui-sessions)
   ;;(dap-ui-expressions)
   )
+
+
 
 (setq display-buffer-alist
       '(("\\*dap-ui-breakpoints\\*"  ;; obsolete
          (display-buffer-use-some-frame)
          (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
+         (reusable-frames . "Debugger Frame")
+         ;;(window-width . 10)
+         )
         ("\\*dap-ui-locals\\*"  ;; obsolete
          (display-buffer-use-some-frame)
          (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
+         (reusable-frames . "Debugger Frame")
+         ;;(window-width . 10)
+         )
         ("\\*Occur\\*"  ;; Match debugger buffers (*gud*, *gud-session*, etc.)
          (display-buffer-use-some-frame)
          (inhibit-same-window . t)
