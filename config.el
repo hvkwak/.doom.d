@@ -106,14 +106,7 @@
 (setq-default void-text-area-pointer 'nil)
 (setq scroll-preserve-screen-position t)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; key bindings and shortcut memos                                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "C-<left>")  'windmove-left) ;; moving around windows
-(global-set-key (kbd "C-<right>") 'windmove-right)
-(global-set-key (kbd "C-<up>")    'windmove-up)
-(global-set-key (kbd "C-<down>")  'windmove-down)
-(global-set-key (kbd "C-c t t")  'treemacs)
+
 
 
 
@@ -227,9 +220,9 @@
          (frame (make-frame `((name . "Debugger Frame")
                               (left . ,x)
                               (top . ,y)
-                              ;;(fullscreen . fullboth)
-                              (width . 1368)    ; Adjust frame width if needed
-                              (height . 768)
+                              ;;(fullscreen . fullboth) ;; toggle-frame-full screen will do.
+                              (width . 1600)    ; Adjust frame width if needed
+                              (height . 900)
                               )))) ; Adjust frame height if needed
     (select-frame-set-input-focus frame)
     (with-current-buffer (generate-new-buffer "*dummy*")
@@ -239,34 +232,67 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Bauarbeiten
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-dap-debug ()
+  (interactive)
+  (let ((config (cdr (assoc "C++ LLDB dap" dap-debug-template-configurations))))
+    (if config
+        (dap-debug config)
+      (message "Debug configuration not found!"))
+    ;; (if config
+    ;;     (my-debugger-setting)
+    ;;   (message "Debug configuration not found!"))
+  )
+)
+
 (defun my-debugger-setting ()
   "Custom function to run when a DAP session is created."
   (interactive)
   (set-frame-name "main")
   (new-frame-on-second-monitor)
-  (dap-ui-breakpoints)
-  (dap-ui-locals)
-  (delete-windows-on "*dummy*")
   (toggle-frame-fullscreen)
+  (dap-ui-breakpoints)
+  (dap-ui-sessions)
+  (dap-ui-locals)
+  (dap-ui-expressions)
+  (dap-ui-repl)
   (select-frame-by-name "main")
-  ;;(dap-ui-sessions)
-  ;;(dap-ui-expressions)
   )
 
-
+(defun my-close-debugger-setting ()
+  "Implementieren!"
+  )
 
 (setq display-buffer-alist
-      '(("\\*dap-ui-breakpoints\\*"  ;; obsolete
-         (display-buffer-use-some-frame)
+      '(("\\*dap-ui-breakpoints\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
          (inhibit-same-window . t)
          (reusable-frames . "Debugger Frame")
-         ;;(window-width . 10)
          )
-        ("\\*dap-ui-locals\\*"  ;; obsolete
-         (display-buffer-use-some-frame)
+        ("\\*dap-ui-locals\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
          (inhibit-same-window . t)
          (reusable-frames . "Debugger Frame")
-         ;;(window-width . 10)
+         )
+        ("\\*dap-ui-sessions\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame")
+         )
+        ("\\*dap-ui-expressions\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame")
+         )
+        ("\\*dap-ui-repl\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame")
          )
         ("\\*Occur\\*"  ;; Match debugger buffers (*gud*, *gud-session*, etc.)
          (display-buffer-use-some-frame)
@@ -289,11 +315,25 @@
 
 
 
+
+
+
 ;; util functions
-;;
 (defun eval-buffer-by-name (buffer-name)
   "Evaluate the buffer with the given BUFFER-NAME."
   (interactive "BBuffer name: ")
   (when (get-buffer buffer-name)
     (with-current-buffer buffer-name
       (eval-buffer))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; key bindings and shortcut memos                                               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-<left>")  'windmove-left) ;; moving around windows
+(global-set-key (kbd "C-<right>") 'windmove-right)
+(global-set-key (kbd "C-<up>")    'windmove-up)
+(global-set-key (kbd "C-<down>")  'windmove-down)
+(global-set-key (kbd "C-c t t")  'treemacs)
+(global-set-key (kbd "<f5>")  'my-dap-debug)
+(global-set-key (kbd "<f6>")  'my-dap-debug-setting)
