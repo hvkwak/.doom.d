@@ -81,10 +81,13 @@
 (setq native-comp-deferred-compilation nil) ;; This would disable native-compilation entirely.
 (menu-bar-mode 1)
 
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; change just background color of doom-one
+;; general changes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; directly modify Doom's theme settings using custom-set-faces
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (after! solaire-mode
   (solaire-global-mode -1))
 
@@ -94,27 +97,15 @@
   '(cursor ((t (:background "green")))) ;; change cursor background to green.
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; keyboard cursor change
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; keyboard cursor
 (setq-default cursor-type 'bar)
 (blink-cursor-mode 1)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; mouse cursor behavior change
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; mouse cursor
 (setq-default void-text-area-pointer 'nil)
 (setq scroll-preserve-screen-position t)
 
-
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; some useful use-packages                                                      ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; some useful use-packages
 (use-package! treemacs-projectile
   :after (treemacs projectile))
 
@@ -128,11 +119,7 @@
         lsp-ui-sideline-show-code-actions t
         lsp-ui-peek-enable t))
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; packages for better completion and regex
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package! marginalia
   :general
   (:keymaps 'minibuffer-local-map
@@ -171,7 +158,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Debugging with dap-mode
+;; Debugging: dap-mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package! dap-mode
   :defer t
@@ -228,12 +215,8 @@
     (with-current-buffer (generate-new-buffer "*dummy*")
       (switch-to-buffer (current-buffer)))))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Bauarbeiten
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-dap-debug ()
+  "runs dap-debug with the template defined above."
   (interactive)
   (let ((config (cdr (assoc "C++ LLDB dap" dap-debug-template-configurations))))
     (if config
@@ -245,7 +228,7 @@
   )
 )
 
-(defun my-debugger-setting ()
+(defun my-dap-debugger-setting ()
   "Custom function to run when a DAP session is created."
   (interactive)
   (set-frame-name "main")
@@ -254,15 +237,96 @@
   (dap-ui-breakpoints)
   (dap-ui-sessions)
   (dap-ui-locals)
-  (dap-ui-expressions)
   (dap-ui-repl)
+  (dap-ui-expressions)
+  (delete-windows-on "*dummy*")
   (select-frame-by-name "main")
   )
 
-(defun my-close-debugger-setting ()
-  "Implementieren!"
+(defun my-dap-debug-close ()
+  "closes dap-debug session including dap-disconnect."
+  (dap-disconnect (dap--cur-session)) ;; (mapc #'dap-disconnect (dap--get-sessions)) is alternative to disconnect all sessions.
+  (select-frame-by-name "Debugger Frame")
+  (doom/delete-frame-with-prompt)
+  (kill-buffer "*dap-ui-breakpoints*")
+  (kill-buffer "*dap-ui-locals*")
+  (kill-buffer "*dap-ui-sessions*")
+  (kill-buffer "*dap-ui-expressions*")
+  (kill-buffer "*dap-ui-repl*")
+  (kill-buffer "*C++ LLDB dap out*")
+  (kill-buffer "*dummy*")
+  (kill-buffer "*C++ LLDB dap stderr*")
   )
 
+(defun my-dap-debug-on-off ()
+  "calls my-dap-debug (or my-dap-debug-close if session is running.)"
+  (interactive)
+  (if (dap--cur-session)
+      (my-dap-debug-close)
+      (my-dap-debug))
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; projectile                                                                    ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
+
+(after! projectile ;; Set the compile command for CMake projects
+  (setq projectile-project-compilation-cmd "cmake -S . -B build && cmake --build build")
+  (setq projectile-project-run-cmd "./build/main")
+  )
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; util functions                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun eval-buffer-by-name (buffer-name)
+  "Evaluate the buffer with the given BUFFER-NAME."
+  (interactive "BBuffer name: ")
+  (when (get-buffer buffer-name)
+    (with-current-buffer buffer-name
+      (eval-buffer))))
+
+(defun eval-buffer-and-close ()
+  (interactive)
+  (eval-buffer-by-name "*DAP Templates*")
+  (+workspace/close-window-or-workspace)
+  )
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;TODO                                                                           ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 1. enable navigation with ivy
+;; 2. keep dap-ui-repl in the main frame bottom && pop up.
+;; 3. override projectile-compile-project with my-projectile-compile-project to select the window
+;; 4. see if consult and Co. are useful
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; my key bindings                                                               ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-<left>")  'windmove-left) ;; moving around windows
+(global-set-key (kbd "C-<right>") 'windmove-right)
+(global-set-key (kbd "C-<up>")    'windmove-up)
+(global-set-key (kbd "C-<down>")  'windmove-down)
+(global-set-key (kbd "C-c t t")  'treemacs)
+(global-set-key (kbd "C-e")  'eval-buffer-and-close) ;; debug template
+(global-set-key (kbd "<f5>")  'my-dap-debug-on-off) ;;(global-set-key (kbd "<f5>")  'my-dap-debug)
+(global-set-key (kbd "<f6>")  'my-dap-debugger-setting)
+(global-set-key (kbd "<f7>")  'my-close-debugger-setting) ;; obsolete. included in <f5>.
+(global-set-key (kbd "C-z")  'undo)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; display-buffer-alist for 'my-dap-debugger-setting                             ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq display-buffer-alist
       '(("\\*dap-ui-breakpoints\\*"
          (display-buffer-use-some-frame
@@ -299,41 +363,3 @@
          (inhibit-same-window . t)
          (reusable-frames . "Debugger Frame"))
         ))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Set the compgile command for CMake projects                                   ;;
-;; use projectile                                                                ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
-
-(after! projectile ;; Set the compile command for CMake projects
-  (setq projectile-project-compilation-cmd "cmake -S . -B build && cmake --build build")
-  (setq projectile-project-run-cmd "./build/output_file")
-  )
-
-
-
-
-
-
-
-;; util functions
-(defun eval-buffer-by-name (buffer-name)
-  "Evaluate the buffer with the given BUFFER-NAME."
-  (interactive "BBuffer name: ")
-  (when (get-buffer buffer-name)
-    (with-current-buffer buffer-name
-      (eval-buffer))))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; key bindings and shortcut memos                                               ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "C-<left>")  'windmove-left) ;; moving around windows
-(global-set-key (kbd "C-<right>") 'windmove-right)
-(global-set-key (kbd "C-<up>")    'windmove-up)
-(global-set-key (kbd "C-<down>")  'windmove-down)
-(global-set-key (kbd "C-c t t")  'treemacs)
-(global-set-key (kbd "<f5>")  'my-dap-debug)
-(global-set-key (kbd "<f6>")  'my-dap-debug-setting)
