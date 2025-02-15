@@ -50,8 +50,10 @@
 ;;
 ;;
 (package! consult)
-;;(package! treemacs-projectile)
+(package! consult-projectile)
+(package! treemacs-projectile)
 (package! all-the-icons)
 (package! marginalia)
 (package! all-the-icons-completion)
 (package! orderless)
+(package! yasnippet-snippets)

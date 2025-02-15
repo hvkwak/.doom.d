@@ -78,15 +78,14 @@
 ;;
 ;;
 ;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; general changes and completion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq native-comp-deferred-compilation nil) ;; This would disable native-compilation entirely.
 (menu-bar-mode 1)
 
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; general changes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; directly modify Doom's theme settings using custom-set-faces
 (after! solaire-mode
   (solaire-global-mode -1))
@@ -107,7 +106,9 @@
 
 ;; some useful use-packages
 (use-package! treemacs-projectile
-  :after (treemacs projectile))
+  :after (treemacs projectile)
+  :config
+  )
 
 (after! lsp-ui
   (setq lsp-ui-doc-enable t
@@ -132,8 +133,25 @@
 
 (use-package! consult
   :after projectile
-  :bind (:map projectile-command-map
-              ("f" . consult-projectile))) ;; Replaces projectile-find-file
+  :config
+  (setq consult-preview-key 'any) ;; Preview instantly as you cycle
+  (setq consult-buffer-sources
+      '(consult--source-project-buffer)  ;; Show only project buffers
+      ;; '(consult--source-project-buffer  ;; Show only project buffers and recent files
+      ;;   consult--source-recent-file)
+      )
+  (setq consult-project-function #'projectile-project-root)
+
+  ;; filter out several unrelated buffers
+  (setq consult-buffer-filter '("\\` \\*"
+                                "\\`\\*scratch\\*"
+                                "\\`\\*Messages\\*"
+                                "\\`\\*doom\\*"
+                                "\\`\\*lsp-log\\*"
+                                "\\`\\*Native-compile-Log\\*"
+                                "\\`\\*Ibuffer\\*"
+                                "\\`\\bash-completion\\*"
+                                )))
 
 (use-package! orderless
   :custom
@@ -157,15 +175,19 @@
 
 
 
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Debugging: dap-mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package! dap-mode
   :defer t
   :custom
-  (dap-auto-configure-mode t                           "Automatically configure dap.")
+  (dap-auto-configure-mode t "Automatically configure dap.")
   ;;(dap-auto-configure-features '(sessions locals breakpoints expressions tooltip)  "Remove the button panel in the top.")
-  (dap-auto-configure-features '(tooltip)  "no auto configure features.")
+  (dap-auto-configure-features '(tooltip) "no auto configure features.")
 
   :config
   (require 'dap-lldb)
@@ -245,6 +267,7 @@
 
 (defun my-dap-debug-close ()
   "closes dap-debug session including dap-disconnect."
+  (interactive)
   (dap-disconnect (dap--cur-session)) ;; (mapc #'dap-disconnect (dap--get-sessions)) is alternative to disconnect all sessions.
   (select-frame-by-name "Debugger Frame")
   (doom/delete-frame-with-prompt)
@@ -253,29 +276,85 @@
   (kill-buffer "*dap-ui-sessions*")
   (kill-buffer "*dap-ui-expressions*")
   (kill-buffer "*dap-ui-repl*")
-  (kill-buffer "*C++ LLDB dap out*")
+  (kill-llldb-dap-buffers) ;; kills buffer 'C++ LLDB dap*'
   (kill-buffer "*dummy*")
-  (kill-buffer "*C++ LLDB dap stderr*")
   )
 
-(defun my-dap-debug-on-off ()
-  "calls my-dap-debug (or my-dap-debug-close if session is running.)"
-  (interactive)
-  (if (dap--cur-session)
-      (my-dap-debug-close)
-      (my-dap-debug))
+(defun kill-llldb-dap-buffers ()
+  "Kill all buffers whose name starts with '*C++ LLDB dap'."
+  (dolist (buf (buffer-list))
+    (when (string-match-p "LLDB dap" (buffer-name buf))
+      (kill-buffer buf))))
+
+(defun my-dap-ui--show-buffer (buf)
+  "Show BUF according to defined rules."
+  (when-let (win (display-buffer buf))
+    (set-window-dedicated-p win t)
+    (select-window win))
 )
+(advice-add 'dap-ui--show-buffer :override #'my-dap-ui--show-buffer)
+
+
+;; display-buffer-alist for 'my-dap-debugger-setting
+(setq display-buffer-alist
+      '(("\\*Consult Project Buffer\\*" ;; Match buffer name
+         (display-buffer-in-side-window)
+         (window-height . 0.4)  ;; Adjust height (40% of the frame)
+         (side . bottom))
+        ;; ("\\*Consult Buffer\\*" ;; Match buffer name
+        ;;  (display-buffer-in-side-window)
+        ;;  (window-height . 0.4)  ;; Adjust height (40% of the frame)
+        ;;  (side . bottom))
+        ("\\*dap-ui-breakpoints\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame"))
+        ("\\*dap-ui-locals\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame"))
+        ("\\*dap-ui-sessions\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame"))
+        ("\\*dap-ui-expressions\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame"))
+        ("\\*dap-ui-repl\\*"
+         (display-buffer-use-some-frame
+          display-buffer-in-side-window)
+         (inhibit-same-window . t)
+         (reusable-frames . "Debugger Frame"))
+        ;; ("\\*Occur\\*"  ;; Match debugger buffers (*gud*, *gud-session*, etc.)
+        ;;  (display-buffer-use-some-frame)
+        ;;  (inhibit-same-window . t)
+        ;;  (reusable-frames . "Debugger Frame"))
+        ))
+
+
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; projectile                                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
-
 (after! projectile ;; Set the compile command for CMake projects
   (setq projectile-project-compilation-cmd "cmake -S . -B build && cmake --build build")
   (setq projectile-project-run-cmd "./build/main")
+  (setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
   )
+
+(use-package! consult-projectile
+  :after (consult projectile)
+  :bind (("C-c p f" . consult-projectile-find-file)
+         ("C-c p p" . consult-projectile-switch-project)))
+
 
 
 
@@ -297,19 +376,11 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;TODO                                                                           ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 1. enable navigation with ivy
-;; 2. keep dap-ui-repl in the main frame bottom && pop up.
-;; 3. override projectile-compile-project with my-projectile-compile-project to select the window
-;; 4. see if consult and Co. are useful
-
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; my key bindings                                                               ;;
+;; key bindings                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "C-<left>")  'windmove-left) ;; moving around windows
 (global-set-key (kbd "C-<right>") 'windmove-right)
@@ -317,49 +388,46 @@
 (global-set-key (kbd "C-<down>")  'windmove-down)
 (global-set-key (kbd "C-c t t")  'treemacs)
 (global-set-key (kbd "C-e")  'eval-buffer-and-close) ;; debug template
-(global-set-key (kbd "<f5>")  'my-dap-debug-on-off) ;;(global-set-key (kbd "<f5>")  'my-dap-debug)
+(global-set-key (kbd "<f5>")  'my-dap-debug)
 (global-set-key (kbd "<f6>")  'my-dap-debugger-setting)
-(global-set-key (kbd "<f7>")  'my-close-debugger-setting) ;; obsolete. included in <f5>.
+(global-set-key (kbd "<f8>")  'my-dap-debug-close)
 (global-set-key (kbd "C-z")  'undo)
+(global-set-key (kbd "C-<tab>")  'consult-buffer)
+
+
+
+
+
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display-buffer-alist for 'my-dap-debugger-setting                             ;;
+;; keep this for later use, replace dap-ui--show-buffer with this @ dap-ui.el    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setq display-buffer-alist
-      '(("\\*dap-ui-breakpoints\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame")
-         )
-        ("\\*dap-ui-locals\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame")
-         )
-        ("\\*dap-ui-sessions\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame")
-         )
-        ("\\*dap-ui-expressions\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame")
-         )
-        ("\\*dap-ui-repl\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame")
-         )
-        ("\\*Occur\\*"  ;; Match debugger buffers (*gud*, *gud-session*, etc.)
-         (display-buffer-use-some-frame)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ))
+;; (defun dap-ui--show-buffer (buf)
+;;   "Show BUF according to defined rules."
+;;   ;; (when-let (win (display-buffer-in-side-window buf
+;;   ;;                                               (or (-> buf
+;;   ;;                                                       buffer-name
+;;   ;;                                                       (assoc dap-ui-buffer-configurations)
+;;   ;;                                                       cl-rest)
+;;   ;;                                                   '((side . right)
+;;   ;;                                                     (slot . 1)
+;;   ;;                                                     (window-width . 0.20)))))
+;;   ;;   (set-window-dedicated-p win t)
+;;   ;;   (select-window win))
+;;   (when-let (win (display-buffer buf))
+;;     (set-window-dedicated-p win t)
+;;     (select-window win))
+;; )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; keep this for later use, practical use of overriding.                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (defun my-message (format-string &rest args)
+;;   "Custom message function that logs to a file."
+;;   (with-temp-file "~/emacs_log.txt"
+;;     (insert (apply #'format format-string args)))
+;;   (apply #'message format-string args))  ; Call original message function
+
+;; (advice-add 'message :override #'my-message)
