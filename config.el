@@ -104,11 +104,9 @@
 (setq-default void-text-area-pointer 'nil)
 (setq scroll-preserve-screen-position t)
 
-;; some useful use-packages
-(use-package! treemacs-projectile
-  :after (treemacs projectile)
-  :config
-  )
+(after! treemacs
+  (setq treemacs-project-follow-mode t)
+  (treemacs-follow-mode t))
 
 (after! lsp-ui
   (setq lsp-ui-doc-enable t
@@ -393,11 +391,6 @@
 (global-set-key (kbd "<f8>")  'my-dap-debug-close)
 (global-set-key (kbd "C-z")  'undo)
 (global-set-key (kbd "C-<tab>")  'consult-buffer)
-
-
-
-
-
 
 
 
