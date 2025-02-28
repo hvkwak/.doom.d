@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-dark+)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -87,12 +87,12 @@
 (menu-bar-mode 1)
 
 ;; directly modify Doom's theme settings using custom-set-faces
-(after! solaire-mode
-  (solaire-global-mode -1))
+;; (after! solaire-mode
+;;   (solaire-global-mode -1))
 
 (custom-set-faces
-  '(default ((t (:background "#000000"))))
-  '(hl-line ((t (:background "#000000"))))
+  ;;'(default ((t (:background "#000000"))))
+  ;;'(hl-line ((t (:background "#000000"))))
   '(cursor ((t (:background "green")))) ;; change cursor background to green.
   )
 
@@ -170,10 +170,6 @@
      ;; orderless-without-literal          ; Recommended for dispatches instead
      ))
   )
-
-
-
-
 
 
 
@@ -372,47 +368,73 @@
   (+workspace/close-window-or-workspace)
   )
 
+(defun my-indent-setup ()
+  "Set up the TAB key to indent with a single press."
+  (local-set-key (kbd "<tab>") 'indent-for-tab-command))
 
+(add-hook 'prog-mode-hook 'my-indent-setup)  ; For programming modes
+(add-hook 'text-mode-hook 'my-indent-setup)  ; For text modes
 
+(defun smart-beginning-of-line ()
+ "Move point to first non-whitespace character or beginning-of-line.
+ If point is already at the beginning of the line, move to the beginning of the
+ line. If point is at the first non-whitespace character, move to the beginning
+ of the line."
+  (interactive)
+  (let ((orig-pos (point)))
+    (back-to-indentation)
+    (when (= orig-pos (point))
+      (move-beginning-of-line 1))))
 
-
+(defun my/select-to-click (event)
+  "Set mark at current position and extend selection to the position
+  clicked with the mouse."
+  (interactive "e")
+  (mouse-minibuffer-check event)
+  (let ((pos (posn-point (event-end event))))
+    (unless (region-active-p)
+      (push-mark))
+    (goto-char pos)
+    (activate-mark)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; key bindings                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "C-<left>")  'windmove-left) ;; moving around windows
-(global-set-key (kbd "C-<right>") 'windmove-right)
-(global-set-key (kbd "C-<up>")    'windmove-up)
-(global-set-key (kbd "C-<down>")  'windmove-down)
+;; move
+(global-set-key (kbd "M-i")  'previous-line)
+(global-set-key (kbd "M-k")  'next-line)
+(global-set-key (kbd "M-j")  'backward-char)
+(global-set-key (kbd "M-l")  'forward-char)
+(global-set-key (kbd "C-j")  'windmove-left) ;; moving around windows
+(global-set-key (kbd "C-l") 'windmove-right)
+(global-set-key (kbd "C-i")    'windmove-up)
+(global-set-key (kbd "C-k")  'windmove-down)
+
 (global-set-key (kbd "C-c t t")  'treemacs)
 (global-set-key (kbd "C-e")  'eval-buffer-and-close) ;; debug template
 (global-set-key (kbd "<f5>")  'my-dap-debug)
 (global-set-key (kbd "<f6>")  'my-dap-debugger-setting)
 (global-set-key (kbd "<f8>")  'my-dap-debug-close)
 (global-set-key (kbd "C-z")  'undo)
+
+(global-set-key (kbd "<home>")  'smart-beginning-of-line) ;; home
+;; (global-set-key (kbd "M-h")  'smart-beginning-of-line) ;; home
+;; (global-set-key (kbd "M-S-l")  'move-end-of-line) ;; end
+;; (global-set-key (kbd "M-S-i")  'scroll-up-command) ;; PgUp
+;; (global-set-key (kbd "M-S-k")  'scroll-down-command) ;; PgDn
+(global-set-key (kbd "M-\\")  'delete-char)
+
+;; search functions - consult
 (global-set-key (kbd "C-<tab>")  'consult-buffer)
+(global-set-key (kbd "C-s") 'consult-line)
+(global-set-key (kbd "C-f") 'consult-line)
+(global-set-key (kbd "C-S-s") 'consult-ripgrep)
+
+;; Shift + mouse click
+(global-set-key [S-down-mouse-1] 'ignore)  ; Ignore the initial mouse down event
+(global-set-key [S-mouse-1] 'my/select-to-click)
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; keep this for later use, replace dap-ui--show-buffer with this @ dap-ui.el    ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (defun dap-ui--show-buffer (buf)
-;;   "Show BUF according to defined rules."
-;;   ;; (when-let (win (display-buffer-in-side-window buf
-;;   ;;                                               (or (-> buf
-;;   ;;                                                       buffer-name
-;;   ;;                                                       (assoc dap-ui-buffer-configurations)
-;;   ;;                                                       cl-rest)
-;;   ;;                                                   '((side . right)
-;;   ;;                                                     (slot . 1)
-;;   ;;                                                     (window-width . 0.20)))))
-;;   ;;   (set-window-dedicated-p win t)
-;;   ;;   (select-window win))
-;;   (when-let (win (display-buffer buf))
-;;     (set-window-dedicated-p win t)
-;;     (select-window win))
-;; )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; keep this for later use, practical use of overriding.                         ;;
