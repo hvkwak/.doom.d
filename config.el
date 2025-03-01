@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-dark+)
+(setq doom-theme 'doom-moonlight)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -93,6 +93,7 @@
 (custom-set-faces
   ;;'(default ((t (:background "#000000"))))
   ;;'(hl-line ((t (:background "#000000"))))
+  '(hl-line ((t (:background "#3e4451" :underline nil))))
   '(cursor ((t (:background "green")))) ;; change cursor background to green.
   )
 
@@ -150,6 +151,43 @@
                                 "\\`\\*Ibuffer\\*"
                                 "\\`\\bash-completion\\*"
                                 )))
+
+(defun my/consult-auto-next-buffer ()
+  "Automatically switch to the next buffer based on consult-buffer's sorting."
+  (interactive)
+  (let* ((buffers (mapcar #'buffer-name (buffer-list))) ;; TODO: buffer-query might be improved with projectile.
+         (visible-buffers (consult--buffer-query :sort 'visibility :as #'buffer-name)))
+    ;; Ensure the current buffer is not considered
+    (setq visible-buffers (delq (current-buffer) visible-buffers))
+    ;; Find the next buffer from the filtered and sorted list
+    (when-let ((next-buf (car visible-buffers)))
+      (switch-to-buffer next-buf))))
+
+(defun my/consult-auto-previous-buffer ()
+  "Automatically switch to the previous buffer based on consult-buffer's sorting."
+  (interactive)
+  (let* ((buffers (mapcar #'buffer-name (buffer-list)))
+         (visible-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name))))
+    ;; Ensure the current buffer is not considered
+    (setq visible-buffers (delq (current-buffer) visible-buffers))
+    ;; Find the previous buffer from the filtered and sorted list
+    (when-let ((prev-buf (car visible-buffers)))
+      (switch-to-buffer prev-buf))))
+
+;; (defun my/consult-auto-previous-project-buffer ()
+;;   "Automatically switch to the previous project-specific buffer based on consult-buffer's sorting."
+;;   (interactive)
+;;   (require 'projectile)  ; Ensure Projectile is loaded, replace with (project-current) if not using Projectile
+;;   (let* ((project-root (projectile-project-root))
+;;          (project-buffers (seq-filter (lambda (buf)
+;;                                         (string-prefix-p project-root
+;;                                                          (or (buffer-file-name buf) "")))
+;;                                       (buffer-list))))
+;;     (setq project-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name :predicate (lambda (name)
+;;                                                                                                            (member (get-buffer name) project-buffers)))))
+;;     ;; Find the previous buffer from the filtered and sorted list
+;;     (when-let ((prev-buf (car project-buffers)))
+;;       (switch-to-buffer prev-buf))))
 
 (use-package! orderless
   :custom
@@ -332,9 +370,6 @@
 
 
 
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; projectile                                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -353,7 +388,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; util functions                                                                ;;
+;; util and general functions                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun eval-buffer-by-name (buffer-name)
   "Evaluate the buffer with the given BUFFER-NAME."
@@ -397,42 +432,80 @@
     (goto-char pos)
     (activate-mark)))
 
+(defun select-to-beginning-of-line ()
+  "Select text from the current cursor position to the beginning of the line."
+  (interactive)
+  (push-mark)  ; Set mark at the current position
+  (beginning-of-line)  ; Move to the beginning of the line
+  (activate-mark))  ; Ensure the selection is active and visible
+
+(defun select-to-end-of-line ()
+  "Select text from the current cursor position to the beginning of the line."
+  (interactive)
+  (push-mark)  ; Set mark at the current position
+  (end-of-line)  ; Move to the beginning of the line
+  (activate-mark))  ; Ensure the selection is active and visible
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; key bindings                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; move
-(global-set-key (kbd "M-i")  'previous-line)
-(global-set-key (kbd "M-k")  'next-line)
-(global-set-key (kbd "M-j")  'backward-char)
-(global-set-key (kbd "M-l")  'forward-char)
-(global-set-key (kbd "C-j")  'windmove-left) ;; moving around windows
-(global-set-key (kbd "C-l") 'windmove-right)
-(global-set-key (kbd "C-i")    'windmove-up)
-(global-set-key (kbd "C-k")  'windmove-down)
+(map! :map global-map
 
-(global-set-key (kbd "C-c t t")  'treemacs)
-(global-set-key (kbd "C-e")  'eval-buffer-and-close) ;; debug template
-(global-set-key (kbd "<f5>")  'my-dap-debug)
-(global-set-key (kbd "<f6>")  'my-dap-debugger-setting)
-(global-set-key (kbd "<f8>")  'my-dap-debug-close)
-(global-set-key (kbd "C-z")  'undo)
+      ;; navigate lines
+      "M-i" #'previous-line
+      "M-k" #'next-line
+      "M-j" #'backward-char
+      "M-l" #'forward-char
 
-(global-set-key (kbd "<home>")  'smart-beginning-of-line) ;; home
-;; (global-set-key (kbd "M-h")  'smart-beginning-of-line) ;; home
-;; (global-set-key (kbd "M-S-l")  'move-end-of-line) ;; end
-;; (global-set-key (kbd "M-S-i")  'scroll-up-command) ;; PgUp
-;; (global-set-key (kbd "M-S-k")  'scroll-down-command) ;; PgDn
-(global-set-key (kbd "M-\\")  'delete-char)
+      ;; navigate between buffers
+      "M-p" #'my/consult-auto-previous-buffer ;; instead of previous-buffer, next-buffer.
+      "M-n" #'my/consult-auto-next-buffer
+      "C-<tab>" #'consult-buffer
 
-;; search functions - consult
-(global-set-key (kbd "C-<tab>")  'consult-buffer)
-(global-set-key (kbd "C-s") 'consult-line)
-(global-set-key (kbd "C-f") 'consult-line)
-(global-set-key (kbd "C-S-s") 'consult-ripgrep)
+      ;; moving around windows
+      "C-j" #'windmove-left
+      "C-l" #'windmove-right
+      "C-i" #'windmove-up
+      "C-k" #'windmove-down
 
-;; Shift + mouse click
-(global-set-key [S-down-mouse-1] 'ignore)  ; Ignore the initial mouse down event
-(global-set-key [S-mouse-1] 'my/select-to-click)
+      ;; debug key bindings
+      "C-e" #'eval-buffer-and-close ;; debug template
+      "<f5>" #'my-dap-debug
+      "<f6>" #'my-dap-debugger-setting
+      "<f8>" #'my-dap-debug-close
+      "<f9>" #'+treemacs/toggle ;; it is already <f9>. keep it this way.
+
+      ;; home, end and delete.
+      "<home>" #'smart-beginning-of-line ;; home
+      "M-h" #'smart-beginning-of-line ;; home
+      "M-o" #'move-end-of-line ;; end
+      "M-\\" #'delete-char
+
+      ;; search functions - consult
+      "C-f" #'consult-line
+      "C-S-s" #'consult-ripgrep
+
+      ;; jump, copy and paste, and more.
+      "C-s" #'save-buffer
+      "s-c" #'kill-ring-save
+      "s-v" #'yank
+      "C-z" #'undo
+      "M-," #'better-jumper-jump-backward
+      "M-." #'better-jumper-jump-forward
+      ;;"M-h" #'better-jumper-set-jump
+
+      ;; home, end, mouse selection with shift.
+      "<S-home>" #'select-to-beginning-of-line    ; TODO: from M-h and M-o somewhat different.
+      "<S-end>"  #'select-to-end-of-line
+      "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
+      "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function
+)
+
+
 
 
 
