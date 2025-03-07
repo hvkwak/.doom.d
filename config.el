@@ -95,6 +95,7 @@
   ;;'(hl-line ((t (:background "#000000"))))
   '(hl-line ((t (:background "#3e4451" :underline nil))))
   '(cursor ((t (:background "green")))) ;; change cursor background to green.
+  '(region ((t (:background "#4671d5" :foreground "#ffffff"))))  ; Region selection
   )
 
 ;; keyboard cursor
@@ -104,6 +105,12 @@
 ;; mouse cursor
 (setq-default void-text-area-pointer 'nil)
 (setq scroll-preserve-screen-position t)
+
+;; Scroll one line at a time
+(setq mouse-wheel-scroll-amount '(4 ((shift) . 8)))  ; 2 lines at a time, +shift 4 lines.
+
+;; Do not accelerate scrolling
+(setq mouse-wheel-progressive-speed nil)  ; Do not accelerate scrolling
 
 (after! treemacs
   (setq treemacs-project-follow-mode t)
@@ -174,20 +181,7 @@
     (when-let ((prev-buf (car visible-buffers)))
       (switch-to-buffer prev-buf))))
 
-;; (defun my/consult-auto-previous-project-buffer ()
-;;   "Automatically switch to the previous project-specific buffer based on consult-buffer's sorting."
-;;   (interactive)
-;;   (require 'projectile)  ; Ensure Projectile is loaded, replace with (project-current) if not using Projectile
-;;   (let* ((project-root (projectile-project-root))
-;;          (project-buffers (seq-filter (lambda (buf)
-;;                                         (string-prefix-p project-root
-;;                                                          (or (buffer-file-name buf) "")))
-;;                                       (buffer-list))))
-;;     (setq project-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name :predicate (lambda (name)
-;;                                                                                                            (member (get-buffer name) project-buffers)))))
-;;     ;; Find the previous buffer from the filtered and sorted list
-;;     (when-let ((prev-buf (car project-buffers)))
-;;       (switch-to-buffer prev-buf))))
+
 
 (use-package! orderless
   :custom
@@ -411,15 +405,25 @@
 (add-hook 'text-mode-hook 'my-indent-setup)  ; For text modes
 
 (defun smart-beginning-of-line ()
- "Move point to first non-whitespace character or beginning-of-line.
- If point is already at the beginning of the line, move to the beginning of the
- line. If point is at the first non-whitespace character, move to the beginning
- of the line."
-  (interactive)
+  "Move point to first non-whitespace character or beginning-of-line.
+If point is already at the beginning of the line, move to the beginning of the
+line. If point is at the first non-whitespace character, move to the beginning
+of the line. Extend the selection when used with the Shift key."
+  (interactive "^")  ; The caret (^) makes the command support shift-selection
   (let ((orig-pos (point)))
     (back-to-indentation)
     (when (= orig-pos (point))
       (move-beginning-of-line 1))))
+
+(defun my-next-line-extend-selection ()
+  "Extend the selection by moving to the next line, respecting shift selection."
+  (interactive "^")  ; The caret (^) ensures shift-modification is respected.
+  (next-line 1))
+
+(defun my-previous-line-extend-selection ()
+  "Extend the selection by moving to the next line, respecting shift selection."
+  (interactive "^")  ; The caret (^) ensures shift-modification is respected.
+  (previous-line 1))
 
 (defun my/select-to-click (event)
   "Set mark at current position and extend selection to the position
@@ -432,23 +436,23 @@
     (goto-char pos)
     (activate-mark)))
 
-(defun select-to-beginning-of-line ()
-  "Select text from the current cursor position to the beginning of the line."
+(defun my/toggle-between-header-and-source ()
+  "Toggle between a C++ header file and its corresponding source file."
   (interactive)
-  (push-mark)  ; Set mark at the current position
-  (beginning-of-line)  ; Move to the beginning of the line
-  (activate-mark))  ; Ensure the selection is active and visible
-
-(defun select-to-end-of-line ()
-  "Select text from the current cursor position to the beginning of the line."
-  (interactive)
-  (push-mark)  ; Set mark at the current position
-  (end-of-line)  ; Move to the beginning of the line
-  (activate-mark))  ; Ensure the selection is active and visible
-
-
-
-
+  (let ((current-file (buffer-file-name)))
+    (if (string-match-p "\\.cpp$" current-file)
+        ;; If the current file is a .cpp file, find the corresponding .h file
+        (let ((header-file (replace-regexp-in-string "/src/" "/include/"
+                          (replace-regexp-in-string "\\.cpp$" ".h" current-file))))
+          (if (file-exists-p header-file)
+              (find-file header-file)
+            (message "Header file does not exist.")))
+      ;; If the current file is a .h file, find the corresponding .cpp file
+      (let ((source-file (replace-regexp-in-string "/include/" "/src/"
+                       (replace-regexp-in-string "\\.h$" ".cpp" current-file))))
+        (if (file-exists-p source-file)
+            (find-file source-file)
+          (message "Source file does not exist."))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; key bindings                                                                  ;;
@@ -462,8 +466,8 @@
       "M-l" #'forward-char
 
       ;; navigate between buffers
-      "M-p" #'my/consult-auto-previous-buffer ;; instead of previous-buffer, next-buffer.
-      "M-n" #'my/consult-auto-next-buffer
+      "M-p"     #'my/consult-auto-previous-buffer ;; instead of previous-buffer, next-buffer.
+      "M-n"     #'my/consult-auto-next-buffer
       "C-<tab>" #'consult-buffer
 
       ;; moving around windows
@@ -481,28 +485,29 @@
 
       ;; home, end and delete.
       "<home>" #'smart-beginning-of-line ;; home
-      "M-h" #'smart-beginning-of-line ;; home
-      "M-o" #'move-end-of-line ;; end
-      "M-\\" #'delete-char
+      "M-h"    #'smart-beginning-of-line ;; home
+      "M-o"    #'move-end-of-line ;; end
+      "M-\\"   #'delete-char
 
       ;; search functions - consult
       "C-f" #'consult-line
-      "C-S-s" #'consult-ripgrep
+      "C-S-f" #'consult-ripgrep
 
       ;; jump, copy and paste, and more.
       "C-s" #'save-buffer
       "s-c" #'kill-ring-save
       "s-v" #'yank
-      "C-z" #'undo
+      "C-z" #'undo                      ;
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward
       ;;"M-h" #'better-jumper-set-jump
 
-      ;; home, end, mouse selection with shift.
-      "<S-home>" #'select-to-beginning-of-line    ; TODO: from M-h and M-o somewhat different.
-      "<S-end>"  #'select-to-end-of-line
+      ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
-      "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function
+      "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
+
+      "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
+      "M-u"   #'my/toggle-between-header-and-source
 )
 
 

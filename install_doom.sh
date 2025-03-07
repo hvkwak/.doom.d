@@ -20,7 +20,5 @@ sudo make install
 
 # installs doom emacs
 cd ..
-git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-~/.config/emacs/bin/doom install
-
-
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.emacs.d
+~/.emacs.d/bin/doom install
