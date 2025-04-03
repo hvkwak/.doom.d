@@ -157,6 +157,10 @@
                                 "\\`\\*Native-compile-Log\\*"
                                 "\\`\\*Ibuffer\\*"
                                 "\\`\\bash-completion\\*"
+                                "\\`\\*clangd\\*"
+                                "\\`\\*clangd::stderr\\*"
+                                "\\`\\*Async-native-compile-log\\*"
+                                "\\*compilation\\*<\\.emacs\\.d>"
                                 )))
 
 (defun my/consult-auto-next-buffer ()
@@ -170,17 +174,27 @@
     (when-let ((next-buf (car visible-buffers)))
       (switch-to-buffer next-buf))))
 
+;; (defun my/consult-auto-previous-buffer ()
+;;   "Automatically switch to the previous buffer based on consult-buffer's sorting."
+;;   (interactive)
+;;   (let* ((buffers (mapcar #'buffer-name (buffer-list)))
+;;          (visible-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name))))
+;;     Ensure the current buffer is not considered
+;;     (setq visible-buffers (delq (current-buffer) visible-buffers))
+;;     Find the previous buffer from the filtered and sorted list
+;;     (when-let ((prev-buf (car visible-buffers)))
+;;       (switch-to-buffer prev-buf))))
+
 (defun my/consult-auto-previous-buffer ()
   "Automatically switch to the previous buffer based on consult-buffer's sorting."
   (interactive)
   (let* ((buffers (mapcar #'buffer-name (buffer-list)))
          (visible-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name))))
-    ;; Ensure the current buffer is not considered
-    (setq visible-buffers (delq (current-buffer) visible-buffers))
+    ;; Ensure the current buffer's name is not considered
+    (setq visible-buffers (remove (buffer-name (current-buffer)) visible-buffers))
     ;; Find the previous buffer from the filtered and sorted list
     (when-let ((prev-buf (car visible-buffers)))
       (switch-to-buffer prev-buf))))
-
 
 
 (use-package! orderless
@@ -454,6 +468,7 @@ of the line. Extend the selection when used with the Shift key."
             (find-file source-file)
           (message "Source file does not exist."))))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; key bindings                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -485,7 +500,7 @@ of the line. Extend the selection when used with the Shift key."
 
       ;; home, end and delete.
       "<home>" #'smart-beginning-of-line ;; home
-      "M-h"    #'smart-beginning-of-line ;; home
+      "M-u"    #'smart-beginning-of-line ;; home
       "M-o"    #'move-end-of-line ;; end
       "M-\\"   #'delete-char
 
@@ -506,8 +521,9 @@ of the line. Extend the selection when used with the Shift key."
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
       "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
 
+      ;; toggle
       "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-u"   #'my/toggle-between-header-and-source
+      "M-h"   #'my/toggle-between-header-and-source
 )
 
 
