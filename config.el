@@ -163,38 +163,30 @@
                                 "\\*compilation\\*<\\.emacs\\.d>"
                                 )))
 
-(defun my/consult-auto-next-buffer ()
-  "Automatically switch to the next buffer based on consult-buffer's sorting."
-  (interactive)
-  (let* ((buffers (mapcar #'buffer-name (buffer-list))) ;; TODO: buffer-query might be improved with projectile.
-         (visible-buffers (consult--buffer-query :sort 'visibility :as #'buffer-name)))
-    ;; Ensure the current buffer is not considered
-    (setq visible-buffers (delq (current-buffer) visible-buffers))
-    ;; Find the next buffer from the filtered and sorted list
-    (when-let ((next-buf (car visible-buffers)))
-      (switch-to-buffer next-buf))))
+
+;; comment out these two functions
+;;
+;; (defun my/consult-auto-next-buffer ()
+;;   "Automatically switch to the next buffer based on consult-buffer's sorting."
+;;   (interactive)
+;;   (let* ((buffers (mapcar #'buffer-name (buffer-list))) ;; TODO: buffer-query might be improved with projectile.
+;;          (visible-buffers (consult--buffer-query :sort 'visibility :as #'buffer-name)))
+;;     ;; Ensure the current buffer is not considered
+;;     (setq visible-buffers (delq (current-buffer) visible-buffers))
+;;     ;; Find the next buffer from the filtered and sorted list
+;;     (when-let ((next-buf (car visible-buffers)))
+;;       (switch-to-buffer next-buf))))
 
 ;; (defun my/consult-auto-previous-buffer ()
 ;;   "Automatically switch to the previous buffer based on consult-buffer's sorting."
 ;;   (interactive)
 ;;   (let* ((buffers (mapcar #'buffer-name (buffer-list)))
 ;;          (visible-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name))))
-;;     Ensure the current buffer is not considered
-;;     (setq visible-buffers (delq (current-buffer) visible-buffers))
-;;     Find the previous buffer from the filtered and sorted list
+;;     ;; Ensure the current buffer's name is not considered
+;;     (setq visible-buffers (remove (buffer-name (current-buffer)) visible-buffers))
+;;     ;; Find the previous buffer from the filtered and sorted list
 ;;     (when-let ((prev-buf (car visible-buffers)))
 ;;       (switch-to-buffer prev-buf))))
-
-(defun my/consult-auto-previous-buffer ()
-  "Automatically switch to the previous buffer based on consult-buffer's sorting."
-  (interactive)
-  (let* ((buffers (mapcar #'buffer-name (buffer-list)))
-         (visible-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name))))
-    ;; Ensure the current buffer's name is not considered
-    (setq visible-buffers (remove (buffer-name (current-buffer)) visible-buffers))
-    ;; Find the previous buffer from the filtered and sorted list
-    (when-let ((prev-buf (car visible-buffers)))
-      (switch-to-buffer prev-buf))))
 
 
 (use-package! orderless
@@ -251,7 +243,7 @@
 
   (defun dap-debug-create-or-edit-json-template ()
     "Edit the C++ debugging configuration or create + edit if none exists yet."
-    (interactive)
+k    (interactive)
     (let ((filename (concat (lsp-workspace-root) "/launch.json"))
           (default "~/.emacs.d/default-launch.json"))
       (unless (file-exists-p filename)
@@ -377,7 +369,6 @@
         ))
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; projectile                                                                    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -474,6 +465,9 @@ of the line. Extend the selection when used with the Shift key."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (map! :map global-map
 
+      ;; lsp-ui-signautres
+      "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC for truncated view.
+
       ;; navigate lines
       "M-i" #'previous-line
       "M-k" #'next-line
@@ -481,9 +475,12 @@ of the line. Extend the selection when used with the Shift key."
       "M-l" #'forward-char
 
       ;; navigate between buffers
-      "M-p"     #'my/consult-auto-previous-buffer ;; instead of previous-buffer, next-buffer.
-      "M-n"     #'my/consult-auto-next-buffer
+      ;;"M-p"     #'my/consult-auto-previous-buffer ;; instead of previous-buffer, next-buffer.
+      ;;"M-n"     #'my/consult-auto-next-buffer
+      "M-8"       #'switch-to-prev-buffer
+      "M-9"       #'switch-to-next-buffer
       "C-<tab>" #'consult-buffer
+      "M-b"     #'switch-to-buffer
 
       ;; moving around windows
       "C-j" #'windmove-left
@@ -498,11 +495,15 @@ of the line. Extend the selection when used with the Shift key."
       "<f8>" #'my-dap-debug-close
       "<f9>" #'+treemacs/toggle ;; it is already <f9>. keep it this way.
 
-      ;; home, end and delete.
+      ;; home, end, page up, page down, and delete.
       "<home>" #'smart-beginning-of-line ;; home
-      "M-u"    #'smart-beginning-of-line ;; home
-      "M-o"    #'move-end-of-line ;; end
-      "M-\\"   #'delete-char
+      "M-h"    #'smart-beginning-of-line ;; home
+      "M-e"    #'move-end-of-line ;; end
+      "M-DEL"  #'delete-char ;; delete
+      "M-u"    #'scroll-down ;; Page Up
+      "M-o"    #'scroll-up   ;; Page Down
+
+      ;;"M-\\"   #'delete-char ;; keep it simple with M-DEL
 
       ;; search functions - consult
       "C-f" #'consult-line
@@ -521,9 +522,9 @@ of the line. Extend the selection when used with the Shift key."
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
       "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
 
-      ;; toggle
+      ;; find definition, header-source toggle
       "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-h"   #'my/toggle-between-header-and-source
+      "M-<f12>"   #'my/toggle-between-header-and-source
 )
 
 
