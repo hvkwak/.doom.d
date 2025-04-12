@@ -77,7 +77,6 @@
 ;;
 ;;
 ;;
-;;
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,16 +125,6 @@
         lsp-ui-sideline-show-code-actions t
         lsp-ui-peek-enable t))
 
-;; packages for better completion and regex
-(use-package! marginalia
-  :general
-  (:keymaps 'minibuffer-local-map
-            "M-A" 'marginalia-cycle)
-  :custom
-  (marginalia-max-relative-age 0)
-  (marginalia-align 'right)
-  :init
-  (marginalia-mode))
 
 (use-package! consult
   :after projectile
@@ -164,30 +153,16 @@
                                 )))
 
 
-;; comment out these two functions
-;;
-;; (defun my/consult-auto-next-buffer ()
-;;   "Automatically switch to the next buffer based on consult-buffer's sorting."
-;;   (interactive)
-;;   (let* ((buffers (mapcar #'buffer-name (buffer-list))) ;; TODO: buffer-query might be improved with projectile.
-;;          (visible-buffers (consult--buffer-query :sort 'visibility :as #'buffer-name)))
-;;     ;; Ensure the current buffer is not considered
-;;     (setq visible-buffers (delq (current-buffer) visible-buffers))
-;;     ;; Find the next buffer from the filtered and sorted list
-;;     (when-let ((next-buf (car visible-buffers)))
-;;       (switch-to-buffer next-buf))))
-
-;; (defun my/consult-auto-previous-buffer ()
-;;   "Automatically switch to the previous buffer based on consult-buffer's sorting."
-;;   (interactive)
-;;   (let* ((buffers (mapcar #'buffer-name (buffer-list)))
-;;          (visible-buffers (reverse (consult--buffer-query :sort 'visibility :as #'buffer-name))))
-;;     ;; Ensure the current buffer's name is not considered
-;;     (setq visible-buffers (remove (buffer-name (current-buffer)) visible-buffers))
-;;     ;; Find the previous buffer from the filtered and sorted list
-;;     (when-let ((prev-buf (car visible-buffers)))
-;;       (switch-to-buffer prev-buf))))
-
+;; packages for better completion and regex
+(use-package! marginalia
+  :general
+  (:keymaps 'minibuffer-local-map
+            "M-A" 'marginalia-cycle)
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'right)
+  :init
+  (marginalia-mode))
 
 (use-package! orderless
   :custom
@@ -243,7 +218,7 @@
 
   (defun dap-debug-create-or-edit-json-template ()
     "Edit the C++ debugging configuration or create + edit if none exists yet."
-k    (interactive)
+    (interactive)
     (let ((filename (concat (lsp-workspace-root) "/launch.json"))
           (default "~/.emacs.d/default-launch.json"))
       (unless (file-exists-p filename)
@@ -378,6 +353,28 @@ k    (interactive)
   (setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; keep this to see if known projects work properly.
+(defun my/projectile-canonical-path (path)
+  "Return the fully expanded and true path for PATH."
+  (directory-file-name (file-truename (expand-file-name path))))
+
+(defun my/projectile-remove-duplicate-projects ()
+  "Remove duplicate projects from `projectile-known-projects`."
+  (setq projectile-known-projects
+        (delete-dups
+         (mapcar #'my/projectile-canonical-path projectile-known-projects))))
+
+;; Hook into projectile's save/load
+(advice-add #'projectile-add-known-project :filter-args
+            (lambda (args)
+              (let ((path (car args)))
+                (list (my/projectile-canonical-path path)))))
+(add-hook 'projectile-after-switch-project-hook #'my/projectile-remove-duplicate-projects)
+;; ends here
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (use-package! consult-projectile
   :after (consult projectile)
   :bind (("C-c p f" . consult-projectile-find-file)
@@ -459,9 +456,20 @@ of the line. Extend the selection when used with the Shift key."
             (find-file source-file)
           (message "Source file does not exist."))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Tramp                                                                         ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(after! tramp
+  ;; Use sh to avoid bash/zsh issues
+  (setq tramp-remote-shell "/bin/sh")
+  ;; Suppress startup messages from SSH
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no -T -q -o LogLevel=QUIET")
+  (setq tramp-verbose 10)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; key bindings                                                                  ;;
+;; KEY bindings                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (map! :map global-map
 
@@ -497,11 +505,11 @@ of the line. Extend the selection when used with the Shift key."
 
       ;; home, end, page up, page down, and delete.
       "<home>" #'smart-beginning-of-line ;; home
-      "M-h"    #'smart-beginning-of-line ;; home
-      "M-e"    #'move-end-of-line ;; end
+      "M-u"    #'smart-beginning-of-line ;; home
+      "M-o"    #'move-end-of-line ;; end
       "M-DEL"  #'delete-char ;; delete
-      "M-u"    #'scroll-down ;; Page Up
-      "M-o"    #'scroll-up   ;; Page Down
+      "M-h"    #'scroll-down ;; Page Up
+      "M-n"    #'scroll-up   ;; Page Down
 
       ;;"M-\\"   #'delete-char ;; keep it simple with M-DEL
 
