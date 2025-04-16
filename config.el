@@ -80,7 +80,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; general changes and completion
+;; general settings, treemacs, lsp-ui, ...                                       ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq native-comp-deferred-compilation nil) ;; This would disable native-compilation entirely.
 (menu-bar-mode 1)
@@ -125,8 +125,16 @@
         lsp-ui-sideline-show-code-actions t
         lsp-ui-peek-enable t))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; packages for better completion and regex
+;; these two are activated in init.el
+;; company - In-buffer code completion (like suggesting function names, variables, etc.)
+;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'eshell-mode-hook (lambda () (company-mode -1))) ;; disable company in eshell
 
 (use-package! consult
+  ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
   :after projectile
   :config
   (setq consult-preview-key 'any) ;; Preview instantly as you cycle
@@ -152,9 +160,8 @@
                                 "\\*compilation\\*<\\.emacs\\.d>"
                                 )))
 
-
-;; packages for better completion and regex
 (use-package! marginalia
+  ;; Adds helpful annotations to minibuffer completion results.
   :general
   (:keymaps 'minibuffer-local-map
             "M-A" 'marginalia-cycle)
@@ -165,6 +172,7 @@
   (marginalia-mode))
 
 (use-package! orderless
+  ;; Improves how your typed input matches minibuffer completions.
   :custom
   (completion-styles '(orderless))      ; Use orderless
   (completion-category-defaults nil)    ; I want to be in control!
@@ -182,8 +190,8 @@
      ;; orderless-strict-full-initialism
      ;; orderless-without-literal          ; Recommended for dispatches instead
      ))
-  )
-
+)
+(setq orderless-case-sensitivity 'smart)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -353,8 +361,16 @@
   (setq compile-command "rm -r build && mkdir build && cmake -S . -B build && cmake --build build")
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; keep this to see if known projects work properly.
+;; TODO: test this
+(with-eval-after-load 'projectile
+  (setq projectile-mode-line-prefix " Proj"
+        projectile-indexing-method 'alien
+        projectile-enable-caching nil
+        projectile-file-exists-remote-cache-expire nil)
+  (add-to-list 'projectile-globally-ignored-directories "/ssh:"))
+
+
+;; TODO: test this
 (defun my/projectile-canonical-path (path)
   "Return the fully expanded and true path for PATH."
   (directory-file-name (file-truename (expand-file-name path))))
@@ -371,15 +387,18 @@
               (let ((path (car args)))
                 (list (my/projectile-canonical-path path)))))
 (add-hook 'projectile-after-switch-project-hook #'my/projectile-remove-duplicate-projects)
-;; ends here
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; consult-projectile
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package! consult-projectile
   :after (consult projectile)
-  :bind (("C-c p f" . consult-projectile-find-file)
-         ("C-c p p" . consult-projectile-switch-project)))
-
+  :bind (;;("C-c p f" . consult-projectile-find-file)
+         ("C-c p p" . consult-projectile-switch-project))
+  )
 
 
 
@@ -417,15 +436,15 @@ of the line. Extend the selection when used with the Shift key."
     (when (= orig-pos (point))
       (move-beginning-of-line 1))))
 
-(defun my-next-line-extend-selection ()
-  "Extend the selection by moving to the next line, respecting shift selection."
-  (interactive "^")  ; The caret (^) ensures shift-modification is respected.
-  (next-line 1))
+;; (defun my-next-line-extend-selection ()
+;;   "Extend the selection by moving to the next line, respecting shift selection."
+;;   (interactive "^")  ; The caret (^) ensures shift-modification is respected.
+;;   (next-line 1))
 
-(defun my-previous-line-extend-selection ()
-  "Extend the selection by moving to the next line, respecting shift selection."
-  (interactive "^")  ; The caret (^) ensures shift-modification is respected.
-  (previous-line 1))
+;; (defun my-previous-line-extend-selection ()
+;;   "Extend the selection by moving to the next line, respecting shift selection."
+;;   (interactive "^")  ; The caret (^) ensures shift-modification is respected.
+;;   (previous-line 1))
 
 (defun my/select-to-click (event)
   "Set mark at current position and extend selection to the position
@@ -460,13 +479,10 @@ of the line. Extend the selection when used with the Shift key."
 ;; Tramp                                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (after! tramp
-  ;; Use sh to avoid bash/zsh issues
-  (setq tramp-remote-shell "/bin/sh")
-  ;; Suppress startup messages from SSH
-  (setq tramp-ssh-controlmaster-options
-        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no -T -q -o LogLevel=QUIET")
   (setq tramp-verbose 10)
 )
+(setq recentf-exclude '("/ssh:")) ;; Or a more robust pattern
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY bindings                                                                  ;;
@@ -532,7 +548,7 @@ of the line. Extend the selection when used with the Shift key."
 
       ;; find definition, header-source toggle
       "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-<f12>"   #'my/toggle-between-header-and-source
+      "M-<f12>"   #'my/toggle-between-header-and-sources
 )
 
 
