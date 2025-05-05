@@ -146,7 +146,7 @@
   (setq consult-project-function #'projectile-project-root)
 
   ;; filter out several unrelated buffers
-  (setq consult-buffer-filter '("\\` \\*"
+  (setq consult-buffer-filter '(;;"\\` \\*" ;; this excluded filters out any buffer whose name starts with a space and an asterisk, may be too broad
                                 "\\`\\*scratch\\*"
                                 "\\`\\*Messages\\*"
                                 "\\`\\*doom\\*"
@@ -490,7 +490,11 @@ of the line. Extend the selection when used with the Shift key."
 (defun my/disable-projectile-on-remote ()
   (when (file-remote-p default-directory)
     (projectile-mode -1)))
-(add-hook 'find-file-hook #'my/projectile-disable-on-remote)
+(add-hook 'find-file-hook #'my/disable-projectile-on-remote)
+
+(after! eshell
+  (add-hook! 'eshell-directory-change-hook
+    (company-mode (if (file-remote-p default-directory) -1 +1))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -512,8 +516,8 @@ of the line. Extend the selection when used with the Shift key."
       ;;"M-n"     #'my/consult-auto-next-buffer
       "M-8"       #'switch-to-prev-buffer
       "M-9"       #'switch-to-next-buffer
-      "C-<tab>" #'consult-buffer
-      "M-b"     #'switch-to-buffer
+      "C-<tab>" #'+vertico/switch-workspace-buffer ;; C-x-b
+      "M-b"     #'switch-to-buffer ;; TODO: change to C-x-b?
 
       ;; moving around windows
       "C-j" #'windmove-left
