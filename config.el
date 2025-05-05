@@ -482,24 +482,15 @@ of the line. Extend the selection when used with the Shift key."
   (setq tramp-verbose 10)
 )
 
-(setq projectile-mode-line "Projectile")
+(defun my/disable-vc-for-tramp ()
+  (when (file-remote-p default-directory)
+    (setq-local vc-handled-backends nil)))
+(add-hook 'find-file-hook #'my/disable-vc-for-tramp)
 
-(defun my/projectile-remote-p ()
-  (file-remote-p default-directory))
-
-(defun my/projectile-disable-on-remote ()
-  (when (my/projectile-remote-p)
+(defun my/disable-projectile-on-remote ()
+  (when (file-remote-p default-directory)
     (projectile-mode -1)))
-
 (add-hook 'find-file-hook #'my/projectile-disable-on-remote)
-
-;; keep this.
-;; (defun my/disable-vc-for-tramp ()
-;;   (when (file-remote-p default-directory)
-;;     (setq-local vc-handled-backends nil)))
-;; (add-hook 'find-file-hook #'my/disable-vc-for-tramp)
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
