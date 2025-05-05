@@ -481,7 +481,25 @@ of the line. Extend the selection when used with the Shift key."
 (after! tramp
   (setq tramp-verbose 10)
 )
-(setq recentf-exclude '("/ssh:")) ;; Or a more robust pattern
+
+(setq projectile-mode-line "Projectile")
+
+(defun my/projectile-remote-p ()
+  (file-remote-p default-directory))
+
+(defun my/projectile-disable-on-remote ()
+  (when (my/projectile-remote-p)
+    (projectile-mode -1)))
+
+(add-hook 'find-file-hook #'my/projectile-disable-on-remote)
+
+;; keep this.
+;; (defun my/disable-vc-for-tramp ()
+;;   (when (file-remote-p default-directory)
+;;     (setq-local vc-handled-backends nil)))
+;; (add-hook 'find-file-hook #'my/disable-vc-for-tramp)
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -523,7 +541,7 @@ of the line. Extend the selection when used with the Shift key."
       "<home>" #'smart-beginning-of-line ;; home
       "M-u"    #'smart-beginning-of-line ;; home
       "M-o"    #'move-end-of-line ;; end
-      "M-DEL"  #'delete-char ;; delete
+      "M-DEL"  #'delete-char ;; delete with backspace
       "M-h"    #'scroll-down ;; Page Up
       "M-n"    #'scroll-up   ;; Page Down
 
@@ -549,6 +567,9 @@ of the line. Extend the selection when used with the Shift key."
       ;; find definition, header-source toggle
       "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
       "M-<f12>"   #'my/toggle-between-header-and-sources
+
+      ;; open echo area
+      "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e
 )
 
 
