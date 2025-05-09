@@ -129,7 +129,7 @@
 ;; packages for better completion and regex
 ;; these two are activated in init.el
 ;; company - In-buffer code completion (like suggesting function names, variables, etc.)
-;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
+;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)gg
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'eshell-mode-hook (lambda () (company-mode -1))) ;; disable company in eshell
 
@@ -172,7 +172,7 @@
   (marginalia-mode))
 
 (use-package! orderless
-  ;; Improves how your typed input matches minibuffer completions.
+  ;; Matches your typed input orderless minibuffer completions.
   :custom
   (completion-styles '(orderless))      ; Use orderless
   (completion-category-defaults nil)    ; I want to be in control!
@@ -436,16 +436,6 @@ of the line. Extend the selection when used with the Shift key."
     (when (= orig-pos (point))
       (move-beginning-of-line 1))))
 
-;; (defun my-next-line-extend-selection ()
-;;   "Extend the selection by moving to the next line, respecting shift selection."
-;;   (interactive "^")  ; The caret (^) ensures shift-modification is respected.
-;;   (next-line 1))
-
-;; (defun my-previous-line-extend-selection ()
-;;   "Extend the selection by moving to the next line, respecting shift selection."
-;;   (interactive "^")  ; The caret (^) ensures shift-modification is respected.
-;;   (previous-line 1))
-
 (defun my/select-to-click (event)
   "Set mark at current position and extend selection to the position
   clicked with the mouse."
@@ -482,6 +472,20 @@ of the line. Extend the selection when used with the Shift key."
   (setq tramp-verbose 10)
 )
 
+;; ;; Disable lockfiles and autosave for TRAMP buffers
+;; (setq tramp-auto-save-directory nil)
+;; (setq auto-save-default nil)
+;; (setq create-lockfiles nil)
+
+;; Disable lockfiles and autosave for TRAMP buffers only
+(defun my/disable-tramp-autosave-and-lockfiles ()
+  "Disable lockfiles and autosave for TRAMP buffers to avoid fallback encoding."
+  (when (and buffer-file-name (tramp-tramp-file-p buffer-file-name))
+    (setq-local create-lockfiles nil)
+    (setq-local auto-save-default nil)
+    (auto-save-mode -1)))  ; <--- this line explicitly disables auto-save-mode
+(add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
+
 (defun my/disable-vc-for-tramp ()
   (when (file-remote-p default-directory)
     (setq-local vc-handled-backends nil)))
@@ -490,14 +494,29 @@ of the line. Extend the selection when used with the Shift key."
 (defun my/disable-projectile-on-remote ()
   (when (file-remote-p default-directory)
     (projectile-mode -1)))
-(add-hook 'find-file-hook #'my/disable-projectile-on-remote)
+(add-hook 'find-file-hook #'my/disable-projectile-on-remote)x
 
-(setq flycheck-idle-change-delay 5.0) ;; Increase delay to reduce interference
+;; flycheck - on save
+(defun my/flycheck-tramp-on-save-only ()
+  (when (and buffer-file-name (tramp-tramp-file-p buffer-file-name))
+    (flycheck-mode -1)
+    (add-hook 'after-save-hook #'flycheck-buffer nil t)))
+(add-hook 'flycheck-mode-hook #'my/flycheck-tramp-on-save-only)
 
-(after! eshell
-  (add-hook! 'eshell-directory-change-hook
-    (company-mode (if (file-remote-p default-directory) -1 +1))))
+;; flycheck - disable on tramp test this
+;; (defun my/disable-flycheck-for-tramp ()
+;;   "Disable Flycheck when visiting remote files via TRAMP."
+;;   (when (and buffer-file-name (file-remote-p buffer-file-name))
+;;     (flycheck-mode -1)))
+;; (add-hook 'after-change-major-mode-hook #'my/disable-flycheck-for-tramp)
 
+;; start vterm with this:
+(defun my/vterm-init ()
+  "Automatically source .profile when vterm starts."
+  (vterm-send-string "source ~/.profile" t)
+  (vterm-send-return))
+
+(add-hook 'vterm-mode-hook #'my/vterm-init)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY bindings                                                                  ;;
