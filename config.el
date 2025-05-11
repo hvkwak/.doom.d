@@ -1,14 +1,10 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
-
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
 ;; (setq user-full-name "John Doe"
 ;;       user-mail-address "john@doe.com")
-
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
 ;; - `doom-font' -- the primary font to use
@@ -32,6 +28,19 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
+;; (defun general--unalias (thing &optional state-p)
+;;   "Safe general--unalias that guards against nil and bad inputs."
+;;   (message "[GENERAL] unalias: %S (state-p: %S)" thing state-p)
+;;   (let ((aliases (if state-p general-state-aliases general-keymap-aliases)))
+;;     (cond
+;;      ((symbolp thing) (or (cdr (assq thing aliases)) thing))
+;;      ((stringp thing) (or (cdr (assq (intern thing) aliases)) (intern thing)))
+;;      ((null thing) nil)
+;;      (t (progn
+;;           (message "[GENERAL ERROR] invalid input to general--unalias: %S" thing)
+;;           nil)))))
+
+
 (setq doom-theme 'doom-moonlight)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -41,7 +50,6 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
-
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
@@ -131,7 +139,6 @@
 ;; company - In-buffer code completion (like suggesting function names, variables, etc.)
 ;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)gg
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(add-hook 'eshell-mode-hook (lambda () (company-mode -1))) ;; disable company in eshell
 
 (use-package! consult
   ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
@@ -387,7 +394,7 @@
               (let ((path (car args)))
                 (list (my/projectile-canonical-path path)))))
 (add-hook 'projectile-after-switch-project-hook #'my/projectile-remove-duplicate-projects)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 
 
@@ -469,15 +476,46 @@ of the line. Extend the selection when used with the Shift key."
 ;; Tramp                                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (after! tramp
-  (setq tramp-verbose 10)
+  (setq tramp-verbose 1)                ; set it 10 if in debug mode
+  ;;(setq debug-on-error t)
+  ;; (setq tramp-shell-prompt-pattern
+  ;;     "\\(?:^\\|\r\\)\[[:ascii:]\]*\\$ ") ;; it works, just keep it.
+  (setq tramp-shell-prompt-pattern
+      "\\(?:^\\|\r\\)[[:ascii:]]*\\$ ")
 )
 
-;; ;; Disable lockfiles and autosave for TRAMP buffers
-;; (setq tramp-auto-save-directory nil)
-;; (setq auto-save-default nil)
-;; (setq create-lockfiles nil)
+(with-eval-after-load 'tramp
+  ;; Avoid password prompts and force public key use
+  (add-to-list 'tramp-connection-properties
+               '(".*" "IdentityFile" "~/.ssh/id_rsa"))  ;; Or whichever key is used
+  (add-to-list 'tramp-connection-properties
+               '(".*" "IdentitiesOnly" "yes"))
+  (add-to-list 'tramp-connection-properties
+               '(".*" "PasswordAuthentication" "no"))
+  ;; Avoid ControlPersist confusion
+  (add-to-list 'tramp-connection-properties
+               '(".*" "ControlMaster" "auto"))
+  (add-to-list 'tramp-connection-properties
+               '(".*" "ControlPath" "~/.ssh/tramp.%%C"))
+  (add-to-list 'tramp-connection-properties
+               '(".*" "ControlPersist" "600")))
 
-;; Disable lockfiles and autosave for TRAMP buffers only
+
+;; define new general--unalias to reduce wrong type argument listp error.
+;; this will reduce some waiting time
+(defun general--unalias (thing &optional state-p)
+  "Safe general--unalias that guards against nil and bad inputs."
+  (message "[GENERAL] unalias: %S (state-p: %S)" thing state-p)
+  (let ((aliases (if state-p general-state-aliases general-keymap-aliases)))
+    (cond
+     ((symbolp thing) (or (cdr (assq thing aliases)) thing))
+     ((stringp thing) (or (cdr (assq (intern thing) aliases)) (intern thing)))
+     ((null thing) nil)
+     (t (progn
+          (message "[GENERAL ERROR] invalid input to general--unalias: %S" thing)
+          nil)))))
+
+;; disable autosave
 (defun my/disable-tramp-autosave-and-lockfiles ()
   "Disable lockfiles and autosave for TRAMP buffers to avoid fallback encoding."
   (when (and buffer-file-name (tramp-tramp-file-p buffer-file-name))
@@ -486,37 +524,14 @@ of the line. Extend the selection when used with the Shift key."
     (auto-save-mode -1)))  ; <--- this line explicitly disables auto-save-mode
 (add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
 
-(defun my/disable-vc-for-tramp ()
-  (when (file-remote-p default-directory)
-    (setq-local vc-handled-backends nil)))
-(add-hook 'find-file-hook #'my/disable-vc-for-tramp)
-
-(defun my/disable-projectile-on-remote ()
-  (when (file-remote-p default-directory)
-    (projectile-mode -1)))
-(add-hook 'find-file-hook #'my/disable-projectile-on-remote)x
-
-;; flycheck - on save
-(defun my/flycheck-tramp-on-save-only ()
-  (when (and buffer-file-name (tramp-tramp-file-p buffer-file-name))
-    (flycheck-mode -1)
-    (add-hook 'after-save-hook #'flycheck-buffer nil t)))
-(add-hook 'flycheck-mode-hook #'my/flycheck-tramp-on-save-only)
-
-;; flycheck - disable on tramp test this
-;; (defun my/disable-flycheck-for-tramp ()
-;;   "Disable Flycheck when visiting remote files via TRAMP."
-;;   (when (and buffer-file-name (file-remote-p buffer-file-name))
-;;     (flycheck-mode -1)))
-;; (add-hook 'after-change-major-mode-hook #'my/disable-flycheck-for-tramp)
-
 ;; start vterm with this:
 (defun my/vterm-init ()
   "Automatically source .profile when vterm starts."
+  (sleep-for 2)
   (vterm-send-string "source ~/.profile" t)
   (vterm-send-return))
-
 (add-hook 'vterm-mode-hook #'my/vterm-init)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY bindings                                                                  ;;
@@ -588,18 +603,3 @@ of the line. Extend the selection when used with the Shift key."
       ;; open echo area
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e
 )
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; keep this for later use, practical use of overriding.                         ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (defun my-message (format-string &rest args)
-;;   "Custom message function that logs to a file."
-;;   (with-temp-file "~/emacs_log.txt"
-;;     (insert (apply #'format format-string args)))
-;;   (apply #'message format-string args))  ; Call original message function
-
-;; (advice-add 'message :override #'my-message)
