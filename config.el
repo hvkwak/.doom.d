@@ -137,7 +137,7 @@
   ;; hopefully prevents which-key pop-up flickering.
   (setq which-key-popup-type 'side-window
         which-key-side-window-location 'bottom
-        which-key-idle-delay 0.3))
+        which-key-idle-delay 0.1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; packages for better completion and regex
@@ -539,39 +539,6 @@ of the line. Extend the selection when used with the Shift key."
 (add-hook 'vterm-mode-hook #'my/vterm-init)
 
 
-;;;;;;;;;;;;;;;;;;;;
-;; copy and paste ;;
-;;;;;;;;;;;;;;;;;;;;
-
-;; (defun my/copy-if-region ()
-;;   "If only `C-c` is pressed and a region is active, copy it. Otherwise, fallback to default behavior."
-;;   (interactive)
-;;   (cond
-;;    ((and (use-region-p)
-;;          (= (length (this-command-keys-vector)) 1)) ; only C-c pressed
-;;     (kill-ring-save (region-beginning) (region-end)))
-;;    ((= (length (this-command-keys-vector)) 1)
-;;     (message "No region selected. Use full `C-c` command."))
-;;    (t (let ((command (key-binding (this-command-keys-vector))))
-;;         (when command (call-interactively command))))))
-
-;; (defun my/cut-if-region ()
-;;   "If only `C-x` is pressed and a region is active, cut it. Otherwise, fallback to default behavior."
-;;   (interactive)
-;;   (cond
-;;    ((and (use-region-p)
-;;          (= (length (this-command-keys-vector)) 1)) ; only C-x pressed
-;;     (kill-region (region-beginning) (region-end)))
-;;    ((= (length (this-command-keys-vector)) 1)
-;;     (message "No region selected. Use full `C-x` command."))
-;;    (t (let ((command (key-binding (this-command-keys-vector))))
-;;         (when command (call-interactively command))))))
-
-;; (defun my/paste ()
-;;   "Paste from kill ring."
-;;   (interactive)
-;;   (yank))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY bindings                                                                  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -624,12 +591,10 @@ of the line. Extend the selection when used with the Shift key."
 
       ;; jump, copy and paste, and more.
       "C-s" #'save-buffer
-      "s-c" #'kill-ring-save
       "M-e" #'yank
       "C-z" #'undo                      ;
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward
-      ;;"M-h" #'better-jumper-set-jump
 
       ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
