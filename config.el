@@ -39,9 +39,10 @@
 ;;      (t (progn
 ;;           (message "[GENERAL ERROR] invalid input to general--unalias: %S" thing)
 ;;           nil)))))
-
-
 (setq doom-theme 'doom-moonlight)
+
+
+
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -134,16 +135,17 @@
         lsp-ui-peek-enable t))
 
 (after! which-key
-  ;; hopefully prevents which-key pop-up flickering.
-  (setq which-key-popup-type 'side-window
+  (setq which-key-popup-type 'minibuffer ;; better than side-window
         which-key-side-window-location 'bottom
-        which-key-idle-delay 0.1))
+        which-key-side-window-max-height 0.25
+        which-key-side-window-max-width 0.33
+        which-key-min-display-lines 6))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; packages for better completion and regex
 ;; these two are activated in init.el
 ;; company - In-buffer code completion (like suggesting function names, variables, etc.)
-;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)gg
+;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package! consult
@@ -524,10 +526,10 @@ of the line. Extend the selection when used with the Shift key."
 ;; disable autosave
 (defun my/disable-tramp-autosave-and-lockfiles ()
   "Disable lockfiles and autosave for TRAMP buffers to avoid fallback encoding."
-  (when (and buffer-file-name (tramp-tramp-file-p buffer-file-name))
+  (when (and buffer-file-name (file-remote-p buffer-file-name))
     (setq-local create-lockfiles nil)
     (setq-local auto-save-default nil)
-    (auto-save-mode -1)))  ; <--- this line explicitly disables auto-save-mode
+    (auto-save-mode -1)))
 (add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
 
 ;; start vterm with this:
