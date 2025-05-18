@@ -128,7 +128,7 @@
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-position 'right
-        lsp-ui-sideline-enable t
+        ;;lsp-ui-sideline-enable t ;; disable sideline
         lsp-ui-sideline-show-hover t
         lsp-ui-sideline-show-diagnostics t
         lsp-ui-sideline-show-code-actions t
@@ -205,8 +205,9 @@
      ;; orderless-strict-full-initialism
      ;; orderless-without-literal          ; Recommended for dispatches instead
      ))
+  (setq orderless-case-sensitivity 'smart) ;; TODO: keep it smart? or not sensitive?
 )
-(setq orderless-case-sensitivity 'smart)
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -377,12 +378,12 @@
   )
 
 ;; TODO: test this
-(with-eval-after-load 'projectile
-  (setq projectile-mode-line-prefix " Proj"
-        projectile-indexing-method 'alien
-        projectile-enable-caching nil
-        projectile-file-exists-remote-cache-expire nil)
-  (add-to-list 'projectile-globally-ignored-directories "/ssh:"))
+;; (with-eval-after-load 'projectile
+;;   (setq projectile-mode-line-prefix " Proj"
+;;         projectile-indexing-method 'alien
+;;         projectile-enable-caching nil
+;;         projectile-file-exists-remote-cache-expire nil)
+;;   (add-to-list 'projectile-globally-ignored-directories "/ssh:"))
 
 
 ;; TODO: test this
@@ -484,14 +485,22 @@ of the line. Extend the selection when used with the Shift key."
 ;; Tramp                                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (after! tramp
-  (setq tramp-verbose 1)                ; set it 10 if in debug mode
+  (setq tramp-verbose 3)                ; set it 10 if in debug mode, default 3.
   ;;(setq debug-on-error t)
   ;; (setq tramp-shell-prompt-pattern
   ;;     "\\(?:^\\|\r\\)\[[:ascii:]\]*\\$ ") ;; it works, just keep it.
   (setq tramp-shell-prompt-pattern
       "\\(?:^\\|\r\\)[[:ascii:]]*\\$ ")
+  (setq projectile-mode-line "Projectile")
+  (setq remote-file-name-inhibit-cache nil)
+  (setq vc-ignore-dir-regexp
+      (format "%s\\|%s"
+                    vc-ignore-dir-regexp
+                    tramp-file-name-regexp))
+  (setq remote-file-name-inhibit-locks t)
 )
 
+;; weg?
 (with-eval-after-load 'tramp
   ;; Avoid password prompts and force public key use
   (add-to-list 'tramp-connection-properties
@@ -508,6 +517,8 @@ of the line. Extend the selection when used with the Shift key."
   (add-to-list 'tramp-connection-properties
                '(".*" "ControlPersist" "600")))
 
+;; use tramp cache?
+(setq tramp-persistency-file-name "~/.emacs.d/tramp")
 
 ;; define new general--unalias to reduce wrong type argument listp error.
 ;; this will reduce some waiting time
@@ -584,8 +595,6 @@ of the line. Extend the selection when used with the Shift key."
       "M-DEL"  #'delete-char ;; delete with backspace
       "M-h"    #'scroll-down ;; Page Up
       "M-n"    #'scroll-up   ;; Page Down
-
-      ;;"M-\\"   #'delete-char ;; keep it simple with M-DEL
 
       ;; search functions - consult
       "C-f" #'consult-line
