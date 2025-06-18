@@ -128,11 +128,22 @@
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-position 'right
-        ;;lsp-ui-sideline-enable t ;; disable sideline
-        lsp-ui-sideline-show-hover t
-        lsp-ui-sideline-show-diagnostics t
-        lsp-ui-sideline-show-code-actions t
-        lsp-ui-peek-enable t))
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-sideline-show-diagnostics nil
+        lsp-ui-sideline-show-code-actions nil
+        lsp-ui-peek-enable t
+        lsp-enable-symbol-highlighting t
+        ))
+
+(after! lsp-mode
+  ;; Soft background highlights for readability
+  (set-face-attribute 'lsp-face-highlight-textual nil
+                      :background "#2f3e5e" :foreground nil :weight 'bold)
+  (set-face-attribute 'lsp-face-highlight-read nil
+                      :background "#3e4d6c" :foreground nil :weight 'bold)
+  (set-face-attribute 'lsp-face-highlight-write nil
+                      :background "#5e4c6e" :foreground nil :weight 'bold))
 
 (after! which-key
   (setq which-key-popup-type 'minibuffer ;; better than side-window
@@ -557,8 +568,9 @@ of the line. Extend the selection when used with the Shift key."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (map! :map global-map
 
-      ;; lsp-ui-signautres
+      ;; lsp-ui
       "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC for truncated view.
+      "M-f" #'flycheck-list-errors
 
       ;; navigate lines
       "M-i" #'previous-line
@@ -573,6 +585,10 @@ of the line. Extend the selection when used with the Shift key."
       "M-9"       #'switch-to-next-buffer
       "C-8"       #'switch-to-prev-buffer
       "C-9"       #'switch-to-next-buffer
+      "C-1"       #'switch-to-prev-buffer
+      "C-2"       #'switch-to-next-buffer
+      "C-<left>"  #'switch-to-prev-buffer
+      "C-<right>" #'switch-to-next-buffer
       "C-<tab>" #'+vertico/switch-workspace-buffer ;; same as C-x-b
 
       ;; moving around windows
@@ -606,6 +622,8 @@ of the line. Extend the selection when used with the Shift key."
       "C-z" #'undo                      ;
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward
+      "M-<right>" #'better-jumper-jump-forward
+      "M-<left>" #'better-jumper-jump-backward
 
       ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
