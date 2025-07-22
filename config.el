@@ -89,9 +89,9 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; general settings, treemacs, lsp-ui, ...                                       ;;
+;; general settings, lsp-ui, ...                                                 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(setq native-comp-deferred-compilation nil) ;; This would disable native-compilation entirely.
+;; (setq native-comp-jit-compilation nil) ;; This would disable native-compilation entirely.
 (menu-bar-mode 1)
 
 ;; directly modify Doom's theme settings using custom-set-faces
@@ -99,8 +99,6 @@
 ;;   (solaire-global-mode -1))
 
 (custom-set-faces
-  ;;'(default ((t (:background "#000000"))))
-  ;;'(hl-line ((t (:background "#000000"))))
   '(hl-line ((t (:background "#3e4451" :underline nil))))
   '(cursor ((t (:background "green")))) ;; change cursor background to green.
   '(region ((t (:background "#4671d5" :foreground "#ffffff"))))  ; Region selection
@@ -126,14 +124,17 @@
 
 (after! lsp-ui
   (setq lsp-ui-doc-enable t
-        lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-show-with-cursor nil
         lsp-ui-doc-position 'right
+        lsp-ui-doc-include-signature t
+        lsp-ui-doc-max-height 100
         lsp-ui-sideline-enable t
         lsp-ui-sideline-show-hover nil
         lsp-ui-sideline-show-diagnostics nil
         lsp-ui-sideline-show-code-actions nil
         lsp-ui-peek-enable t
         lsp-enable-symbol-highlighting t
+        lsp-signature-render-documentation t
         ))
 
 (after! lsp-mode
@@ -496,43 +497,10 @@ of the line. Extend the selection when used with the Shift key."
 ;; Tramp                                                                         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (after! tramp
-  (setq tramp-verbose 3)                ; set it 10 if in debug mode, default 3.
-  ;;(setq debug-on-error t)
-  ;; (setq tramp-shell-prompt-pattern
-  ;;     "\\(?:^\\|\r\\)\[[:ascii:]\]*\\$ ") ;; it works, just keep it.
-  (setq tramp-shell-prompt-pattern
-      "\\(?:^\\|\r\\)[[:ascii:]]*\\$ ")
-  (setq projectile-mode-line "Projectile")
-  (setq remote-file-name-inhibit-cache nil)
-  (setq vc-ignore-dir-regexp
-      (format "%s\\|%s"
-                    vc-ignore-dir-regexp
-                    tramp-file-name-regexp))
-  (setq remote-file-name-inhibit-locks t)
+  (setq tramp-verbose 3)
 )
 
-;; weg?
-(with-eval-after-load 'tramp
-  ;; Avoid password prompts and force public key use
-  (add-to-list 'tramp-connection-properties
-               '(".*" "IdentityFile" "~/.ssh/id_rsa"))  ;; Or whichever key is used
-  (add-to-list 'tramp-connection-properties
-               '(".*" "IdentitiesOnly" "yes"))
-  (add-to-list 'tramp-connection-properties
-               '(".*" "PasswordAuthentication" "no"))
-  ;; Avoid ControlPersist confusion
-  (add-to-list 'tramp-connection-properties
-               '(".*" "ControlMaster" "auto"))
-  (add-to-list 'tramp-connection-properties
-               '(".*" "ControlPath" "~/.ssh/tramp.%%C"))
-  (add-to-list 'tramp-connection-properties
-               '(".*" "ControlPersist" "600")))
-
-;; use tramp cache?
-(setq tramp-persistency-file-name "~/.emacs.d/tramp")
-
-;; define new general--unalias to reduce wrong type argument listp error.
-;; this will reduce some waiting time
+;; define new general--unalias to reduce wrong type argument listp error. this will reduce some waiting time.
 (defun general--unalias (thing &optional state-p)
   "Safe general--unalias that guards against nil and bad inputs."
   (message "[GENERAL] unalias: %S (state-p: %S)" thing state-p)
@@ -569,7 +537,8 @@ of the line. Extend the selection when used with the Shift key."
 (map! :map global-map
 
       ;; lsp-ui
-      "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC for truncated view.
+      "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
+      "M-7" #'lsp-ui-doc-toggle
       "M-f" #'flycheck-list-errors
 
       ;; navigate lines
@@ -579,8 +548,6 @@ of the line. Extend the selection when used with the Shift key."
       "M-l" #'forward-char
 
       ;; navigate between buffers
-      ;;"M-p"     #'my/consult-auto-previous-buffer ;; instead of previous-buffer, next-buffer.
-      ;;"M-n"     #'my/consult-auto-next-buffer
       "M-8"       #'switch-to-prev-buffer
       "M-9"       #'switch-to-next-buffer
       "C-8"       #'switch-to-prev-buffer

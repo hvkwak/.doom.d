@@ -57,3 +57,4 @@
 (package! all-the-icons-completion)
 (package! orderless)
 (package! yasnippet-snippets)
+(package! vterm)
