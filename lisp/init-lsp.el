@@ -1,0 +1,23 @@
+;;; init-lsp.el --- LSP + Clangd specific config
+
+(after! lsp-ui
+  (setq lsp-ui-doc-enable t
+        lsp-ui-doc-show-with-cursor nil
+        lsp-ui-doc-position 'right
+        lsp-ui-doc-include-signature t
+        lsp-ui-doc-max-height 100
+        lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-sideline-show-diagnostics nil
+        lsp-ui-sideline-show-code-actions nil
+        lsp-ui-peek-enable t
+        lsp-enable-symbol-highlighting t
+        lsp-signature-render-documentation t
+        ))
+
+;; do not add headers automatically.
+(after! lsp-clangd
+  (setq lsp-clients-clangd-args
+        '("--header-insertion=never")))
+
+(provide 'init-lsp)
