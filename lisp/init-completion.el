@@ -1,4 +1,5 @@
-;;; init-completion.el --- Keybindings for Doom Emacs -*- lexical-binding: t; -*-
+;;; init-completion.el --- completion -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; Commentary:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; packages for better completion and regex
@@ -6,7 +7,10 @@
 ;; company - In-buffer code completion (like suggesting function names, variables, etc.)
 ;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Code:
 (use-package! consult
+
   ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
   :after projectile
   :config
@@ -79,3 +83,4 @@
   (define-key company-active-map (kbd "<backtab>") #'company-select-previous))
 
 (provide 'init-completion)
+;;; init-completion.el ends here

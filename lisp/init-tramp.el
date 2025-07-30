@@ -1,4 +1,6 @@
-;;; init-tramp.el --- tramp configuration -*- lexical-binding: t; -*-
+;;; init-tramp.el --- tramp configuration -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; Commentary:
+;;; Code:
 
 (after! tramp
   (setq tramp-verbose 3))
@@ -26,3 +28,4 @@
 (add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
 
 (provide 'init-tramp)
+;;; init-tramp.el ends here

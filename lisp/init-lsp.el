@@ -1,5 +1,6 @@
-;;; init-lsp.el --- LSP + Clangd specific config
-
+;;; init-ui.el --- LSP UI Settings -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; Commentary:
+;;; Code:
 (after! lsp-ui
   (setq lsp-ui-doc-enable t
         lsp-ui-doc-show-with-cursor nil
@@ -21,3 +22,4 @@
         '("--header-insertion=never")))
 
 (provide 'init-lsp)
+;;; init-lsp.el ends here

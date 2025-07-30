@@ -1,4 +1,6 @@
-;;; init-ui.el --- Change how UI looks -*- lexical-binding: t; -*-
+;;; init-ui.el --- Change how UI looks -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; Commentary:
+;;; Code:
 
 (setq doom-theme 'doom-moonlight)
 
@@ -53,3 +55,4 @@
   (treemacs-follow-mode t))
 
 (provide 'init-ui)
+;;; init-ui.el ends here

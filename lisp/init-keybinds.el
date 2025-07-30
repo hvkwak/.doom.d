@@ -1,11 +1,15 @@
-;;; init-keybinds.el --- Keybindings for Doom Emacs -*- lexical-binding: t; -*-
+;;; init-keybinds.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; Commentary:
+;;; Code:
 
-(map! :map global-map
+(map! :map global-map ;;(c-mode-map c++-mode-map)
 
       ;; lsp-ui
       "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
       "M-7" #'lsp-ui-doc-toggle
       "M-f" #'flycheck-list-errors
+      "M-8" #'my/c-move-to-prev-arg
+      "M-9" #'my/c-move-to-next-arg
 
       ;; navigate lines
       "M-i" #'previous-line
@@ -13,29 +17,29 @@
       "M-j" #'backward-char
       "M-l" #'forward-char
 
-      ;; navigate between buffers
-      "M-8"       #'switch-to-prev-buffer
-      "M-9"       #'switch-to-next-buffer
-      "C-8"       #'switch-to-prev-buffer
-      "C-9"       #'switch-to-next-buffer
-      "C-1"       #'switch-to-prev-buffer
-      "C-2"       #'switch-to-next-buffer
-      "C-<left>"  #'switch-to-prev-buffer
-      "C-<right>" #'switch-to-next-buffer
-      "C-<tab>" #'+vertico/switch-workspace-buffer ;; same as C-x-b
-
       ;; moving around windows
       "C-j" #'windmove-left
       "C-l" #'windmove-right
       "C-i" #'windmove-up
       "C-k" #'windmove-down
 
+      ;; navigate between buffers
+      ;; "M-8"       #'switch-to-prev-buffer
+      ;; "M-9"       #'switch-to-next-buffer
+      "C-8"       #'switch-to-prev-buffer
+      "C-9"       #'switch-to-next-buffer
+      "C-1"       #'switch-to-prev-buffer
+      "C-2"       #'switch-to-next-buffer
+      "C-<left>"  #'switch-to-prev-buffer
+      "C-<right>" #'switch-to-next-buffer
+      ;;"C-<tab>" #'+vertico/switch-workspace-buffer ;; same as C-x-b
+
       ;; debug key bindings
       "C-e" #'eval-buffer-and-close ;; debug template
-      "<f5>" #'my-dap-debug
-      "<f6>" #'my-dap-debugger-setting
-      "<f8>" #'my-dap-debug-close
-      "<f9>" #'+treemacs/toggle ;; it is already <f9>. keep it this way.
+      "<f5>" #'my/dap-debug
+      "<f6>" #'my/dap-debugger-setting
+      "<f7>" #'my/dap-debug-close
+      ;;"<f8>" #'+treemacs/toggle ;; it is already <f9>. keep it this way.
 
       ;; home, end, page up, page down, and delete.
       "<home>" #'smart-beginning-of-line ;; home
@@ -70,3 +74,4 @@
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e
 )
 (provide 'init-keybinds)
+;;; init-keybinds.el ends here

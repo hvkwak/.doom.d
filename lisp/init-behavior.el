@@ -1,7 +1,9 @@
-;;; init-behavior.el --- Change how my Doom Emacs behaves -*- lexical-binding: t; -*-
+;;; init-behavior.el --- Change how my Doom Emacs behaves -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; Commentary:
+;;; Code:
 
-(setq native-comp-jit-compilation nil) ;; This would disable native-compilation entirely.
-                                       ;; -> CPU nicht viel besetzen
+(setq native-comp-jit-compilation t) ;; nil would disable native-compilation entirely.
+
 
 (defun eval-buffer-by-name (buffer-name)
   "Evaluate the buffer with the given BUFFER-NAME."
@@ -11,6 +13,7 @@
       (eval-buffer))))
 
 (defun eval-buffer-and-close ()
+  "Eval buffer and close.."
   (interactive)
   (eval-buffer-by-name "*DAP Templates*")
   (+workspace/close-window-or-workspace)
@@ -35,8 +38,7 @@ of the line. Extend the selection when used with the Shift key."
       (move-beginning-of-line 1))))
 
 (defun my/select-to-click (event)
-  "Set mark at current position and extend selection to the position
-  clicked with the mouse."
+  "Set EVENT at current position and extend selection to the position clicked with the mouse."
   (interactive "e")
   (mouse-minibuffer-check event)
   (let ((pos (posn-point (event-end event))))
@@ -63,4 +65,28 @@ of the line. Extend the selection when used with the Shift key."
             (find-file source-file)
           (message "Source file does not exist."))))))
 
+(defun my/c-move-to-next-arg ()
+  "Move cursor to the beginning of the next argument inside function call."
+  (interactive)
+  (when (looking-at "[^,)]+")
+    (goto-char (match-end 0)))
+  (skip-chars-forward " \t")
+  (if (looking-at ",")
+      (progn
+        (forward-char)
+        (skip-chars-forward " \t"))
+    (when (looking-at ")")
+      (forward-char))))
+
+(defun my/c-move-to-prev-arg ()
+  "Move cursor to the beginning of the previous argument inside a function call."
+  (interactive)
+  (skip-chars-backward " \t")
+  (when (looking-back "," (1- (point)))
+    (backward-char))
+  (when (re-search-backward "[,(]" nil t)
+    (forward-char)
+    (skip-chars-forward " \t")))
+
 (provide 'init-behavior)
+;;; init-behavior.el ends here
