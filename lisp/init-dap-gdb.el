@@ -6,10 +6,21 @@
   :init
   ;; Auto configure no features.
   (setq dap-auto-configure-features '())
+  (setq dap-ui-variable-length 2)
+  (setq dap-ui-locals-expand-depth 2)
 
   :config
   (require 'dap-gdb)
+  (dap-register-debug-template
+  "GDB::Run with arguments"
+  (list :type "gdb"
+        :request "launch"
+        :name "GDB::Run with arguments"
+        :arguments "0 0 0 0"
+        :target nil
+        :cwd nil))
 )
+
 
 (defun my/new-frame-on-second-monitor ()
   "Create a new frame named 'Debugger Frame' on the second monitor with an empty buffer."
@@ -39,7 +50,7 @@
   (my/new-frame-on-second-monitor)
   (dap-ui-sessions)
   (dap-ui-locals)
-  (dap-ui-repl)
+  ;;(dap-ui-repl)
   (dap-ui-expressions)
   (dap-ui-breakpoints)
   (delete-windows-on "*dummy*")
@@ -71,7 +82,7 @@
             (delete-frame))))
     (error (message "Failed to delete Debugger Frame")))
 
-  ;; Delete dap ui and dummy
+  ;; Delete dap ui and dummy: (recommended) do not change the dolist
   (dolist (buf '("*dap-ui-breakpoints*"
                  "*dap-ui-locals*"
                  "*dap-ui-sessions*"
@@ -81,6 +92,12 @@
                  "*dummy*"))
     (when (get-buffer buf)
       (kill-buffer buf)))
+
+  ;; Delete GDB::Run
+  (dolist (buf (buffer-list))
+  (let ((name (buffer-name buf)))
+    (when (and name (string-prefix-p "*GDB::Run" name))
+      (kill-buffer buf))))
 )
 
 (defun my/dap-ui--show-buffer (buf)
@@ -123,7 +140,7 @@
           display-buffer-in-side-window)
          (inhibit-same-window . t)
          (reusable-frames . "Debugger Frame"))
-        ("\\*GDB::Run out\\*"
+        ("\\*GDB::Run.*\\*"
          (display-buffer-use-some-frame
           display-buffer-in-side-window)
          (inhibit-same-window . t)

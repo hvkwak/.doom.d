@@ -24,22 +24,18 @@
       "C-k" #'windmove-down
 
       ;; navigate between buffers
-      ;; "M-8"       #'switch-to-prev-buffer
-      ;; "M-9"       #'switch-to-next-buffer
       "C-8"       #'switch-to-prev-buffer
       "C-9"       #'switch-to-next-buffer
-      "C-1"       #'switch-to-prev-buffer
-      "C-2"       #'switch-to-next-buffer
-      "C-<left>"  #'switch-to-prev-buffer
-      "C-<right>" #'switch-to-next-buffer
-      ;;"C-<tab>" #'+vertico/switch-workspace-buffer ;; same as C-x-b
 
       ;; debug key bindings
-      "C-e" #'eval-buffer-and-close ;; debug template
-      "<f5>" #'my/dap-debug
+      "<f4>" #'eval-buffer-and-close ;; debug template
+      "<f5>" #'dap-debug
       "<f6>" #'my/dap-debugger-setting
       "<f7>" #'my/dap-debug-close
-      ;;"<f8>" #'+treemacs/toggle ;; it is already <f9>. keep it this way.
+      "<f9>" #'dap-next
+      "<f10>" #'dap-eval
+      "M-<down>" #'dap-breakpoint-add
+      "M-<up>" #'dap-breakpoint-delete
 
       ;; home, end, page up, page down, and delete.
       "<home>" #'smart-beginning-of-line ;; home
@@ -59,8 +55,6 @@
       "C-z" #'undo                      ;
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward
-      "M-<right>" #'better-jumper-jump-forward
-      "M-<left>" #'better-jumper-jump-backward
 
       ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
