@@ -54,8 +54,8 @@
   (completion-styles '(orderless))      ; Use orderless
   (completion-category-defaults nil)    ; I want to be in control!
   (completion-category-overrides
-   '((file (styles basic-remote ; For `tramp' hostname completion with `vertico'
-                   orderless))))
+   '((file (styles basic ; For `tramp' hostname completion with `vertico'
+                   orderless)))) ; no basic-remote, but basic.
   (orderless-matching-styles
    '(orderless-literal
      orderless-prefixes
@@ -81,6 +81,8 @@
   (define-key company-active-map (kbd "<tab>") #'company-select-next)
   (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
   (define-key company-active-map (kbd "<backtab>") #'company-select-previous))
+
+
 
 (provide 'init-completion)
 ;;; init-completion.el ends here

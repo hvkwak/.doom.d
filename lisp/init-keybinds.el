@@ -28,12 +28,13 @@
       "C-9"       #'switch-to-next-buffer
 
       ;; debug key bindings
-      "<f4>" #'eval-buffer-and-close ;; debug template
+      "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
       "<f5>" #'dap-debug
       "<f6>" #'my/dap-debugger-setting
       "<f7>" #'my/dap-debug-close
-      "<f9>" #'dap-next
-      "<f10>" #'dap-eval
+      "M-<right>" #'dap-continue
+      "M-0" #'dap-next
+      "M-e" #'dap-eval
       "M-<down>" #'dap-breakpoint-add
       "M-<up>" #'dap-breakpoint-delete
 
@@ -51,7 +52,8 @@
 
       ;; jump, copy and paste, and more.
       "C-s" #'save-buffer
-      "M-e" #'yank
+      ;;"M-e" #'yank ;; C-y
+
       "C-z" #'undo                      ;
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward

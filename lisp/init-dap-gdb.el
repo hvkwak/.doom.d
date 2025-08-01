@@ -6,8 +6,6 @@
   :init
   ;; Auto configure no features.
   (setq dap-auto-configure-features '())
-  (setq dap-ui-variable-length 2)
-  (setq dap-ui-locals-expand-depth 2)
 
   :config
   (require 'dap-gdb)
@@ -43,19 +41,28 @@
   (toggle-frame-maximized)
   )
 
+(defvar my/dap-debug-frame nil
+  "Reference to the frame used during DAP debugging.")
+
 (defun my/dap-debugger-setting ()
   "Custom function to run when a DAP session is created."
   (interactive)
-  (set-frame-name "Main")
-  (my/new-frame-on-second-monitor)
-  (dap-ui-sessions)
+  ;; Create and mark the new frame
+  (let ((new-frame (my/new-frame-on-second-monitor)))
+    (when (frame-live-p new-frame)
+      (set-frame-parameter new-frame 'my-dap-frame t)
+      (setq my/dap-debug-frame new-frame)
+      (select-frame-set-input-focus new-frame)))
+
+  ;; Open useful DAP UI windows
+  ;;(dap-ui-sessions)
   (dap-ui-locals)
   ;;(dap-ui-repl)
-  (dap-ui-expressions)
+  ;;(dap-ui-expressions)
   (dap-ui-breakpoints)
-  (delete-windows-on "*dummy*")
-  (select-frame-by-name "Main")
-  )
+
+  ;; Clean up dummy window
+  (delete-windows-on "*dummy*"))
 
 (defun my/dap-debug-close ()
   "Gracefully close DAP session and associated UI frame."
@@ -63,26 +70,22 @@
 
   ;; Disconnect from current session
   (condition-case nil
-      (progn
-        (let ((session (dap--cur-session)))
-          (when session
-            (dap-disconnect session))))
+      (let ((session (dap--cur-session)))
+        (when session
+          (dap-disconnect session)))
     (error (message "DAP disconnect failed")))
 
+  ;; Delete the custom DAP frame if it exists
+  (when (and my/dap-debug-frame (frame-live-p my/dap-debug-frame))
+    (condition-case nil
+        (progn
+          (select-frame-set-input-focus my/dap-debug-frame)
+          (select-frame my/dap-debug-frame)
+          (delete-frame my/dap-debug-frame))
+      (error (message "Failed to delete DAP debug frame")))
+    (setq my/dap-debug-frame nil))
 
-  ;; Safely delete the 'Debugger Frame' if it exists
-  (condition-case nil
-      (progn
-        (let ((debug-frame (seq-find (lambda (f)
-                                       (string= (frame-parameter f 'name) "Debugger Frame"))
-                                     (frame-list))))
-          (when (frame-live-p debug-frame)
-            (select-frame-set-input-focus debug-frame)
-            (select-frame debug-frame)
-            (delete-frame))))
-    (error (message "Failed to delete Debugger Frame")))
-
-  ;; Delete dap ui and dummy: (recommended) do not change the dolist
+  ;; Delete DAP-related buffers
   (dolist (buf '("*dap-ui-breakpoints*"
                  "*dap-ui-locals*"
                  "*dap-ui-sessions*"
@@ -93,11 +96,17 @@
     (when (get-buffer buf)
       (kill-buffer buf)))
 
-  ;; Delete GDB::Run
+  ;; Delete GDB::Run buffers
   (dolist (buf (buffer-list))
-  (let ((name (buffer-name buf)))
-    (when (and name (string-prefix-p "*GDB::Run" name))
-      (kill-buffer buf))))
+    (let ((name (buffer-name buf)))
+      (when (and name (string-prefix-p "*GDB::Run" name))
+        (kill-buffer buf))))
+
+  ;; Delete LLDB buffers
+  (dolist (buf (buffer-list))
+    (let ((name (buffer-name buf)))
+      (when (and name (string-prefix-p "*LLDB" name))
+        (kill-buffer buf))))
 )
 
 (defun my/dap-ui--show-buffer (buf)

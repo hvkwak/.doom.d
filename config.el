@@ -99,15 +99,10 @@
 (load! "lisp/init-lsp")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Debugging                                                                     ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;(require 'init-dap-lldb)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Debugging: dap-mode/gdb                                                       ;;
+;; DAP-Mode for Debugging: init-dap-gdb.el has more util functions in it         ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load! "lisp/init-dap-gdb")
+(load! "lisp/init-dap-lldb")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; projectile                                                                    ;;
@@ -140,9 +135,15 @@
 (add-hook 'vterm-mode-hook #'my/vterm-init)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; consult-projectile                                                            ;;
+;; etc                                                                           ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (use-package! consult-projectile
-;;   :after (consult projectile)
-;;   :bind (;;("C-c p f" . consult-projectile-find-file)
-;;          ("C-c p p" . consult-projectile-switch-project)))
+(defun insert-doxygen-function-comment ()
+  "Insert a Doxygen-style comment block above a function."
+  (interactive)
+  (beginning-of-line)
+  (insert "/**\n")
+  (insert " * @brief \n")
+  (insert " * \n")
+  (insert " * @param \n")
+  (insert " * @return \n")
+  (insert " */\n"))
