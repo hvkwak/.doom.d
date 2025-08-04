@@ -7,15 +7,15 @@
       ;; lsp-ui
       "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
       "M-f" #'flycheck-list-errors
-      "M-7" #'lsp-ui-doc-toggle
-      "M-8" #'my/c-move-to-prev-arg
-      "M-9" #'my/c-move-to-next-arg
+      "M-p" #'lsp-ui-doc-toggle
 
       ;; (fest) navigate lines
       "M-i" #'previous-line
       "M-k" #'next-line
       "M-j" #'backward-char
       "M-l" #'forward-char
+      "M-h" #'my/c-move-to-prev-arg
+      "M-;" #'my/c-move-to-next-arg
 
       ;; (fest) moving around windows
       "M-s M-j" #'windmove-left
@@ -60,8 +60,9 @@
       "M-." #'better-jumper-jump-forward
       "M-<left>" #'better-jumper-jump-backward
       "M-<right>" #'better-jumper-jump-forward
-      "s-c" #'kill-ring-save ;; SuperL
-      "s-v" #'yank
+      "M-8" #'kill-ring-save ;; Ctrl-C
+      "M-9" #'yank           ;; Ctrl-V
+      "M-RET" #'newline-and-indent
 
       ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
