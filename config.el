@@ -147,3 +147,8 @@
   (insert " * @param \n")
   (insert " * @return \n")
   (insert " */\n"))
+
+(after! yasnippet
+  "Insert header guard for C/C++"
+  (add-to-list 'yas-snippet-dirs "~/.doom.d/snippets")
+  (yas-reload-all))

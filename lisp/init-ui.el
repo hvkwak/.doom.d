@@ -26,7 +26,7 @@
 
 ;; mouse cursor
 (setq-default void-text-area-pointer 'nil)
-(setq scroll-preserve-screen-position t)
+(setq scroll-preserve-screen-position nil)
 
 ;; Scroll one line at a time
 (setq mouse-wheel-scroll-amount '(4 ((shift) . 8)))  ; 2 lines at a time, +shift 4 lines.

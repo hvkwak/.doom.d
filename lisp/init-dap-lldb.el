@@ -10,7 +10,7 @@
   (require 'dap-lldb)
 
   ;;; set the debugger executable (c++)
-  (setq dap-lldb-debug-program '("~/LLVM-20.1.8-Linux-X64/bin/lldb-dap"))
+  (setq dap-lldb-debug-program '("~/LLVM-20.1.8-Linux-X64/bin/lldb-dap")) ;; python3.10 with --shared enabled.
 
   ;;; ask user for executable to debug if not specified explicitly (c++)
   (setq dap-lldb-debugged-program-function (lambda () (read-file-name "Select file to debug.")))

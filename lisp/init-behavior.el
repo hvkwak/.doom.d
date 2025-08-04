@@ -7,7 +7,7 @@
 
 (defun eval-buffer-by-name (buffer-name)
   "Evaluate the buffer with the given BUFFER-NAME."
-  (interactive "BBuffer name: ")
+  (interactive "Buffer name: ")
   (when (get-buffer buffer-name)
     (with-current-buffer buffer-name
       (eval-buffer))))
@@ -87,6 +87,20 @@ of the line. Extend the selection when used with the Shift key."
   (when (re-search-backward "[,(]" nil t)
     (forward-char)
     (skip-chars-forward " \t")))
+
+(defun save-all-c-h-buffers ()
+  "Save all open buffers visiting .c or .h files."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (let ((file (buffer-file-name)))
+        (when (and file
+                   (or (string-suffix-p ".c" file t)
+                       (string-suffix-p ".h" file t)
+                       (string-suffix-p ".cpp" file t)
+                       (string-suffix-p ".py" file t))
+          (save-buffer))))))
+  (message "Saved all files."))
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here
