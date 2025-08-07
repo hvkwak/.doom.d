@@ -37,11 +37,11 @@
 (after! lsp-mode
   ;; Soft background highlights for readability
   (set-face-attribute 'lsp-face-highlight-textual nil
-                      :background "#2f3e5e" :foreground nil :weight 'bold)
+                      :background "#2f3e5e" :foreground 'unspecified' :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-read nil
-                      :background "#3e4d6c" :foreground nil :weight 'bold)
+                      :background "#3e4d6c" :foreground 'unspecified' :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-write nil
-                      :background "#5e4c6e" :foreground nil :weight 'bold))
+                      :background "#5e4c6e" :foreground 'unspecified' :weight 'bold))
 
 (after! which-key
   (setq which-key-popup-type 'minibuffer ;; better than side-window

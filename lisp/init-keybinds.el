@@ -42,11 +42,10 @@
       "M-b" #'dap-breakpoint-add
       "M-d" #'dap-breakpoint-delete
 
-      ;; home, end, page up, page down, and delete.
+      ;; home and end
       "<home>" #'smart-beginning-of-line ;; home
       "M-u"    #'smart-beginning-of-line ;; home
       "M-o"    #'move-end-of-line ;; end
-      "M-DEL"  #'delete-char ;; delete with backspace
 
       ;; Search Functions - Consult
       "C-f" #'consult-line
@@ -60,9 +59,10 @@
       "M-." #'better-jumper-jump-forward
       "M-<left>" #'better-jumper-jump-backward
       "M-<right>" #'better-jumper-jump-forward
-      "M-8" #'kill-ring-save ;; Ctrl-C
-      "M-9" #'yank           ;; Ctrl-V
+      "C-c C-c" #'kill-ring-save ;; Ctrl-C
+      "C-v" #'yank               ;; Ctrl-V
       "M-RET" #'newline-and-indent
+      "M-DEL" #'backward-delete-char-untabify
 
       ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
@@ -70,7 +70,7 @@
 
       ;; find definition, header-source toggle
       "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-<f12>"   #'my/toggle-between-header-and-sources
+      ;;"M-<f12>"   #'my/toggle-between-header-and-sources
 
       ;; open echo area
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e

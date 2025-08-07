@@ -82,7 +82,11 @@
   (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
   (define-key company-active-map (kbd "<backtab>") #'company-select-previous))
 
-
+(with-eval-after-load 'yasnippet
+  (define-key yas-keymap (kbd "TAB")       #'yas-next-field)
+  (define-key yas-keymap (kbd "<tab>")     #'yas-next-field)
+  (define-key yas-keymap (kbd "S-TAB")     #'yas-prev-field)
+  (define-key yas-keymap (kbd "<backtab>") #'yas-prev-field))
 
 (provide 'init-completion)
 ;;; init-completion.el ends here

@@ -4,7 +4,6 @@
 
 (setq native-comp-jit-compilation t) ;; nil would disable native-compilation entirely.
 
-
 (defun eval-buffer-by-name (buffer-name)
   "Evaluate the buffer with the given BUFFER-NAME."
   (interactive "Buffer name: ")
@@ -47,23 +46,23 @@ of the line. Extend the selection when used with the Shift key."
     (goto-char pos)
     (activate-mark)))
 
-(defun my/toggle-between-header-and-source ()
-  "Toggle between a C++ header file and its corresponding source file."
-  (interactive)
-  (let ((current-file (buffer-file-name)))
-    (if (string-match-p "\\.cpp$" current-file)
-        ;; If the current file is a .cpp file, find the corresponding .h file
-        (let ((header-file (replace-regexp-in-string "/src/" "/include/"
-                          (replace-regexp-in-string "\\.cpp$" ".h" current-file))))
-          (if (file-exists-p header-file)
-              (find-file header-file)
-            (message "Header file does not exist.")))
-      ;; If the current file is a .h file, find the corresponding .cpp file
-      (let ((source-file (replace-regexp-in-string "/include/" "/src/"
-                       (replace-regexp-in-string "\\.h$" ".cpp" current-file))))
-        (if (file-exists-p source-file)
-            (find-file source-file)
-          (message "Source file does not exist."))))))
+;; (defun my/toggle-between-header-and-source ()
+;;   "Toggle between a C++ header file and its corresponding source file."
+;;   (interactive)
+;;   (let ((current-file (buffer-file-name)))
+;;     (if (string-match-p "\\.cpp$" current-file)
+;;         ;; If the current file is a .cpp file, find the corresponding .h file
+;;         (let ((header-file (replace-regexp-in-string "/src/" "/include/"
+;;                           (replace-regexp-in-string "\\.cpp$" ".h" current-file))))
+;;           (if (file-exists-p header-file)
+;;               (find-file header-file)
+;;             (message "Header file does not exist.")))
+;;       ;; If the current file is a .h file, find the corresponding .cpp file
+;;       (let ((source-file (replace-regexp-in-string "/include/" "/src/"
+;;                        (replace-regexp-in-string "\\.h$" ".cpp" current-file))))
+;;         (if (file-exists-p source-file)
+;;             (find-file source-file)
+;;           (message "Source file does not exist."))))))
 
 (defun my/c-move-to-next-arg ()
   "Move cursor to the beginning of the next argument inside function call."

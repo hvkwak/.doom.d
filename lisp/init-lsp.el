@@ -16,7 +16,7 @@
         lsp-signature-render-documentation t
         ))
 
-;; do not add headers automatically.
+;; to not automatically insert #include statements
 (after! lsp-clangd
   (setq lsp-clients-clangd-args
         '("--header-insertion=never")))
