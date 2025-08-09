@@ -1,7 +1,6 @@
 ;;; init-behavior.el --- Change how my Doom Emacs behaves -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
-
 (setq native-comp-jit-compilation t) ;; nil would disable native-compilation entirely.
 
 (defun eval-buffer-by-name (buffer-name)
@@ -100,6 +99,24 @@ of the line. Extend the selection when used with the Shift key."
                        (string-suffix-p ".py" file t))
           (save-buffer))))))
   (message "Saved all files."))
+
+(defun insert-doxygen-function-comment ()
+  "Insert a Doxygen-style comment block above a function."
+  (interactive)
+  (beginning-of-line)
+  (insert "/*\n")
+  (insert " * @brief \n")
+  (insert " * \n")
+  (insert " * @param \n")
+  (insert " * @return \n")
+  (insert " */"))
+
+(defun my/vterm-init ()
+  "Automatically source .profile when vterm starts."
+  (sleep-for 2)
+  (vterm-send-string "source ~/.profile" t)
+  (vterm-send-return))
+(add-hook 'vterm-mode-hook #'my/vterm-init)
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

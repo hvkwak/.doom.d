@@ -124,9 +124,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load! "lisp/init-keybinds")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; vterm                                                                         ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my/vterm-init ()
   "Automatically source .profile when vterm starts."
   (sleep-for 2)
@@ -135,20 +132,6 @@
 (add-hook 'vterm-mode-hook #'my/vterm-init)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; etc                                                                           ;;
+;; LLM Integration                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun insert-doxygen-function-comment ()
-  "Insert a Doxygen-style comment block above a function."
-  (interactive)
-  (beginning-of-line)
-  (insert "/**\n")
-  (insert " * @brief \n")
-  (insert " * \n")
-  (insert " * @param \n")
-  (insert " * @return \n")
-  (insert " */\n"))
-
-;; (after! yasnippet
-;;   "Insert header guard for C/C++"
-;;   (add-to-list 'yas-snippet-dirs "~/.doom.d/snippets")
-;;   (yas-reload-all))
+(load! "lisp/init-llm")

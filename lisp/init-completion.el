@@ -23,8 +23,7 @@
   (setq consult-project-function #'projectile-project-root)
 
   ;; filter out several unrelated buffers
-  (setq consult-buffer-filter '(;;"\\` \\*" ;; this excluded filters out any buffer whose name starts with a space and an asterisk, may be too broad
-                                "\\`\\*scratch\\*"
+  (setq consult-buffer-filter '("\\`\\*scratch\\*"
                                 "\\`\\*Messages\\*"
                                 "\\`\\*doom\\*"
                                 "\\`\\*lsp-log\\*"
@@ -77,10 +76,13 @@
         company-selection-wrap-around t)
 
   ;; Make TAB cycle candidates instead of accepting immediately
-  (define-key company-active-map (kbd "TAB") #'company-select-next)
-  (define-key company-active-map (kbd "<tab>") #'company-select-next)
-  (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
-  (define-key company-active-map (kbd "<backtab>") #'company-select-previous))
+  (define-key company-active-map (kbd "M-i") #'company-select-previous)
+  (define-key company-active-map (kbd "M-k") #'company-select-next)
+  ;; (define-key company-active-map (kbd "TAB") #'company-select-next)
+  ;; (define-key company-active-map (kbd "<tab>") #'company-select-next)
+  ;; (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
+  ;; (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
+)
 
 (with-eval-after-load 'yasnippet
   (define-key yas-keymap (kbd "TAB")       #'yas-next-field)

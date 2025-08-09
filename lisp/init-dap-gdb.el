@@ -19,50 +19,68 @@
         :cwd nil))
 )
 
-
 (defun my/new-frame-on-second-monitor ()
-  "Create a new frame named 'Debugger Frame' on the second monitor with an empty buffer."
+  "Create a new frame named 'Debugger Frame' on the second monitor with an empty buffer and return frame."
   (interactive)
   (let* ((display-geometry (display-monitor-attributes-list))
-         (second-monitor (nth 1 display-geometry)) ; Adjust index if needed, 1: second monitor.
+         (second-monitor (nth 1 display-geometry)) ; 1 = second monitor
          (geometry (alist-get 'geometry second-monitor))
          (x (nth 0 geometry))
          (y (nth 1 geometry))
          (frame (make-frame `((name . "Debugger Frame")
                               (left . ,x)
                               (top . ,y)
-                              ;;(fullscreen . fullboth) ;; toggle-frame-full screen will do.
-                              (width . 1600)    ; Adjust frame width if needed
-                              (height . 900)
-                              )))) ; Adjust frame height if needed
+                              (width . 1600)
+                              (height . 900)))))
     (select-frame-set-input-focus frame)
     (with-current-buffer (generate-new-buffer "*dummy*")
-      (switch-to-buffer (current-buffer))))
-  (toggle-frame-maximized)
-  )
+      (switch-to-buffer (current-buffer)))
+    (toggle-frame-maximized frame)
+    frame)) ;; return the frame object
 
 (defvar my/dap-debug-frame nil
   "Reference to the frame used during DAP debugging.")
 
+
 (defun my/dap-debugger-setting ()
-  "Custom function to run when a DAP session is created."
+  "Run DAP UI from the MAIN frame; panels show in Debugger Frame via your alist."
   (interactive)
-  ;; Create and mark the new frame
-  (let ((new-frame (my/new-frame-on-second-monitor)))
-    (when (frame-live-p new-frame)
-      (set-frame-parameter new-frame 'my-dap-frame t)
-      (setq my/dap-debug-frame new-frame)
-      (select-frame-set-input-focus new-frame)))
+  (let* ((orig (selected-frame))
+         (dbg  (or (car (filtered-frame-list
+                         (lambda (f)
+                           (string= (frame-parameter f 'name) "Debugger Frame"))))
+                   (my/new-frame-on-second-monitor))))
+    (when (frame-live-p dbg)
+      (set-frame-parameter dbg 'my-dap-frame t)
+      (setq my/dap-debug-frame dbg))
 
-  ;; Open useful DAP UI windows
-  ;;(dap-ui-sessions)
-  (dap-ui-locals)
-  ;;(dap-ui-repl)
-  ;;(dap-ui-expressions)
-  (dap-ui-breakpoints)
+    ;; Now we have two frames!
+    ;; From where we call dap-ui matters here.
+    ;; main frame: orig
+    ;; second frame: dbg
 
-  ;; Clean up dummy window
-  (delete-windows-on "*dummy*"))
+    ;; Open ui locals from orig
+    ;; Open from MAIN;
+    (when (frame-live-p orig)
+      (select-frame-set-input-focus orig))
+    (dap-ui-locals)
+
+    ;; Let it split in dbg
+    (when (frame-live-p dbg)
+      (select-frame-set-input-focus dbg))
+    (split-window-horizontally)
+
+    ;; Open from Main
+    (when (frame-live-p orig)
+      (select-frame-set-input-focus orig))
+    (dap-ui-breakpoints)
+
+    ;; ... weiter erweiterbar!
+
+    ;; Clean dummy only in Debugger Frame
+    (when (frame-live-p dbg)
+      (with-selected-frame dbg
+        (delete-windows-on "*dummy*")))))
 
 (defun my/dap-debug-close ()
   "Gracefully close DAP session and associated UI frame."
@@ -117,48 +135,51 @@
 )
 (advice-add 'dap-ui--show-buffer :override #'my/dap-ui--show-buffer)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; add to list: display buffer alist                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'display-buffer-alist
+             '("\\*dap-ui-locals\\*"
+               (display-buffer-use-some-frame display-buffer-in-side-window)
+               (side . left)
+               (slot . 0) ;; position below slot 0
+               (window-height . 0.5)
+               (inhibit-same-window . t)
+               (reusable-frames . "Debugger Frame")))
 
-;; display-buffer-alist for 'my-dap-debugger-setting
-(setq display-buffer-alist
-      '(("\\*Consult Project Buffer\\*" ;; Match buffer name
-         (display-buffer-in-side-window)
-         (window-height . 0.4)  ;; Adjust height (40% of the frame)
-         (side . bottom))
-        ("\\*dap-ui-breakpoints\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ("\\*dap-ui-locals\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ("\\*dap-ui-sessions\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ("\\*dap-ui-expressions\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ("\\*dap-ui-repl\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ("\\*GDB::Run.*\\*"
-         (display-buffer-use-some-frame
-          display-buffer-in-side-window)
-         (inhibit-same-window . t)
-         (reusable-frames . "Debugger Frame"))
-        ;; ("\\*Occur\\*"  ;; Match debugger buffers (*gud*, *gud-session*, etc.)
-        ;;  (display-buffer-use-some-frame)
-        ;;  (inhibit-same-window . t)
-        ;;  (reusable-frames . "Debugger Frame"))
-        ))
+(add-to-list 'display-buffer-alist
+             '("\\*dap-ui-breakpoints\\*"
+               (display-buffer-use-some-frame display-buffer-in-side-window)
+               (side . right)
+               (slot . 0) ;; top position in the side window
+               (window-height . 0.5)
+               (inhibit-same-window . t)
+               (reusable-frames . "Debugger Frame")))
+
+(add-to-list 'display-buffer-alist
+             '("\\*dap-ui-sessions\\*"
+               (display-buffer-use-some-frame display-buffer-in-side-window)
+               (inhibit-same-window . t)
+               (reusable-frames . "Debugger Frame")))
+
+(add-to-list 'display-buffer-alist
+             '("\\*dap-ui-expressions\\*"
+               (display-buffer-use-some-frame display-buffer-in-side-window)
+               (inhibit-same-window . t)
+               (reusable-frames . "Debugger Frame")))
+
+(add-to-list 'display-buffer-alist
+             '("\\*dap-ui-repl\\*"
+               (display-buffer-use-some-frame display-buffer-in-side-window)
+               (inhibit-same-window . t)
+               (reusable-frames . "Debugger Frame")))
+
+(add-to-list 'display-buffer-alist
+             '("\\*GDB::Run.*\\*"
+               (display-buffer-use-some-frame display-buffer-in-side-window)
+               (inhibit-same-window . t)
+               (reusable-frames . "Debugger Frame")))
+
 
 (provide 'init-dap-gdb)
 ;;; init-dap-gdb.el ends here

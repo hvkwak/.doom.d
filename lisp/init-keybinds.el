@@ -14,8 +14,16 @@
       "M-k" #'next-line
       "M-j" #'backward-char
       "M-l" #'forward-char
-      "M-h" #'my/c-move-to-prev-arg
-      "M-;" #'my/c-move-to-next-arg
+      ;;"M-h" #'my/c-move-to-prev-arg
+      ;;"M-;" #'my/c-move-to-next-arg
+
+      ;; insert comment
+      "M-/" #'comment-dwim
+
+      ;; keep it same as without M-
+      "M-;" (lambda () (interactive) (insert ";"))
+      "M-RET" #'newline-and-indent            ;; same as ENTER
+      "M-DEL" #'backward-delete-char-untabify ;; same as Backspace
 
       ;; (fest) moving around windows
       "M-s M-j" #'windmove-left
@@ -51,18 +59,20 @@
       "C-f" #'consult-line
       "C-S-f" #'consult-ripgrep
 
-      ;; jump, copy and paste, and more.
-      "C-s" #'save-buffer
-      "C-a" #'save-all-c-h-buffers
-      "C-z" #'undo                      ;
+      ;; copy and paste
+      "C-c C-c" #'kill-ring-save ;; Ctrl-C
+      "C-v" #'yank               ;; Ctrl-V
+
+      ;; jump
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward
       "M-<left>" #'better-jumper-jump-backward
       "M-<right>" #'better-jumper-jump-forward
-      "C-c C-c" #'kill-ring-save ;; Ctrl-C
-      "C-v" #'yank               ;; Ctrl-V
-      "M-RET" #'newline-and-indent
-      "M-DEL" #'backward-delete-char-untabify
+
+      ;; misc.
+      "C-s" #'save-buffer
+      "C-S-s" #'save-all-c-h-buffers
+      "C-z" #'undo
 
       ;; home, end, mouse selection with shift
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event

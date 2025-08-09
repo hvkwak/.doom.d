@@ -58,3 +58,4 @@
 (package! orderless)
 (package! yasnippet-snippets)
 (package! vterm)
+(package! gptel :recipe (:nonrecursive t))
