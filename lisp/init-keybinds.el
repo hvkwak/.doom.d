@@ -20,7 +20,7 @@
       ;; insert comment
       "M-/" #'comment-dwim
 
-      ;; keep it same as without M-
+      ;; keep it same as without prefix M-
       "M-;" (lambda () (interactive) (insert ";"))
       "M-RET" #'newline-and-indent            ;; same as ENTER
       "M-DEL" #'backward-delete-char-untabify ;; same as Backspace
@@ -38,19 +38,21 @@
       ;; (fest) navigate between buffers
       "C-8"       #'switch-to-prev-buffer
       "C-9"       #'switch-to-next-buffer
+      "M-8"       #'switch-to-prev-buffer
+      "M-9"       #'switch-to-next-buffer
 
       ;; debug key bindings
-      "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
+      ;; "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
       "<f5>" #'dap-debug
       "<f6>" #'my/dap-debugger-setting
       "<f7>" #'my/dap-debug-close
       "M-n" #'dap-next
       "M-m" #'dap-continue
-      "M-e" #'dap-eval
+      "M-v" #'dap-eval
       "M-b" #'dap-breakpoint-add
       "M-d" #'dap-breakpoint-delete
 
-      ;; home and end
+      ;; home, end
       "<home>" #'smart-beginning-of-line ;; home
       "M-u"    #'smart-beginning-of-line ;; home
       "M-o"    #'move-end-of-line ;; end
@@ -62,6 +64,7 @@
       ;; copy and paste
       "C-c C-c" #'kill-ring-save ;; Ctrl-C
       "C-v" #'yank               ;; Ctrl-V
+      "M-e" #'yank
 
       ;; jump
       "M-," #'better-jumper-jump-backward
@@ -80,6 +83,7 @@
 
       ;; find definition, header-source toggle
       "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
+      "M-r"   #'xref-find-references
       ;;"M-<f12>"   #'my/toggle-between-header-and-sources
 
       ;; open echo area

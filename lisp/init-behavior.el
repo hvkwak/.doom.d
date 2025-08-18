@@ -104,7 +104,7 @@ of the line. Extend the selection when used with the Shift key."
   "Insert a Doxygen-style comment block above a function."
   (interactive)
   (beginning-of-line)
-  (insert "/*\n")
+  (insert "/**\n")
   (insert " * @brief \n")
   (insert " * \n")
   (insert " * @param \n")
@@ -117,6 +117,12 @@ of the line. Extend the selection when used with the Shift key."
   (vterm-send-string "source ~/.profile" t)
   (vterm-send-return))
 (add-hook 'vterm-mode-hook #'my/vterm-init)
+
+(with-eval-after-load 'vterm
+  (define-key vterm-mode-map (kbd "M-8") nil)
+  (define-key vterm-mode-map (kbd "M-9") nil)
+  (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
+  (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer))
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

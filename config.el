@@ -124,13 +124,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load! "lisp/init-keybinds")
 
-(defun my/vterm-init ()
-  "Automatically source .profile when vterm starts."
-  (sleep-for 2)
-  (vterm-send-string "source ~/.profile" t)
-  (vterm-send-return))
-(add-hook 'vterm-mode-hook #'my/vterm-init)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LLM Integration                                                               ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -60,27 +60,33 @@
     ;; second frame: dbg
 
     ;; Open ui locals from orig
-    ;; Open from MAIN;
-    (when (frame-live-p orig)
-      (select-frame-set-input-focus orig))
-    (dap-ui-locals)
-
     ;; Let it split in dbg
     (when (frame-live-p dbg)
       (select-frame-set-input-focus dbg))
     (split-window-horizontally)
+
+    ;; Open from MAIN;
+    (when (frame-live-p orig)
+      (select-frame-set-input-focus orig))
+    (dap-ui-locals)
 
     ;; Open from Main
     (when (frame-live-p orig)
       (select-frame-set-input-focus orig))
     (dap-ui-breakpoints)
 
-    ;; ... weiter erweiterbar!
+    ;; ... weiter erweiterbar
 
     ;; Clean dummy only in Debugger Frame
     (when (frame-live-p dbg)
       (with-selected-frame dbg
-        (delete-windows-on "*dummy*")))))
+        (delete-windows-on "*dummy*")))
+
+    ;; Select MAIN
+    (when (frame-live-p orig)
+      (select-frame-set-input-focus orig))))
+
+
 
 (defun my/dap-debug-close ()
   "Gracefully close DAP session and associated UI frame."
