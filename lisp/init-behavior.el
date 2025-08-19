@@ -112,7 +112,7 @@ of the line. Extend the selection when used with the Shift key."
   (insert " */"))
 
 (defun my/vterm-init ()
-  "Automatically source .profile when vterm starts."
+  "Automatically source .profile at vterm start."
   (sleep-for 2)
   (vterm-send-string "source ~/.profile" t)
   (vterm-send-return))
@@ -123,6 +123,9 @@ of the line. Extend the selection when used with the Shift key."
   (define-key vterm-mode-map (kbd "M-9") nil)
   (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
   (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer))
+
+(after! better-jumper
+  (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump))
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

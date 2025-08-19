@@ -70,7 +70,7 @@
       (select-frame-set-input-focus orig))
     (dap-ui-locals)
 
-    ;; Open from Main
+    ;; Open from MAIN;
     (when (frame-live-p orig)
       (select-frame-set-input-focus orig))
     (dap-ui-breakpoints)
@@ -78,9 +78,9 @@
     ;; ... weiter erweiterbar
 
     ;; Clean dummy only in Debugger Frame
-    (when (frame-live-p dbg)
-      (with-selected-frame dbg
-        (delete-windows-on "*dummy*")))
+    ;; (when (frame-live-p dbg)
+    ;;   (with-selected-frame dbg
+    ;;     (delete-windows-on "*dummy*")))
 
     ;; Select MAIN
     (when (frame-live-p orig)

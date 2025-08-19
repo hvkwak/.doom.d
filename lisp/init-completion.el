@@ -78,6 +78,7 @@
   ;; Make TAB cycle candidates instead of accepting immediately
   (define-key company-active-map (kbd "M-i") #'company-select-previous)
   (define-key company-active-map (kbd "M-k") #'company-select-next)
+  (define-key company-active-map (kbd "M-SPC") #'company-abort)
   ;; (define-key company-active-map (kbd "TAB") #'company-select-next)
   ;; (define-key company-active-map (kbd "<tab>") #'company-select-next)
   ;; (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
