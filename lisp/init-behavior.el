@@ -127,5 +127,16 @@ of the line. Extend the selection when used with the Shift key."
 (after! better-jumper
   (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump))
 
+(defun my/select-symbol-at-point ()
+  "Select the symbol (word with _ and letters) at point.
+The region will deactivate automatically once you move the cursor."
+  (interactive)
+  (let ((bounds (bounds-of-thing-at-point 'symbol)))
+    (if bounds
+        (progn
+          (goto-char (car bounds))
+          (push-mark (cdr bounds) nil t)) ; transient mark
+      (message "No symbol at point."))))
+
 (provide 'init-behavior)
 ;;; init-behavior.el ends here
