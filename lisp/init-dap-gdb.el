@@ -19,6 +19,14 @@
         :cwd nil))
 )
 
+(defconst my/dap-debug-frame-name "Debugger Frame")
+
+(defvar my/main-frame-name nil
+  "Holds the name of the last selected frame.")
+
+(defvar my/dap-debug-frame nil
+  "Reference to the frame used during DAP debugging.")
+
 (defun my/new-frame-on-second-monitor ()
   "Create a new frame named 'Debugger Frame' on the second monitor with an empty buffer and return frame."
   (interactive)
@@ -38,44 +46,34 @@
     (toggle-frame-maximized frame)
     frame)) ;; return the frame object
 
-(defvar my/dap-debug-frame nil
-  "Reference to the frame used during DAP debugging.")
-
 
 (defun my/dap-debugger-setting ()
   "Run DAP UI from the MAIN frame; panels show in Debugger Frame via your alist."
   (interactive)
+  (setq my/main-frame-name (frame-parameter (selected-frame) 'name))
   (let* ((orig (selected-frame))
          (dbg  (or (car (filtered-frame-list
                          (lambda (f)
                            (string= (frame-parameter f 'name) "Debugger Frame"))))
                    (my/new-frame-on-second-monitor))))
+
     (when (frame-live-p dbg)
-      (set-frame-parameter dbg 'my-dap-frame t)
       (setq my/dap-debug-frame dbg))
 
-    ;; Now we have two frames!
-    ;; From where we call dap-ui matters here.
-    ;; main frame: orig
-    ;; second frame: dbg
-
-    ;; Open ui locals from orig
-    ;; Let it split in dbg
-    (when (frame-live-p dbg)
-      (select-frame-set-input-focus dbg))
+    ;; Open ui
+    (when (frame-live-p my/dap-debug-frame)
+      (select-frame-by-name my/dap-debug-frame-name))
     (split-window-horizontally)
 
-    ;; Open from MAIN;
-    (when (frame-live-p orig)
-      (select-frame-set-input-focus orig))
-    (dap-ui-locals)
+    ;; (select-frame-by-name my/main-frame-name)
+    ;; (dap-ui-locals)
 
-    ;; Open from MAIN;
-    (when (frame-live-p orig)
-      (select-frame-set-input-focus orig))
-    (dap-ui-breakpoints)
+    ;; (select-frame-by-name my/main-frame-name)
+    ;; (dap-ui-breakpoints)
 
-    ;; ... weiter erweiterbar
+    ;; (when (frame-live-p orig)
+    ;;   (select-frame-by-name my/main-frame-name))
+    ;; (dap-ui-breakpoints) ;; ... weiter erweiterbar
 
     ;; Clean dummy only in Debugger Frame
     ;; (when (frame-live-p dbg)
@@ -83,10 +81,7 @@
     ;;     (delete-windows-on "*dummy*")))
 
     ;; Select MAIN
-    (when (frame-live-p orig)
-      (select-frame-set-input-focus orig))))
-
-
+    (select-frame-by-name my/main-frame-name)))
 
 (defun my/dap-debug-close ()
   "Gracefully close DAP session and associated UI frame."

@@ -9,7 +9,9 @@
       ;; (fest) keep it same as without prefix M-
       "M-;" (lambda () (interactive) (insert ";"))
       "M-RET" #'newline-and-indent            ;; same as ENTER
-      "M-DEL" #'backward-delete-char-untabify ;; same as Backspace
+      "M-DEL" #'delete-forward-char           ;; same as Backspace
+      "M-<next>"  #'scroll-up-command         ;; same as PgDn
+      "M-<prior>" #'scroll-down-command       ;; same as PgUp
 
       ;; (fest) navigate lines
       "M-i" #'previous-line
@@ -28,12 +30,13 @@
       "M-8"       #'switch-to-prev-buffer
       "M-9"       #'switch-to-next-buffer
 
-      ;; (fest) Prefix M-s
+      ;; (fest) Prefix M-s!
       "M-s M-j" #'windmove-left ;; moving around windows
       "M-s M-l" #'windmove-right
       "M-s M-i" #'windmove-up
       "M-s M-k" #'windmove-down
-      "M-s M-s" #'my/select-symbol-at-point ;; select word
+      "M-s M-s" #'save-buffer
+      "M-s M-e" #'my/select-symbol-at-point ;; select word
       "M-s M-f" #'flycheck-list-errors
 
       ;; to delete?
@@ -72,7 +75,7 @@
       ;;   ,  ,  ,  ,  ,  ,  ,
       ;;  z, x, c,
 
-      ;; M-x becomes M-d!
+      ;; M-d for M-x!
       "M-d" #'execute-extended-command ;; this was M-x
 
       ;; vertico/switch-workspace-buffer
@@ -87,9 +90,12 @@
 
       ;; debug key bindings
       ;; "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
+      "<f3>" #'dap-ui-locals
+      "<f4>" #'dap-ui-breakpoints
       "<f5>" #'dap-debug
       "<f6>" #'my/dap-debugger-setting
       "<f7>" #'my/dap-debug-close
+      "<f8>" #'dap-breakpoint-delete
       "M-v" #'dap-eval
       "M-b" #'dap-breakpoint-add
       "M-S-b" #'dap-breakpoint-delete

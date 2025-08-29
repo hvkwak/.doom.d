@@ -124,6 +124,7 @@ of the line. Extend the selection when used with the Shift key."
   (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
   (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer))
 
+;; before beginning-of-buffer is executed, Emacs records the current position as a “jump point” in the better-jumper history.
 (after! better-jumper
   (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump))
 
@@ -132,11 +133,17 @@ of the line. Extend the selection when used with the Shift key."
 The region will deactivate automatically once you move the cursor."
   (interactive)
   (let ((bounds (bounds-of-thing-at-point 'symbol)))
+    ;; (if bounds
+    ;;     (progn
+    ;;       (kill-ring-save (car bounds) (cdr bounds)))
+    ;;     (message "No symbol at point."))
     (if bounds
         (progn
           (goto-char (car bounds))
           (push-mark (cdr bounds) nil t)) ; transient mark
-      (message "No symbol at point."))))
+      (message "No symbol at point."))
+  )
+)
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here
