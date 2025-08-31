@@ -124,9 +124,23 @@ of the line. Extend the selection when used with the Shift key."
   (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
   (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer))
 
-;; before beginning-of-buffer is executed, Emacs records the current position as a “jump point” in the better-jumper history.
+;; add jump points when using beginning-of-buffer.
 (after! better-jumper
   (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump))
+
+;; add jump points when using consult-line or consult-ripgrip
+;;; Make Consult-confirmed jumps integrate with better-jumper
+
+(defun my/better-jumper-before-consult-jump (orig-fn &rest args)
+  "Record a jump with better-jumper just before Consult performs a real jump."
+  (better-jumper-set-jump)
+  (apply orig-fn args))
+
+;; Consult uses these internal functions when you confirm a candidate.
+;; We advise them so previews don't spam the jump list, only confirmed jumps do.
+(dolist (fn '(consult--jump consult--goto-location))
+  (when (fboundp fn)
+    (advice-add fn :around #'my/better-jumper-before-consult-jump)))
 
 (defun my/select-symbol-at-point ()
   "Select the symbol (word with _ and letters) at point.
