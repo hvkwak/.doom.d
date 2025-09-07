@@ -116,6 +116,6 @@
 
       ;; open echo area
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e
-      )
+)
 (provide 'init-keybinds)
 ;;; init-keybinds.el ends here

@@ -1,7 +1,7 @@
 ;;; init-behavior.el --- Change how my Doom Emacs behaves -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
-(setq native-comp-jit-compilation t) ;; nil would disable native-compilation entirely.
+(setq native-comp-jit-compilation t)
 
 (defun eval-buffer-by-name (buffer-name)
   "Evaluate the buffer with the given BUFFER-NAME."
