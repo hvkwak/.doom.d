@@ -24,6 +24,9 @@
       ;; (fest) insert comment
       "M-/" #'comment-dwim
 
+      ;; (fest) C mode indent line/region
+      "C-<tab>" #'c-indent-line-or-region ;; or C-i.
+
       ;; (fest) navigate between buffers
       "C-8"       #'switch-to-prev-buffer
       "C-9"       #'switch-to-next-buffer

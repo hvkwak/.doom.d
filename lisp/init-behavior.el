@@ -130,7 +130,6 @@ of the line. Extend the selection when used with the Shift key."
 
 ;; add jump points when using consult-line or consult-ripgrip
 ;;; Make Consult-confirmed jumps integrate with better-jumper
-
 (defun my/better-jumper-before-consult-jump (orig-fn &rest args)
   "Record a jump with better-jumper just before Consult performs a real jump."
   (better-jumper-set-jump)
@@ -147,10 +146,6 @@ of the line. Extend the selection when used with the Shift key."
 The region will deactivate automatically once you move the cursor."
   (interactive)
   (let ((bounds (bounds-of-thing-at-point 'symbol)))
-    ;; (if bounds
-    ;;     (progn
-    ;;       (kill-ring-save (car bounds) (cdr bounds)))
-    ;;     (message "No symbol at point."))
     (if bounds
         (progn
           (goto-char (car bounds))
