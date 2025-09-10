@@ -63,28 +63,28 @@ of the line. Extend the selection when used with the Shift key."
 ;;             (find-file source-file)
 ;;           (message "Source file does not exist."))))))
 
-(defun my/c-move-to-next-arg ()
-  "Move cursor to the beginning of the next argument inside function call."
-  (interactive)
-  (when (looking-at "[^,)]+")
-    (goto-char (match-end 0)))
-  (skip-chars-forward " \t")
-  (if (looking-at ",")
-      (progn
-        (forward-char)
-        (skip-chars-forward " \t"))
-    (when (looking-at ")")
-      (forward-char))))
+;; (defun my/c-move-to-next-arg ()
+;;   "Move cursor to the beginning of the next argument inside function call."
+;;   (interactive)
+;;   (when (looking-at "[^,)]+")
+;;     (goto-char (match-end 0)))
+;;   (skip-chars-forward " \t")
+;;   (if (looking-at ",")
+;;       (progn
+;;         (forward-char)
+;;         (skip-chars-forward " \t"))
+;;     (when (looking-at ")")
+;;       (forward-char))))
 
-(defun my/c-move-to-prev-arg ()
-  "Move cursor to the beginning of the previous argument inside a function call."
-  (interactive)
-  (skip-chars-backward " \t")
-  (when (looking-back "," (1- (point)))
-    (backward-char))
-  (when (re-search-backward "[,(]" nil t)
-    (forward-char)
-    (skip-chars-forward " \t")))
+;; (defun my/c-move-to-prev-arg ()
+;;   "Move cursor to the beginning of the previous argument inside a function call."
+;;   (interactive)
+;;   (skip-chars-backward " \t")
+;;   (when (looking-back "," (1- (point)))
+;;     (backward-char))
+;;   (when (re-search-backward "[,(]" nil t)
+;;     (forward-char)
+;;     (skip-chars-forward " \t")))
 
 (defun save-all-c-h-buffers ()
   "Save all open buffers visiting .c or .h files."
@@ -153,6 +153,21 @@ The region will deactivate automatically once you move the cursor."
       (message "No symbol at point."))
   )
 )
+
+;; cc-mode overrides: unbind M-e so the global takes effect
+;; M-e is used for "M-e"       #'centaur-tabs-forward
+;; (after! cc-mode
+;;   (dolist (map (list c-mode-base-map c++-mode-map))
+;;     (define-key map (kbd "M-e") nil)))
+
+(custom-set-faces
+ '(centaur-tabs-selected ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
+ '(centaur-tabs-selected-modified ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
+ '(centaur-tabs-unselected ((t (:background "#2b2b2b" :foreground "#888888"))))
+ '(centaur-tabs-unselected-modified ((t (:background "#2b2b2b" :foreground "#888888"))))
+ )
+
+
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

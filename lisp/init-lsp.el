@@ -14,7 +14,10 @@
         lsp-ui-peek-enable t
         lsp-enable-symbol-highlighting t
         lsp-signature-render-documentation t
-        ))
+        lsp-idle-delay 0.15
+        lsp-ui-sideline-delay 0.1
+        )
+  )
 
 ;; to not automatically insert #include statements
 (after! lsp-clangd

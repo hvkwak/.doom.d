@@ -50,7 +50,6 @@
 ;;
 ;;
 (package! consult)
-(package! consult-projectile)
 (package! treemacs-projectile)
 (package! all-the-icons)
 (package! marginalia)

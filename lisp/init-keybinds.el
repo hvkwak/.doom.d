@@ -3,35 +3,36 @@
 ;;; Code:
 ;;;
 
-(define-key key-translation-map (kbd "M-q") (kbd "C-g")) ;; C-g with M-q
+(define-key key-translation-map (kbd "M-q") (kbd "C-g")) ;; M-q doom/escape replaces C-g.
 (map! :map global-map ;;(c-mode-map c++-mode-map)
 
       ;; (fest) keep it same as without prefix M-
-      "M-;" (lambda () (interactive) (insert ";"))
       "M-RET" #'newline-and-indent            ;; same as ENTER
-      "M-DEL" #'delete-forward-char           ;; same as Backspace
       "M-<next>"  #'scroll-up-command         ;; same as PgDn
       "M-<prior>" #'scroll-down-command       ;; same as PgUp
+      ;;"M-DEL" #'delete-forward-char         ;; No more. kill word backward.
+      ;;"M-;" (lambda () (interactive) (insert ";")) ;; Dies auch nicht.
 
       ;; (fest) navigate lines
       "M-i" #'previous-line
       "M-k" #'next-line
       "M-j" #'backward-char
       "M-l" #'forward-char
+      "M-h" #'backward-word
+      "M-;" #'forward-word
       ;;"M-h" #'my/c-move-to-prev-arg
       ;;"M-;" #'my/c-move-to-next-arg
 
       ;; (fest) insert comment
       "M-/" #'comment-dwim
 
-      ;; (fest) C mode indent line/region
-      "C-<tab>" #'c-indent-line-or-region ;; or C-i.
+      ;; (fest) C mode indent line/region: C-i
 
       ;; (fest) navigate between buffers
-      "C-8"       #'switch-to-prev-buffer
-      "C-9"       #'switch-to-next-buffer
-      "M-8"       #'switch-to-prev-buffer
-      "M-9"       #'switch-to-next-buffer
+      "M-8"       #'centaur-tabs-backward
+      "M-9"       #'centaur-tabs-forward
+      "C-8"       #'centaur-tabs-move-current-tab-to-left
+      "C-9"       #'centaur-tabs-move-current-tab-to-right
 
       ;; (fest) Prefix M-s!
       "M-s M-j" #'windmove-left ;; moving around windows
@@ -42,12 +43,6 @@
       "M-s M-e" #'my/select-symbol-at-point ;; select word
       "M-s M-f" #'flycheck-list-errors
 
-      ;; to delete?
-      "C-<left>" #'windmove-left
-      "C-<right>" #'windmove-right
-      "C-<up>" #'windmove-up
-      "C-<down>" #'windmove-down
-
       ;; (fest) home, end
       "<home>" #'smart-beginning-of-line ;; home
       "M-u"    #'smart-beginning-of-line ;; home
@@ -56,8 +51,6 @@
       ;; (fest) jump
       "M-," #'better-jumper-jump-backward
       "M-." #'better-jumper-jump-forward
-      "M-<left>" #'better-jumper-jump-backward
-      "M-<right>" #'better-jumper-jump-forward
 
       ;; (fest) save and undo
       "C-s" #'save-buffer
@@ -69,17 +62,22 @@
       "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
 
       ;; Search Functions - Consult
-      "C-f" #'consult-line
+      "C-f" #'my/consult-line-dwim
       "C-S-f" #'consult-ripgrep
+
+      ;; find definition, references
+      "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
+      "M-r"   #'projectile-find-references
 
       ;; Noch verfuegbare Tasten with M-
       ;;   ,  ,  ,  , t,
-      ;;   ,  ,  ,  , g,
+      ;;  a,  , d,  , g,
       ;;   ,  ,  ,  ,  ,  ,  ,
       ;;  z, x, c,
 
-      ;; M-d for M-x!
-      "M-d" #'execute-extended-command ;; this was M-x
+      ;; M-e for M-x!
+      ;; M-d is back: kill-word
+      "M-e" #'execute-extended-command ;; this was M-x
 
       ;; vertico/switch-workspace-buffer
       "M-f" #'+vertico/switch-workspace-buffer
@@ -88,11 +86,10 @@
       ;;"M-q" #'doom/escape
 
       ;; lsp-ui
-      "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
       "M-p" #'lsp-ui-doc-toggle
+      ;;"M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
 
-      ;; debug key bindings
-      ;; "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
+      ;; dap debug key bindings
       "<f3>" #'dap-ui-locals
       "<f4>" #'dap-ui-breakpoints
       "<f5>" #'dap-debug
@@ -101,18 +98,12 @@
       "<f8>" #'dap-breakpoint-delete
       "M-v" #'dap-eval
       "M-b" #'dap-breakpoint-add
-      "M-S-b" #'dap-breakpoint-delete
       "M-n" #'dap-next
       "M-m" #'dap-continue
+      ;; "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
 
       ;; copy and paste
-      "C-c C-c" #'kill-ring-save ;; Ctrl-C
-      "C-v" #'yank               ;; Ctrl-V
-      "M-e" #'yank
-
-      ;; find definition, header-source toggle
-      "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-r"   #'lsp-find-references
+      "M-y" #'yank
 
       ;; open echo area
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e

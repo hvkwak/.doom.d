@@ -10,15 +10,22 @@
 
 ;;; Code:
 (use-package! consult
-
   ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
   :after projectile
+  :init
+  (defun my/thing-at-point ()
+    (when-let ((s (thing-at-point 'symbol t)))
+      (substring-no-properties s)))
+
+  ;; consult-line prefilled with word/symbol at point (if any)
+  (defun my/consult-line-dwim ()
+    (interactive)
+    (consult-line (my/thing-at-point)))
+
   :config
   (setq consult-preview-key 'any) ;; Preview instantly as you cycle
   (setq consult-buffer-sources
       '(consult--source-project-buffer)  ;; Show only project buffers
-      ;; '(consult--source-project-buffer  ;; Show only project buffers and recent files
-      ;;   consult--source-recent-file)
       )
   (setq consult-project-function #'projectile-project-root)
 
@@ -34,7 +41,10 @@
                                 "\\`\\*clangd::stderr\\*"
                                 "\\`\\*Async-native-compile-log\\*"
                                 "\\*compilation\\*<\\.emacs\\.d>"
-                                )))
+                                ))
+  )
+
+
 
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.
