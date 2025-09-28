@@ -16,6 +16,7 @@
         lsp-signature-render-documentation t
         lsp-idle-delay 0.15
         lsp-ui-sideline-delay 0.1
+        lsp-diagnostics-provider :none
         )
   )
 

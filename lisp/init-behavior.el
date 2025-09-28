@@ -45,46 +45,35 @@ of the line. Extend the selection when used with the Shift key."
     (goto-char pos)
     (activate-mark)))
 
-;; (defun my/toggle-between-header-and-source ()
-;;   "Toggle between a C++ header file and its corresponding source file."
-;;   (interactive)
-;;   (let ((current-file (buffer-file-name)))
-;;     (if (string-match-p "\\.cpp$" current-file)
-;;         ;; If the current file is a .cpp file, find the corresponding .h file
-;;         (let ((header-file (replace-regexp-in-string "/src/" "/include/"
-;;                           (replace-regexp-in-string "\\.cpp$" ".h" current-file))))
-;;           (if (file-exists-p header-file)
-;;               (find-file header-file)
-;;             (message "Header file does not exist.")))
-;;       ;; If the current file is a .h file, find the corresponding .cpp file
-;;       (let ((source-file (replace-regexp-in-string "/include/" "/src/"
-;;                        (replace-regexp-in-string "\\.h$" ".cpp" current-file))))
-;;         (if (file-exists-p source-file)
-;;             (find-file source-file)
-;;           (message "Source file does not exist."))))))
-
-;; (defun my/c-move-to-next-arg ()
-;;   "Move cursor to the beginning of the next argument inside function call."
-;;   (interactive)
-;;   (when (looking-at "[^,)]+")
-;;     (goto-char (match-end 0)))
-;;   (skip-chars-forward " \t")
-;;   (if (looking-at ",")
-;;       (progn
-;;         (forward-char)
-;;         (skip-chars-forward " \t"))
-;;     (when (looking-at ")")
-;;       (forward-char))))
-
-;; (defun my/c-move-to-prev-arg ()
-;;   "Move cursor to the beginning of the previous argument inside a function call."
-;;   (interactive)
-;;   (skip-chars-backward " \t")
-;;   (when (looking-back "," (1- (point)))
-;;     (backward-char))
-;;   (when (re-search-backward "[,(]" nil t)
-;;     (forward-char)
-;;     (skip-chars-forward " \t")))
+(defun my/toggle-between-header-and-source ()
+  "Toggle between C/C++/CUDA header and source file.
+Assumes project layout with `src/` and `include/` at the root."
+  (interactive)
+  (let* ((file (or (buffer-file-name) (user-error "Not visiting a file")))
+         (ext  (downcase (or (file-name-extension file) "")))
+         (name (file-name-base file))
+         (root (locate-dominating-file file "src"))
+         ;; build candidate paths
+         (src   (expand-file-name (concat "src/" name ".c") root))
+         (src++ (expand-file-name (concat "src/" name ".cpp") root))
+         (src-cu (expand-file-name (concat "src/" name ".cu") root))
+         (hdr   (expand-file-name (concat "include/" name ".h") root))
+         (hdr++ (expand-file-name (concat "include/" name ".hpp") root)))
+    (cond
+     ;; if we’re in a source → look for header
+     ((member ext '("c" "cpp" "cc" "cxx" "cu"))
+      (cond
+       ((file-exists-p hdr)   (find-file hdr))
+       ((file-exists-p hdr++) (find-file hdr++))
+       (t (message "No matching header found."))))
+     ;; if we’re in a header → look for source
+     ((member ext '("h" "hh" "hpp" "hxx"))
+      (cond
+       ((file-exists-p src)   (find-file src))
+       ((file-exists-p src++) (find-file src++))
+       ((file-exists-p src-cu)(find-file src-cu))
+       (t (message "No matching source found."))))
+     (t (message "Not a C/C++/CUDA file.")))))
 
 (defun save-all-c-h-buffers ()
   "Save all open buffers visiting .c or .h files."
@@ -121,8 +110,11 @@ of the line. Extend the selection when used with the Shift key."
 (with-eval-after-load 'vterm
   (define-key vterm-mode-map (kbd "M-8") nil)
   (define-key vterm-mode-map (kbd "M-9") nil)
+  (define-key vterm-mode-map (kbd "M-f") nil)
   (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
-  (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer))
+  (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer)
+  (define-key vterm-mode-map (kbd "M-f") #'+vertico/switch-workspace-buffer)
+  )
 
 ;; add jump points when using beginning-of-buffer.
 (after! better-jumper
@@ -167,7 +159,9 @@ The region will deactivate automatically once you move the cursor."
  '(centaur-tabs-unselected-modified ((t (:background "#2b2b2b" :foreground "#888888"))))
  )
 
-
+(after! flycheck
+  (global-flycheck-mode -1)
+  (setq flycheck-global-modes nil))
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

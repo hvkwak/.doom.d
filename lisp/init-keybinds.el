@@ -3,7 +3,7 @@
 ;;; Code:
 ;;;
 
-(define-key key-translation-map (kbd "M-q") (kbd "C-g")) ;; M-q doom/escape replaces C-g.
+(define-key key-translation-map (kbd "M-q") (kbd "C-g")) ;; C-g with M-q doom/escape.
 (map! :map global-map ;;(c-mode-map c++-mode-map)
 
       ;; (fest) keep it same as without prefix M-
@@ -26,13 +26,14 @@
       ;; (fest) insert comment
       "M-/" #'comment-dwim
 
-      ;; (fest) C mode indent line/region: C-i
+      ;; (fest) C mode indent line/region:
+      ;; C-i
 
       ;; (fest) navigate between buffers
       "M-8"       #'centaur-tabs-backward
       "M-9"       #'centaur-tabs-forward
-      "C-8"       #'centaur-tabs-move-current-tab-to-left
-      "C-9"       #'centaur-tabs-move-current-tab-to-right
+      "M-*"       #'centaur-tabs-move-current-tab-to-left ;; with SHIFT pressed
+      "M-("       #'centaur-tabs-move-current-tab-to-right ;; with SHIFT pressed
 
       ;; (fest) Prefix M-s!
       "M-s M-j" #'windmove-left ;; moving around windows
@@ -41,7 +42,7 @@
       "M-s M-k" #'windmove-down
       "M-s M-s" #'save-buffer
       "M-s M-e" #'my/select-symbol-at-point ;; select word
-      "M-s M-f" #'flycheck-list-errors
+      "M-s M-f" #'consult-lsp-diagnostics
 
       ;; (fest) home, end
       "<home>" #'smart-beginning-of-line ;; home
@@ -61,20 +62,11 @@
       "<S-down-mouse-1>" #'ignore                 ; Ignore the initial mouse down event
       "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
 
-      ;; Search Functions - Consult
-      "C-f" #'my/consult-line-dwim
-      "C-S-f" #'consult-ripgrep
-
-      ;; find definition, references
-      "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-r"   #'projectile-find-references
-
       ;; Noch verfuegbare Tasten with M-
-      ;;   ,  ,  ,  , t,
-      ;;  a,  , d,  , g,
+      ;;   ,  ,  , r,  ,
+      ;;   ,  ,  ,  , g,
       ;;   ,  ,  ,  ,  ,  ,  ,
       ;;  z, x, c,
-
       ;; M-e for M-x!
       ;; M-d is back: kill-word
       "M-e" #'execute-extended-command ;; this was M-x
@@ -82,12 +74,12 @@
       ;; vertico/switch-workspace-buffer
       "M-f" #'+vertico/switch-workspace-buffer
 
-      ;; C-g with M-q
-      ;;"M-q" #'doom/escape
+      ;; toggle between header and source. (include-src)
+      "M-t" #'my/toggle-between-header-and-source
 
       ;; lsp-ui
       "M-p" #'lsp-ui-doc-toggle
-      ;;"M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
+      "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
 
       ;; dap debug key bindings
       "<f3>" #'dap-ui-locals
@@ -102,8 +94,16 @@
       "M-m" #'dap-continue
       ;; "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
 
-      ;; copy and paste
-      "M-y" #'yank
+      ;; yank
+      "M-y" #'yank ;; this was once C-y
+
+      ;; Search Functions - Consult
+      "C-f" #'my/consult-line-dwim
+      "C-S-f" #'consult-ripgrep
+
+      ;; find definition, find references
+      "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
+      "M-r"   #'projectile-find-references ; instead of lsp-find-references
 
       ;; open echo area
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e
