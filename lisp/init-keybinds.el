@@ -63,13 +63,14 @@
       "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
 
       ;; Noch verfuegbare Tasten with M-
-      ;;   ,  ,  , r,  ,
+      ;;   ,  ,  ,  ,  ,
       ;;   ,  ,  ,  , g,
       ;;   ,  ,  ,  ,  ,  ,  ,
       ;;  z, x, c,
       ;; M-e for M-x!
       ;; M-d is back: kill-word
       "M-e" #'execute-extended-command ;; this was M-x
+      "M-c" #'kill-buffer
 
       ;; vertico/switch-workspace-buffer
       "M-f" #'+vertico/switch-workspace-buffer

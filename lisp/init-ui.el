@@ -50,8 +50,13 @@
         which-key-min-display-lines 6))
 
 (after! treemacs
-  (setq treemacs-project-follow-mode t)
-  (treemacs-follow-mode t))
+  ;; follow the file under cursor
+  (treemacs-follow-mode 1)
+  ;; follow the current project root
+  (treemacs-project-follow-mode 1)
+  ;; show indent guides
+  (treemacs-indent-guide-mode 1))
+
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

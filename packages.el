@@ -47,15 +47,12 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
-;;
-;;
+
 (package! consult)
-(package! treemacs-projectile)
-(package! all-the-icons)
 (package! marginalia)
-(package! all-the-icons-completion)
+;; (package! all-the-icons)
+;; (package! all-the-icons-completion)
 (package! orderless)
 (package! yasnippet-snippets)
 (package! vterm)
 (package! gptel :recipe (:nonrecursive t))
-(package! olivetti)

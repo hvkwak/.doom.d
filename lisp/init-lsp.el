@@ -20,10 +20,11 @@
         )
   )
 
-;; to not automatically insert #include statements
 (after! lsp-clangd
   (setq lsp-clients-clangd-args
-        '("--header-insertion=never")))
+        '("--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang"
+          "--header-insertion=never" ;; to not automatically insert #include statements
+          )))
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here
