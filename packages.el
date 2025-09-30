@@ -50,9 +50,6 @@
 
 (package! consult)
 (package! marginalia)
-;; (package! all-the-icons)
-;; (package! all-the-icons-completion)
 (package! orderless)
-(package! yasnippet-snippets)
 (package! vterm)
 (package! gptel :recipe (:nonrecursive t))

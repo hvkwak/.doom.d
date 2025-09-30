@@ -17,6 +17,10 @@
   '(hl-line ((t (:background "#3e4451" :underline nil))))
   '(cursor ((t (:background "green")))) ;; change cursor background to green.
   '(region ((t (:background "#4671d5" :foreground "#ffffff"))))  ; Region selection
+  '(centaur-tabs-selected ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
+  '(centaur-tabs-selected-modified ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
+  '(centaur-tabs-unselected ((t (:background "#2b2b2b" :foreground "#888888"))))
+  '(centaur-tabs-unselected-modified ((t (:background "#2b2b2b" :foreground "#888888"))))
   )
 
 ;; keyboard cursor
@@ -51,12 +55,20 @@
 
 (after! treemacs
   ;; follow the file under cursor
-  (treemacs-follow-mode 1)
+  (treemacs-follow-mode -1)
   ;; follow the current project root
   (treemacs-project-follow-mode 1)
   ;; show indent guides
-  (treemacs-indent-guide-mode 1))
+  (treemacs-indent-guide-mode 1)
+  (treemacs-load-theme "Default")
+  )
 
+(treemacs-modify-theme "Default"
+  :icon-directory (treemacs-join-path treemacs-dir "icons/default/svgrepo")
+  :config
+  (progn
+    (treemacs-create-icon :file "dir-src-closed.png" :extensions ("include-closed"))
+    (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open"))))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

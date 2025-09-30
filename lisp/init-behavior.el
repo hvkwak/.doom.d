@@ -146,22 +146,37 @@ The region will deactivate automatically once you move the cursor."
   )
 )
 
-;; cc-mode overrides: unbind M-e so the global takes effect
-;; M-e is used for "M-e"       #'centaur-tabs-forward
-;; (after! cc-mode
-;;   (dolist (map (list c-mode-base-map c++-mode-map))
-;;     (define-key map (kbd "M-e") nil)))
+(defun my-next-3-lines ()
+  (interactive)
+  (dotimes (_ 3) (next-line 1)))
 
-(custom-set-faces
- '(centaur-tabs-selected ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
- '(centaur-tabs-selected-modified ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
- '(centaur-tabs-unselected ((t (:background "#2b2b2b" :foreground "#888888"))))
- '(centaur-tabs-unselected-modified ((t (:background "#2b2b2b" :foreground "#888888"))))
- )
+(defun my-previous-3-lines ()
+  (interactive)
+  (dotimes (_ 3) (previous-line 1)))
+
+(global-set-key (kbd "C-<up>")  'my-previous-3-lines)
+(global-set-key (kbd "C-<down>")    'my-next-3-lines)
 
 (after! flycheck
   (global-flycheck-mode -1)
   (setq flycheck-global-modes nil))
+
+(defun my-jump-matching-paren ()
+  "Jump to the matching parenthesis/bracket/brace.
+If point is on an opening, go forward. If on a closing, go backward."
+  (interactive)
+  (cond
+   ((looking-at "\\s(") (forward-sexp 1))
+   ((looking-at "\\s{") (forward-sexp 1))
+   ((looking-at "\\s[") (forward-sexp 1))
+   ((looking-back "\\s)" 1) (backward-sexp 1))
+   ((looking-back "\\s}" 1) (backward-sexp 1))
+   ((looking-back "\\s]" 1) (backward-sexp 1))
+   (t (user-error "Not on a paren/brace/bracket"))))
+
+;; bind it globally (pick your key)
+(global-set-key (kbd "C-%") #'my-jump-matching-paren)
+
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

@@ -7,11 +7,11 @@
 (map! :map global-map ;;(c-mode-map c++-mode-map)
 
       ;; (fest) keep it same as without prefix M-
-      "M-RET" #'newline-and-indent            ;; same as ENTER
-      "M-<next>"  #'scroll-up-command         ;; same as PgDn
-      "M-<prior>" #'scroll-down-command       ;; same as PgUp
-      ;;"M-DEL" #'delete-forward-char         ;; No more. kill word backward.
-      ;;"M-;" (lambda () (interactive) (insert ";")) ;; Dies auch nicht.
+      "M-RET"     #'newline-and-indent            ;; same as ENTER
+      "M-<next>"  #'scroll-up-command             ;; same as PgDn
+      "M-<prior>" #'scroll-down-command           ;; same as PgUp
+      "M-DEL"     #'backward-delete-char-untabify ;; same as Backspace
+      "M-;" (lambda () (interactive) (insert ";"));; same as ;
 
       ;; (fest) navigate lines
       "M-i" #'previous-line
@@ -20,8 +20,10 @@
       "M-l" #'forward-char
       "M-h" #'backward-word
       "M-;" #'forward-word
-      ;;"M-h" #'my/c-move-to-prev-arg
-      ;;"M-;" #'my/c-move-to-next-arg
+
+      ;; (Note: this is in init-behavior.el)
+      ;; "C-i"  #'my-previous-3-lines
+      ;; "C-k"  #'my-next-3-lines
 
       ;; (fest) insert comment
       "M-/" #'comment-dwim
@@ -29,9 +31,10 @@
       ;; (fest) C mode indent line/region:
       ;; C-i
 
-      ;; (fest) navigate between buffers
+      ;; (fest) navigate between buffers, or kill
       "M-8"       #'centaur-tabs-backward
       "M-9"       #'centaur-tabs-forward
+      "M-0"       #'kill-buffer
       "M-*"       #'centaur-tabs-move-current-tab-to-left ;; with SHIFT pressed
       "M-("       #'centaur-tabs-move-current-tab-to-right ;; with SHIFT pressed
 
@@ -63,7 +66,7 @@
       "<S-mouse-1>"      #'my/select-to-click     ; Bind Shift + mouse click to your function;
 
       ;; Noch verfuegbare Tasten with M-
-      ;;   ,  ,  ,  ,  ,
+      ;;   ,  ,  ,  , t,
       ;;   ,  ,  ,  , g,
       ;;   ,  ,  ,  ,  ,  ,  ,
       ;;  z, x, c,
@@ -75,25 +78,22 @@
       ;; vertico/switch-workspace-buffer
       "M-f" #'+vertico/switch-workspace-buffer
 
-      ;; toggle between header and source. (include-src)
-      "M-t" #'my/toggle-between-header-and-source
-
       ;; lsp-ui
       "M-p" #'lsp-ui-doc-toggle
       "M-a" #'lsp-signature-toggle-full-docs ;; C-S-SPC: lsp-signature-activate
 
-      ;; dap debug key bindings
       "<f3>" #'dap-ui-locals
-      "<f4>" #'dap-ui-breakpoints
+      "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
       "<f5>" #'dap-debug
       "<f6>" #'my/dap-debugger-setting
       "<f7>" #'my/dap-debug-close
       "<f8>" #'dap-breakpoint-delete
+
+      ;; dap debug key bindings
       "M-v" #'dap-eval
       "M-b" #'dap-breakpoint-add
       "M-n" #'dap-next
       "M-m" #'dap-continue
-      ;; "<f4>" #'eval-buffer-and-close ;; for edit-debug-template
 
       ;; yank
       "M-y" #'yank ;; this was once C-y
@@ -103,8 +103,9 @@
       "C-S-f" #'consult-ripgrep
 
       ;; find definition, find references
-      "<f12>" #'lsp-find-definition     ; toggle between definition and deklaration
-      "M-r"   #'projectile-find-references ; instead of lsp-find-references
+      "<f12>" #'lsp-find-definition                ;; toggle between definition and deklaration
+      "M-t" #'my/toggle-between-header-and-source ;; toggle between header and source. (include-src)
+      "M-r"   #'projectile-find-references         ;; instead of lsp-find-references
 
       ;; open echo area
       "C-b" #'view-echo-area-messages     ; open echo area. it is still C-h e
