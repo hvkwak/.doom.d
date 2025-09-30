@@ -61,14 +61,17 @@
   ;; show indent guides
   (treemacs-indent-guide-mode 1)
   (treemacs-load-theme "Default")
-  )
 
-(treemacs-modify-theme "Default"
+  ;; same icon for include as src
+  (treemacs-modify-theme "Default"
   :icon-directory (treemacs-join-path treemacs-dir "icons/default/svgrepo")
   :config
   (progn
     (treemacs-create-icon :file "dir-src-closed.png" :extensions ("include-closed"))
     (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open"))))
+  )
+
+
 
 (provide 'init-ui)
 ;;; init-ui.el ends here
