@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (setq doom-theme 'doom-moonlight)
+(setq doom-font (font-spec :family "JetBrains Mono" :size 20))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -54,13 +55,11 @@
         which-key-min-display-lines 6))
 
 (after! treemacs
-  ;; follow the file under cursor
-  (treemacs-follow-mode -1)
+
   ;; follow the current project root
   (treemacs-project-follow-mode 1)
   ;; show indent guides
   (treemacs-indent-guide-mode 1)
-  (treemacs-load-theme "Default")
 
   ;; same icon for include as src
   (treemacs-modify-theme "Default"
@@ -68,7 +67,8 @@
   :config
   (progn
     (treemacs-create-icon :file "dir-src-closed.png" :extensions ("include-closed"))
-    (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open"))))
+    (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open"))
+    ))
   )
 
 

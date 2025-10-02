@@ -100,12 +100,16 @@ Assumes project layout with `src/` and `include/` at the root."
   (insert " * @return \n")
   (insert " */"))
 
-(defun my/vterm-init ()
-  "Automatically source .profile at vterm start."
-  (sleep-for 2)
-  (vterm-send-string "source ~/.profile" t)
-  (vterm-send-return))
-(add-hook 'vterm-mode-hook #'my/vterm-init)
+;; (defun my/vterm-init ()
+;;   "Automatically source .profile at vterm start."
+;;   (sleep-for 2)
+;;   (vterm-send-string "source ~/.profile" t)
+;;   (vterm-send-return))
+;; (add-hook 'vterm-mode-hook #'my/vterm-init)
+
+(after! vterm
+  (set-popup-rule! "^\\*vterm\\*" :size 0.25 :vslot -4 :select t :quit t :ttl 0))
+
 
 (with-eval-after-load 'vterm
   (define-key vterm-mode-map (kbd "M-8") nil)
@@ -154,8 +158,8 @@ The region will deactivate automatically once you move the cursor."
   (interactive)
   (dotimes (_ 3) (previous-line 1)))
 
-(global-set-key (kbd "C-<up>")  'my-previous-3-lines)
-(global-set-key (kbd "C-<down>")    'my-next-3-lines)
+;; (global-set-key (kbd "C-<up>")  'my-previous-3-lines)
+;; (global-set-key (kbd "C-<down>")    'my-next-3-lines)
 
 (after! flycheck
   (global-flycheck-mode -1)
@@ -163,7 +167,7 @@ The region will deactivate automatically once you move the cursor."
 
 (defun my-jump-matching-paren ()
   "Jump to the matching parenthesis/bracket/brace.
-If point is on an opening, go forward. If on a closing, go backward."
+  If point is on an opening, go forward. If on a closing, go backward."
   (interactive)
   (cond
    ((looking-at "\\s(") (forward-sexp 1))
@@ -174,8 +178,19 @@ If point is on an opening, go forward. If on a closing, go backward."
    ((looking-back "\\s]" 1) (backward-sexp 1))
    (t (user-error "Not on a paren/brace/bracket"))))
 
-;; bind it globally (pick your key)
-(global-set-key (kbd "C-%") #'my-jump-matching-paren)
+;;(global-set-key (kbd "M-[") #'my-jump-matching-paren)
+
+(defun my/select-current-line ()
+  "Select the current line. Repeat to extend selection by line."
+  (interactive)
+  (let ((start (line-beginning-position))
+        (end (line-end-position)))
+    (if (use-region-p)
+        ;; Extend the region
+        (set-mark (region-beginning))
+      ;; Start new region
+      (set-mark start))
+    (goto-char end)))
 
 
 (provide 'init-behavior)

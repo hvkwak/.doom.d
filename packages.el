@@ -53,3 +53,9 @@
 (package! orderless)
 (package! vterm)
 (package! gptel :recipe (:nonrecursive t))
+(package! claude-code-ide
+  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
+
+;; use default: No nerd-icons, nor all-the-icons.
+(package! treemacs-nerd-icons :disable t)
+(package! treemacs-all-the-icons :disable t)

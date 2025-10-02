@@ -17,28 +17,17 @@
           (window-width . 0.5)
           (slot . 1))))
 
-;; (after! markdown-mode
-;;   ;; Tighter paragraph spacing
-;;   (setq markdown-asymmetric-header t) ; No extra underline chars
-;;   (setq markdown-fontify-code-blocks-natively t)
-;;   (setq markdown-list-indent-width 2)
+(use-package! claude-code-ide
+  ;; https://github.com/manzaltu/claude-code-ide.el?tab=readme-ov-file
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
 
-;;   ;; Reduce blank lines before/after headings
-;;   (setq markdown-header-scaling t) ; Keep heading size proportional
-;;   (setq markdown-hide-markup t)    ; Hide syntax chars (*, #, etc.)
-
-;;   ;; Narrower text width for better readability
-;;   (add-hook 'markdown-mode-hook
-;;             (lambda ()
-;;               (setq-local line-spacing 0.1)   ; tighter line height
-;;               (setq-local fill-column 80)     ; wrap at 80 chars
-;;               (visual-line-mode 1)             ; soft wrap
-;;               (variable-pitch-mode 1)          ; proportional font
-;;               (setq-local markdown-hide-markup t)
-;;               ;; Remove extra top margin for headings
-;;               (setq-local markdown-header-scaling nil)
-;;               (setq-local markdown-fontify-whole-heading-line t)
-;;               )))
+  :config
+  (claude-code-ide-emacs-tools-setup) ; Optionally enable Emacs MCP tools
+  (setq claude-code-ide-terminal-backend 'vterm
+        ;; Use regular window instead of side window
+        claude-code-ide-use-side-window nil
+        )
+  )
 
 (provide 'init-llm)
 ;;; init-llm.el ends here
