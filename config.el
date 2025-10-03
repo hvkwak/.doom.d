@@ -28,17 +28,6 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-;; (defun general--unalias (thing &optional state-p)
-;;   "Safe general--unalias that guards against nil and bad inputs."
-;;   (message "[GENERAL] unalias: %S (state-p: %S)" thing state-p)
-;;   (let ((aliases (if state-p general-state-aliases general-keymap-aliases)))
-;;     (cond
-;;      ((symbolp thing) (or (cdr (assq thing aliases)) thing))
-;;      ((stringp thing) (or (cdr (assq (intern thing) aliases)) (intern thing)))
-;;      ((null thing) nil)
-;;      (t (progn
-;;           (message "[GENERAL ERROR] invalid input to general--unalias: %S" thing)
-;;           nil)))))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!

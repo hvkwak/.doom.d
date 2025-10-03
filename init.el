@@ -12,7 +12,7 @@
 ;;      flags as well (those symbols that start with a plus).
 ;;
 ;;      Alternatively, press 'gd' (or 'C-c c d') on a module to browse its
-;;      directory (for easy access to its source code).s
+;;      directory (for easy access to its source code)
 
 (doom! :input
        ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
@@ -50,7 +50,7 @@
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
-       ;;zen               ; distraction-free coding or writingg
+       ;;zen               ; distraction-free coding or writing
 
        :editor
        ;;(evil +everywhere); come to the dark side, we have cookies
@@ -63,7 +63,7 @@
        ;;objed             ; text object editing for the innocent
        ;;parinfer          ; turn lisp into python, sort of
        ;;rotate-text       ; cycle region at point between text candidates
-       snippets          ; my elves. They type so I don't have to
+       snippets          ; my elves. They type so I don't have to ;; https://github.com/doomemacs/snippets
        ;;word-wrap         ; soft wrapping with language-aware indent
 
        :emacs
@@ -171,7 +171,7 @@
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
-       ;;swift             ; who asked for emoji variablesg?
+       ;;swift             ; who asked for emoji variable?
        ;;terra             ; Earth and Moon in alignment for performance.
        ;;web               ; the tubes
        ;;yaml              ; JSON, but readable
@@ -179,7 +179,7 @@
 
        :email
        ;;(mu4e +org +gmail)
-       ;;notmuchd
+       ;;notmuch
        ;;(wanderlust +gmail)
 
        :app
