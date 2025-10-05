@@ -52,10 +52,10 @@
         which-key-side-window-location 'bottom
         which-key-side-window-max-height 0.25
         which-key-side-window-max-width 0.33
-        which-key-min-display-lines 6))
+        which-key-min-display-lines 6)
+)
 
 (after! treemacs
-
   ;; follow the current project root
   (treemacs-project-follow-mode 1)
   ;; show indent guides
@@ -68,8 +68,10 @@
   (progn
     (treemacs-create-icon :file "dir-src-closed.png" :extensions ("include-closed"))
     (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open"))
-    ))
+    )
   )
+)
+
 
 
 

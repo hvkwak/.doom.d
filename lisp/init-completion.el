@@ -17,10 +17,19 @@
     (when-let ((s (thing-at-point 'symbol t)))
       (substring-no-properties s)))
 
-  ;; consult-line prefilled with word/symbol at point (if any)
   (defun my/consult-line-dwim ()
+    "Run `consult-line` with the symbol at point prefilled and selected. If
+     there is no symbol at point, just run `consult-line` normally."
     (interactive)
-    (consult-line (my/thing-at-point)))
+    (let ((sym (my/thing-at-point)))
+      (if sym
+          (minibuffer-with-setup-hook
+              (lambda ()
+                (goto-char (minibuffer-prompt-end))
+                (set-mark (point-max))
+                (activate-mark))
+            (consult-line sym))
+        (consult-line))))
 
   :config
   (setq consult-preview-key 'any) ;; Preview instantly as you cycle
