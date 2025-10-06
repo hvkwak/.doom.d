@@ -22,32 +22,31 @@
       "M-k" #'next-line
       "M-j" #'backward-char
       "M-l" #'forward-char
-      "M-;" #'forward-word
-      "M-h" #'backward-word
+
+      ;; TODO: use <up>, <down>, ... for faster navigation
+      ;; "M-;" #'forward-word
+      ;; "M-h" #'backward-word
       "C-<up>"    #'my-previous-3-lines
       "C-<down>"  #'my-next-3-lines
-
-      ;;; Moving around windows(f for Fenster)
-      "M-f M-j" #'windmove-left
-      "M-f M-l" #'windmove-right
-      "M-f M-i" #'windmove-up
-      "M-f M-k" #'windmove-down
 
       ;;; Comment Insert
       "M-/" #'comment-dwim
 
       ;;; Navigate between tabs or buffers with SHIFT
-      "M-8" #'centaur-tabs-forward
-      "M-*" #'centaur-tabs-move-current-tab-to-left ;; with SHIFT pressed
+      "M-8" #'centaur-tabs-backward
+      "M-9" #'my/matching-paren-or-tabs-forward ;; combined with centaur-tabs-forward
+      "M-*" #'centaur-tabs-move-current-tab-to-left ;; with SHIFT pressed, left oriented
+      "M-(" #'centaur-tabs-move-current-tab-to-right
+
+      ;;; Jump: <, >
+      "M-," #'better-jumper-jump-backward
+      "M-." #'better-jumper-jump-forward
 
       ;;; Home, End
       "<home>" #'smart-beginning-of-line
       "M-u"    #'smart-beginning-of-line
       "M-o"    #'move-end-of-line
 
-      ;;; Jump: <, >
-      "M-," #'better-jumper-jump-backward
-      "M-." #'better-jumper-jump-forward
 
       ;;; Save and Undo
       "C-s"   #'save-buffer ;; M-s M-s does it, too
@@ -58,9 +57,8 @@
       "<S-down-mouse-1>" #'ignore
       "<S-mouse-1>"      #'my/select-to-click
 
-      ;;; Tab extract/jump matching paren
+      ;;; Tab extract for claude code
       "M-=" #'centaur-tabs-extract-window-to-new-frame
-      "M-9" #'my-jump-matching-paren ;; works well with S-9
 
       ;;; Noch verfuegbare Tasten mit M-
       ;;   ,  ,  ,  ,  ,  ,  ,
@@ -77,21 +75,26 @@
       "M-d M-l" #'kill-whole-line
       "M-d M-d" #'kill-word ;; originally was M-d
       "M-d M-f" #'kill-buffer
+      "M-0"     #'kill-buffer
       "M-d M-w" #'+workspace/kill
 
       ;;; Prefix M-s: save, select and switch
       "M-s M-s" #'save-buffer
       "M-s M-e" #'my/select-symbol-at-point
-      "M-s M-l" #'my/select-current-line
       "M-s M-f" #'+vertico/switch-workspace-buffer ;; switch to file
       "M-s M-p" #'+workspace/switch-to             ;; switch to project
+      "M-s M-j" #'windmove-left                    ;; switching windows
+      "M-s M-l" #'windmove-right
+      "M-s M-i" #'windmove-up
+      "M-s M-k" #'windmove-down
+      ;; "M-s M-l" #'my/select-current-line
 
       ;;; find references
-      "M-f M-f" #'my/consult-line-dwim
-      "C-f"     #'my/consult-line-dwim
-      "M-r"     #'projectile-find-references
-      "M-R"     #'consult-ripgrep
-      "C-i"     #'consult-imenu
+      "C-i" #'consult-imenu
+      "C-f" #'my/consult-line-dwim ;; Ctrl + f
+      "M-f" #'my/consult-line-dwim
+      "M-r" #'projectile-find-references
+      "M-R" #'consult-ripgrep
 
       ;;; Lsp-doc // TODO: Prefix M-p could be more useful than this
       "M-p" #'lsp-ui-doc-toggle

@@ -165,18 +165,24 @@ The region will deactivate automatically once you move the cursor."
   (global-flycheck-mode -1)
   (setq flycheck-global-modes nil))
 
-(defun my-jump-matching-paren ()
+(defun my/matching-paren-or-tabs-forward ()
   "Jump to the matching parenthesis/bracket/brace.
-  If point is on an opening, go forward. If on a closing, go backward."
+If point is on an opening, go forward. If on a closing, go backward.
+Otherwise, move to the next tab using `centaur-tabs-forward`."
   (interactive)
   (cond
+   ;; On opening paren/bracket/brace → forward
    ((looking-at "\\s(") (forward-sexp 1))
    ((looking-at "\\s{") (forward-sexp 1))
    ((looking-at "\\s[") (forward-sexp 1))
+   ;; On closing paren/bracket/brace → backward
    ((looking-back "\\s)" 1) (backward-sexp 1))
    ((looking-back "\\s}" 1) (backward-sexp 1))
    ((looking-back "\\s]" 1) (backward-sexp 1))
-   (t (user-error "Not on a paren/brace/bracket"))))
+   ;; Otherwise → call centaur-tabs-forward and show message
+   (t
+    (message "Not on a paren/brace/bracket, but call centaur-tabs-forward")
+    (centaur-tabs-forward))))
 
 ;;(global-set-key (kbd "M-[") #'my-jump-matching-paren)
 
