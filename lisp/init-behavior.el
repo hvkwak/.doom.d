@@ -122,7 +122,8 @@ Assumes project layout with `src/` and `include/` at the root."
 
 ;; add jump points when using beginning-of-buffer.
 (after! better-jumper
-  (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump))
+  (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump)
+  (advice-add 'end-of-buffer :before #'better-jumper-set-jump))
 
 ;; add jump points when using consult-line or consult-ripgrip
 ;;; Make Consult-confirmed jumps integrate with better-jumper
