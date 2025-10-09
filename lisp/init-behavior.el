@@ -108,17 +108,18 @@ Assumes project layout with `src/` and `include/` at the root."
 ;; (add-hook 'vterm-mode-hook #'my/vterm-init)
 
 (after! vterm
-  (set-popup-rule! "^\\*vterm\\*" :size 0.25 :vslot -4 :select t :quit t :ttl 0))
-
-
-(with-eval-after-load 'vterm
-  (define-key vterm-mode-map (kbd "M-8") nil)
-  (define-key vterm-mode-map (kbd "M-9") nil)
-  (define-key vterm-mode-map (kbd "M-f") nil)
-  (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
-  (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer)
-  (define-key vterm-mode-map (kbd "M-f") #'+vertico/switch-workspace-buffer)
-  )
+  (set-popup-rule! "^\\*vterm\\*" :size 0.25 :vslot -4 :select t :quit t :ttl 0)
+  (with-eval-after-load 'vterm
+    (define-key vterm-mode-map (kbd "M-8") nil)
+    (define-key vterm-mode-map (kbd "M-9") nil)
+    (define-key vterm-mode-map (kbd "M-f") nil)
+    (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
+    (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer)
+    (define-key vterm-mode-map (kbd "M-f") #'+vertico/switch-workspace-buffer)
+    (define-key vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t)))
+    (with-eval-after-load 'evil
+      (evil-define-key 'insert vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t))))
+  ))
 
 ;; add jump points when using beginning-of-buffer.
 (after! better-jumper

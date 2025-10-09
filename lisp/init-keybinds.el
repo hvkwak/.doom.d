@@ -157,11 +157,10 @@
         "M-s M-l" #'evil-window-right))
   )
 
-(after! cc-mode
+(after! (evil cc-mode)
   (map! :map c-mode-base-map
-        "C-d" #'consult-lsp-diagnostics
-        "C-h k" #'describe-key
-        ))
+        :ni "C-d" #'consult-lsp-diagnostics
+        :ni "C-h k" #'describe-key))  ;; optional
 
 ;;; move in M-x
 (after! vertico
