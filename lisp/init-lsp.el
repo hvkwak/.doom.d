@@ -27,5 +27,16 @@
           "--header-insertion=never" ;; to not automatically insert #include statements
           )))
 
+;; This enables C-h in c-mode
+(with-eval-after-load 'ccls
+  (dolist (m '(c-mode-map c++-mode-map objc-mode-map c-ts-mode-map c++-ts-mode-map))
+    (when (boundp m)
+      (evil-define-key 'normal (symbol-value m)
+        (kbd "C-h") nil (kbd "C-j") nil (kbd "C-k") nil (kbd "C-l") nil))))
+
+;; This enables C-h in c-mode
+(with-eval-after-load 'lsp-mode
+  (define-key lsp-mode-map (kbd "C-h") nil))
+
 (provide 'init-lsp)
 ;;; init-lsp.el ends here

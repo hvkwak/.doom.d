@@ -159,12 +159,22 @@ The region will deactivate automatically once you move the cursor."
   (interactive)
   (dotimes (_ 3) (previous-line 1)))
 
-;; (global-set-key (kbd "C-<up>")  'my-previous-3-lines)
-;; (global-set-key (kbd "C-<down>")    'my-next-3-lines)
-
 (after! flycheck
   (global-flycheck-mode -1)
   (setq flycheck-global-modes nil))
+
+(defun my/jump-matching-paren ()
+  "Jump to the matching parenthesis/bracket/brace.
+If point is on an opening, go forward. If on a closing, go backward."
+  (interactive)
+  (cond
+   ((looking-at "\\s(") (forward-sexp 1))
+   ((looking-at "\\s{") (forward-sexp 1))
+   ((looking-at "\\s[") (forward-sexp 1))
+   ((looking-back "\\s)" 1) (backward-sexp 1))
+   ((looking-back "\\s}" 1) (backward-sexp 1))
+   ((looking-back "\\s]" 1) (backward-sexp 1))
+   (t (user-error "Not on a paren/brace/bracket"))))
 
 (defun my/matching-paren-or-tabs-forward ()
   "Jump to the matching parenthesis/bracket/brace.
@@ -185,8 +195,6 @@ Otherwise, move to the next tab using `centaur-tabs-forward`."
     (message "Not on a paren/brace/bracket, but call centaur-tabs-forward")
     (centaur-tabs-forward))))
 
-;;(global-set-key (kbd "M-[") #'my-jump-matching-paren)
-
 (defun my/select-current-line ()
   "Select the current line. Repeat to extend selection by line."
   (interactive)
@@ -199,6 +207,27 @@ Otherwise, move to the next tab using `centaur-tabs-forward`."
       (set-mark start))
     (goto-char end)))
 
+(defun my/locate-key (key)
+  "Show which active keymaps bind KEY (highest precedence first)."
+  (interactive "kKey: ")
+  (require 'cl-lib)
+  (let* ((maps (current-active-maps t))
+         (res (cl-loop for m in maps
+                       for b = (lookup-key m key)
+                       when (and b (not (numberp b)))
+                       collect (list
+                                ;; try to name the map (minor mode name if possible)
+                                (car (rassq m minor-mode-map-alist))
+                                m
+                                b))))
+    (with-current-buffer (get-buffer-create "*Key Locator*")
+      (erase-buffer)
+      (dolist (x res)
+        (pcase-let ((`(,minor-name ,map ,binding) x))
+          (princ (format "%-32s %-32S → %S\n"
+                         (or minor-name "") map binding)
+                 (current-buffer))))
+      (display-buffer (current-buffer)))))
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

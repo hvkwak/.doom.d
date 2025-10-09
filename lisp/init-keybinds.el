@@ -1,12 +1,37 @@
 ;;; init-keybinds.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
+
+(keymap-global-set "C-h" help-map) ;; enables C-h everywhere, combined with init-lsp.el
+(keymap-global-unset "C-z" t)
+(with-eval-after-load 'evil
+  (define-key general-override-mode-map (kbd "C-h") help-map) ;; Top-priority override, if you use general.el
+  (define-key evil-motion-state-map (kbd "C-z") #'undo-fu-only-undo)
+  (define-key evil-normal-state-map (kbd "C-z") #'undo-fu-only-undo)
+  (define-key evil-insert-state-map (kbd "C-z") #'undo-fu-only-undo)
+  (define-key evil-visual-state-map (kbd "C-z") #'undo-fu-only-undo)
+  (define-key evil-motion-state-map (kbd "C-S-z") #'undo-fu-only-redo)
+  (define-key evil-normal-state-map (kbd "C-S-z") #'undo-fu-only-redo)
+  (define-key evil-insert-state-map (kbd "C-S-z") #'undo-fu-only-redo)
+  (define-key evil-visual-state-map (kbd "C-S-z") #'undo-fu-only-redo)
+  (define-key evil-normal-state-map (kbd "C-f") #'my/consult-line-dwim) ;; keep it here
+  (define-key evil-insert-state-map (kbd "C-f") #'my/consult-line-dwim) ;; ok this, too.
+  )
+
 (after! evil
-  ;;; Common Keybindings for nie states
-  (map! :nie
-        "M-q" #'evil-escape
-        "C-a" #'evil-emacs-state
-        "C-z" #'undo
+  ;; 1) Make C-h a prefix everywhere (which-key will show the menu)
+  (keymap-global-set "C-h" help-map)   ;; or (global-set-key (kbd "C-h") help-map)
+
+  ;;; Doom's leader key system SPC to switch
+  (map! :leader
+        )
+  ;;; Common Keybindings for niv states
+  (map! :map override
+        :niv
+        "M-9"  #'my/jump-matching-paren
+        "<f9>" #'treemacs
+        "M-q"  #'evil-escape
+        "C-a"  #'evil-emacs-state
 
         ;; navigation
         "M-i" #'previous-line
@@ -16,15 +41,14 @@
 
         ;; find references
         "M-'" #'consult-imenu        ;; C-i is for TAB. change to M-'.
-        "C-f" #'my/consult-line-dwim ;; Ctrl + f
         "M-f" #'my/consult-line-dwim
         "M-r" #'projectile-find-references
         "M-R" #'consult-ripgrep
 
         ;; kill/save
         "M-s M-s" #'save-buffer
-        ;;"C-x C-s" #'save-buffer ;; exists already
-        "C-S-s" #'save-all-c-h-buffers
+        "C-x C-s" #'save-buffer
+        "C-S-s" #'save-all-c-h-buffers ;; c mode
 
         ;; jump
         "M-," #'better-jumper-jump-backward
@@ -48,7 +72,8 @@
   
   ;;; Normal State: navigate, edit structure, execute commands
   (map! :map evil-normal-state-map
-        "M-e" #'execute-extended-command ;; one more M-x
+        ;; Another M-x for normal state
+        "M-e" #'execute-extended-command
 
         ;; Tabs Navigation
         "j" #'centaur-tabs-backward
@@ -60,8 +85,8 @@
         "kw" #'+workspace/kill                 ;; kill project
 
         ;; switch to file, project
-        "M-s M-f" #'+vertico/switch-workspace-buffer ;; buffer
-        "M-s M-p" #'+workspace/switch-to             ;; project
+        "M-s M-f" #'+vertico/switch-workspace-buffer ;; needed for vterm
+        ;;"M-s M-p" #'+workspace/switch-to             ;; project
         "M-s M-j" #'evil-window-left ;; switching windows
         "M-s M-l" #'evil-window-right
         "M-s M-i" #'evil-window-up
@@ -89,6 +114,8 @@
         "M-y" #'yank           ;; C-y for yank still works
         "M-w" #'kill-ring-save ;;
         "C-w" #'kill-region
+        "M-e" #'execute-extended-command
+        "M-s M-e" #'my/select-symbol-at-point ;; select symbol
 
         ;; More M- for convenience
         "M-RET"     #'newline-and-indent            ;; same as ENTER
@@ -96,7 +123,6 @@
         "M-<prior>" #'scroll-down-command           ;; same as PgUp
         "M-DEL"     #'delete-char                   ;; Delete
         "M-;" (lambda () (interactive) (insert ";"));; same as ;
-        "M-e" #'my/select-symbol-at-point ;; select symbol
         "M-/" #'comment-dwim ;; insert comment
         ;;; Insert Mode ends here
         )
@@ -106,11 +132,35 @@
         "M-y" #'yank           ;; C-y for yank still works
         "C-w" #'kill-region
         )
-)
+  (map! :map evil-emacs-state-map
+        "C-a" #'evil-exit-emacs-state
+        )
+
+  )
+
+;;; you serious? this complicated for navigation in treemacs?
+(after! (treemacs evil-collection)
+  ;; Works even if treemacs-evil isn't present
+  (map! :map treemacs-mode-map
+        "M-i" #'previous-line
+        "M-k" #'next-line
+        "M-j" #'backward-char
+        "M-l" #'forward-char
+        "M-s M-l" #'evil-window-right)
+  ;; If treemacs-evil is enabled, bind there too
+  (when (boundp 'evil-treemacs-state-map)
+    (map! :map evil-treemacs-state-map
+        "M-i" #'previous-line
+        "M-k" #'next-line
+        "M-j" #'backward-char
+        "M-l" #'forward-char
+        "M-s M-l" #'evil-window-right))
+  )
 
 (after! cc-mode
   (map! :map c-mode-base-map
         "C-d" #'consult-lsp-diagnostics
+        "C-h k" #'describe-key
         ))
 
 ;;; move in M-x
