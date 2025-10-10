@@ -8,6 +8,9 @@
   (setq toc-org-max-depth 3))
 
 (after! org
+  ;; If you use `org' and don't want your org files in the default location below,
+  ;; change `org-directory'. It must be set before org loads!
+  (setq org-directory "~/org/")
 
   ;; enable font-lock for bold/italic/underline/etc.
   (setq org-fontify-emphasized-text t)

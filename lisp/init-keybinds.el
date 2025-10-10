@@ -2,98 +2,68 @@
 ;;; Commentary:
 ;;; Code:
 
-(keymap-global-set "C-h" help-map) ;; enables C-h everywhere, combined with init-lsp.el
+(keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
 (keymap-global-unset "C-z" t)
-(with-eval-after-load 'evil
-  (define-key general-override-mode-map (kbd "C-h") help-map) ;; Top-priority override, if you use general.el
-  (define-key evil-motion-state-map (kbd "C-z") #'undo-fu-only-undo)
-  (define-key evil-normal-state-map (kbd "C-z") #'undo-fu-only-undo)
-  (define-key evil-insert-state-map (kbd "C-z") #'undo-fu-only-undo)
-  (define-key evil-visual-state-map (kbd "C-z") #'undo-fu-only-undo)
-  (define-key evil-motion-state-map (kbd "C-S-z") #'undo-fu-only-redo)
-  (define-key evil-normal-state-map (kbd "C-S-z") #'undo-fu-only-redo)
-  (define-key evil-insert-state-map (kbd "C-S-z") #'undo-fu-only-redo)
-  (define-key evil-visual-state-map (kbd "C-S-z") #'undo-fu-only-redo)
-  (define-key evil-normal-state-map (kbd "C-f") #'my/consult-line-dwim) ;; keep it here
-  (define-key evil-insert-state-map (kbd "C-f") #'my/consult-line-dwim) ;; ok this, too.
-  )
+
+;;; Global Map
+(after! evil
+  (evil-define-key '(normal insert visual) global-map
+    (kbd "C-b")        #'view-echo-area-messages
+    (kbd "M-s M-e")    #'my/select-symbol-at-point
+    (kbd "C-w")        #'kill-region
+    (kbd "M-y")        #'yank
+    (kbd "C-S-z")      #'undo-fu-only-redo
+    (kbd "C-z")        #'undo-fu-only-undo
+    (kbd "M-p")        #'lsp-ui-doc-toggle
+    (kbd "M-P")        #'lsp-signature-toggle-full-docs
+    (kbd "M-<f12>")    #'my/toggle-between-header-and-source
+    (kbd "<f12>")      #'lsp-find-definition
+    (kbd "M-s M-s")    #'save-buffer
+    (kbd "C-x C-s")    #'save-buffer
+    (kbd "C-S-s")      #'save-all-c-h-buffers
+    (kbd "M-,")        #'better-jumper-jump-backward
+    (kbd "M-.")        #'better-jumper-jump-forward
+    (kbd "M-9")        #'my/jump-matching-paren
+    (kbd "M-q")        #'doom/escape
+    (kbd "<f9>")       #'treemacs
+    (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
+    (kbd "<S-down-mouse-1>") #'ignore
+    (kbd "<S-mouse-1>")      #'my/select-to-click
+    (kbd "<home>")     #'smart-beginning-of-line
+    (kbd "M-u")        #'smart-beginning-of-line
+    (kbd "M-o")        #'move-end-of-line
+    (kbd "C-f")        #'my/consult-line-dwim
+    (kbd "M-f")        #'my/consult-line-dwim
+    (kbd "M-r")        #'projectile-find-references
+    (kbd "M-R")        #'consult-ripgrep
+    (kbd "M-'")        #'consult-imenu
+    (kbd "M-i")        #'previous-line
+    (kbd "M-k")        #'next-line
+    (kbd "M-j")        #'backward-char
+    (kbd "M-l")        #'forward-char
+    (kbd "M-h")        (lambda () (interactive))
+    (kbd "M-e")        #'execute-extended-command)
+)
 
 (after! evil
-  ;; 1) Make C-h a prefix everywhere (which-key will show the menu)
-  (keymap-global-set "C-h" help-map)   ;; or (global-set-key (kbd "C-h") help-map)
-
-  ;;; Doom's leader key system SPC to switch
-  (map! :leader
-        )
-  ;;; Common Keybindings for niv states
-  (map! :map override
-        :niv
-        "M-9"  #'my/jump-matching-paren
-        "<f9>" #'treemacs
-        "M-q"  #'evil-escape
-        "C-a"  #'evil-emacs-state
-
-        ;; navigation
-        "M-i" #'previous-line
-        "M-k" #'next-line
-        "M-j" #'backward-char
-        "M-l" #'forward-char
-
-        ;; find references
-        "M-'" #'consult-imenu        ;; C-i is for TAB. change to M-'.
-        "M-f" #'my/consult-line-dwim
-        "M-r" #'projectile-find-references
-        "M-R" #'consult-ripgrep
-
-        ;; kill/save
-        "M-s M-s" #'save-buffer
-        "C-x C-s" #'save-buffer
-        "C-S-s" #'save-all-c-h-buffers ;; c mode
-
-        ;; jump
-        "M-," #'better-jumper-jump-backward
-        "M-." #'better-jumper-jump-forward
-
-        ;; home/end
-        "<HOME>" #'smart-beginning-of-line ;; Home
-        "M-u"    #'smart-beginning-of-line ;; Home
-        "M-o"    #'move-end-of-line        ;; End
-
-        ;; lsp ui doc, header toggle, definition
-        "M-p"     #'lsp-ui-doc-toggle
-        "M-P"     #'lsp-signature-toggle-full-docs ;; with shift, C-S-SPC: lsp-signature-activate
-        "M-<f12>" #'my/toggle-between-header-and-source  ;; toggle between header and source. (include-src)
-        "<f12>"   #'lsp-find-definition        ;; toggle between definition and declaration
-
-        "M-=" #'centaur-tabs-extract-window-to-new-frame
-        "<S-down-mouse-1>" #'ignore
-        "<S-mouse-1>"      #'my/select-to-click
-        )
-  
   ;;; Normal State: navigate, edit structure, execute commands
   (map! :map evil-normal-state-map
-        ;; Another M-x for normal state
-        "M-e" #'execute-extended-command
-
         ;; Tabs Navigation
-        "j" #'centaur-tabs-backward
-        "l" #'centaur-tabs-forward
-        "J" #'centaur-tabs-move-current-tab-to-left
-        "L" #'centaur-tabs-move-current-tab-to-right
+        "8" #'centaur-tabs-backward
+        "9" #'centaur-tabs-forward
+        "*" #'centaur-tabs-move-current-tab-to-left
+        "(" #'centaur-tabs-move-current-tab-to-right
 
-        "kf" #'kill-buffer                     ;; kill buffer
-        "kw" #'+workspace/kill                 ;; kill project
+        (:prefix ("K" . "Kill…")
+                 "f" #'kill-buffer
+                 "w" #'+workspace/kill)
 
-        ;; switch to file, project
+        ;; switch to file
         "M-s M-f" #'+vertico/switch-workspace-buffer ;; needed for vterm
-        ;;"M-s M-p" #'+workspace/switch-to             ;; project
         "M-s M-j" #'evil-window-left ;; switching windows
         "M-s M-l" #'evil-window-right
         "M-s M-i" #'evil-window-up
         "M-s M-k" #'evil-window-down
-
-        ;; Open Echo Area
-        "C-b" #'view-echo-area-messages ;; or C-h e
 
         ;; dap
         "<f3>" #'dap-ui-locals
@@ -101,9 +71,9 @@
         "<f5>" #'dap-debug
         "<f6>" #'my/dap-debugger-setting
         "<f7>" #'my/dap-debug-close
-        "<f8>" #'dap-breakpoint-delete
         "M-v"  #'dap-eval
         "M-b"  #'dap-breakpoint-add
+        "M-B"  #'dap-breakpoint-delete
         "M-n"  #'dap-next
         "M-m"  #'dap-continue
         ;;; Normal Mode ends here
@@ -111,50 +81,26 @@
 
   ;;; Insert State
   (map! :map evil-insert-state-map
-        "M-y" #'yank           ;; C-y for yank still works
-        "M-w" #'kill-ring-save ;;
-        "C-w" #'kill-region
-        "M-e" #'execute-extended-command
-        "M-s M-e" #'my/select-symbol-at-point ;; select symbol
-
-        ;; More M- for convenience
+        ;; Prefix M- but same
         "M-RET"     #'newline-and-indent            ;; same as ENTER
         "M-<next>"  #'scroll-up-command             ;; same as PgDn.
         "M-<prior>" #'scroll-down-command           ;; same as PgUp
         "M-DEL"     #'delete-char                   ;; Delete
-        "M-;" (lambda () (interactive) (insert ";"));; same as ;
-        "M-/" #'comment-dwim ;; insert comment
+        "M-;"       (lambda () (interactive) (insert ";"));; same as ;
+        "M-/"       #'comment-dwim ;; insert comment
         ;;; Insert Mode ends here
         )
 
   ;;; Visual State
   (map! :map evil-visual-state-map
-        "M-y" #'yank           ;; C-y for yank still works
-        "C-w" #'kill-region
+
         )
+
+  ;;; Emacs State
   (map! :map evil-emacs-state-map
         "C-a" #'evil-exit-emacs-state
         )
 
-  )
-
-;;; you serious? this complicated for navigation in treemacs?
-(after! (treemacs evil-collection)
-  ;; Works even if treemacs-evil isn't present
-  (map! :map treemacs-mode-map
-        "M-i" #'previous-line
-        "M-k" #'next-line
-        "M-j" #'backward-char
-        "M-l" #'forward-char
-        "M-s M-l" #'evil-window-right)
-  ;; If treemacs-evil is enabled, bind there too
-  (when (boundp 'evil-treemacs-state-map)
-    (map! :map evil-treemacs-state-map
-        "M-i" #'previous-line
-        "M-k" #'next-line
-        "M-j" #'backward-char
-        "M-l" #'forward-char
-        "M-s M-l" #'evil-window-right))
   )
 
 (after! (evil cc-mode)
@@ -162,14 +108,21 @@
         :ni "C-d" #'consult-lsp-diagnostics
         :ni "C-h k" #'describe-key))  ;; optional
 
-;;; move in M-x
+
+;;; Vertico candidate navigation
 (after! vertico
-  (map! :map vertico-map
-        "M-q" #'evil-escape
-        "M-i" #'vertico-previous
-        "M-k" #'vertico-next
-        "M-j" #'left-char   ; or #'vertico-exit if you prefer
-        "M-l" #'right-char)) ; pick anything you like here
+  ;; Up/Down through candidates
+  (define-key vertico-map (kbd "M-i") #'vertico-previous)
+  (define-key vertico-map (kbd "M-k") #'vertico-next)
+  ;; Left/Right within the minibuffer input
+  (define-key vertico-map (kbd "M-j") #'backward-char)
+  (define-key vertico-map (kbd "M-l") #'forward-char)
+  ;; Home/End equivalents
+  (define-key vertico-map (kbd "M-u") #'smart-beginning-of-line) ; or move-beginning-of-line
+  (define-key vertico-map (kbd "M-o") #'move-end-of-line)
+  ;; quit M-q
+  (define-key vertico-map (kbd "M-q") #'doom/escape))
+
 
 (provide 'init-keybinds)
 ;;; init-keybinds.el ends here

@@ -121,23 +121,25 @@ Assumes project layout with `src/` and `include/` at the root."
       (evil-define-key 'insert vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t))))
   ))
 
-;; add jump points when using beginning-of-buffer.
+;;; add jump points when using beginning-of-buffer.
 (after! better-jumper
   (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump)
   (advice-add 'end-of-buffer :before #'better-jumper-set-jump))
 
-;; add jump points when using consult-line or consult-ripgrip
-;;; Make Consult-confirmed jumps integrate with better-jumper
+
+;;; add jump points when using consult-line or consult-ripgrip
+;;; the following two are together.
+;; Make Consult-confirmed jumps integrate with better-jumper
 (defun my/better-jumper-before-consult-jump (orig-fn &rest args)
   "Record a jump with better-jumper just before Consult performs a real jump."
   (better-jumper-set-jump)
   (apply orig-fn args))
-
 ;; Consult uses these internal functions when you confirm a candidate.
 ;; We advise them so previews don't spam the jump list, only confirmed jumps do.
 (dolist (fn '(consult--jump consult--goto-location))
   (when (fboundp fn)
     (advice-add fn :around #'my/better-jumper-before-consult-jump)))
+
 
 (defun my/select-symbol-at-point ()
   "Select the symbol (word with _ and letters) at point.
@@ -152,13 +154,13 @@ The region will deactivate automatically once you move the cursor."
   )
 )
 
-(defun my-next-3-lines ()
-  (interactive)
-  (dotimes (_ 3) (next-line 1)))
+;; (defun my-next-3-lines ()
+;;   (interactive)
+;;   (dotimes (_ 3) (next-line 1)))
 
-(defun my-previous-3-lines ()
-  (interactive)
-  (dotimes (_ 3) (previous-line 1)))
+;; (defun my-previous-3-lines ()
+;;   (interactive)
+;;   (dotimes (_ 3) (previous-line 1)))
 
 (after! flycheck
   (global-flycheck-mode -1)
@@ -177,24 +179,24 @@ If point is on an opening, go forward. If on a closing, go backward."
    ((looking-back "\\s]" 1) (backward-sexp 1))
    (t (user-error "Not on a paren/brace/bracket"))))
 
-(defun my/matching-paren-or-tabs-forward ()
-  "Jump to the matching parenthesis/bracket/brace.
-If point is on an opening, go forward. If on a closing, go backward.
-Otherwise, move to the next tab using `centaur-tabs-forward`."
-  (interactive)
-  (cond
-   ;; On opening paren/bracket/brace → forward
-   ((looking-at "\\s(") (forward-sexp 1))
-   ((looking-at "\\s{") (forward-sexp 1))
-   ((looking-at "\\s[") (forward-sexp 1))
-   ;; On closing paren/bracket/brace → backward
-   ((looking-back "\\s)" 1) (backward-sexp 1))
-   ((looking-back "\\s}" 1) (backward-sexp 1))
-   ((looking-back "\\s]" 1) (backward-sexp 1))
-   ;; Otherwise → call centaur-tabs-forward and show message
-   (t
-    (message "Not on a paren/brace/bracket, but call centaur-tabs-forward")
-    (centaur-tabs-forward))))
+;; (defun my/matching-paren-or-tabs-forward ()
+;;   "Jump to the matching parenthesis/bracket/brace.
+;; If point is on an opening, go forward. If on a closing, go backward.
+;; Otherwise, move to the next tab using `centaur-tabs-forward`."
+;;   (interactive)
+;;   (cond
+;;    ;; On opening paren/bracket/brace → forward
+;;    ((looking-at "\\s(") (forward-sexp 1))
+;;    ((looking-at "\\s{") (forward-sexp 1))
+;;    ((looking-at "\\s[") (forward-sexp 1))
+;;    ;; On closing paren/bracket/brace → backward
+;;    ((looking-back "\\s)" 1) (backward-sexp 1))
+;;    ((looking-back "\\s}" 1) (backward-sexp 1))
+;;    ((looking-back "\\s]" 1) (backward-sexp 1))
+;;    ;; Otherwise → call centaur-tabs-forward and show message
+;;    (t
+;;     (message "Not on a paren/brace/bracket, but call centaur-tabs-forward")
+;;     (centaur-tabs-forward))))
 
 (defun my/select-current-line ()
   "Select the current line. Repeat to extend selection by line."
@@ -229,6 +231,7 @@ Otherwise, move to the next tab using `centaur-tabs-forward`."
                          (or minor-name "") map binding)
                  (current-buffer))))
       (display-buffer (current-buffer)))))
+
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here
