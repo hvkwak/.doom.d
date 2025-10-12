@@ -12,25 +12,6 @@
 (use-package! consult
   ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
   :after projectile
-  :init
-  (defun my/thing-at-point ()
-    (when-let ((s (thing-at-point 'symbol t)))
-      (substring-no-properties s)))
-
-  (defun my/consult-line-dwim ()
-    "Run `consult-line` with the symbol at point prefilled and selected. If
-     there is no symbol at point, just run `consult-line` normally."
-    (interactive)
-    (let ((sym (my/thing-at-point)))
-      (if sym
-          (minibuffer-with-setup-hook
-              (lambda ()
-                (goto-char (minibuffer-prompt-end))
-                (set-mark (point-max))
-                (activate-mark))
-            (consult-line sym))
-        (consult-line))))
-
   :config
   (setq consult-preview-key 'any) ;; Preview instantly as you cycle
   (setq consult-buffer-sources
@@ -58,7 +39,23 @@
                                 ))
   )
 
+(defun my/thing-at-point ()
+  (when-let ((s (thing-at-point 'symbol t)))
+    (substring-no-properties s)))
 
+(defun my/consult-line-dwim ()
+  "Run `consult-line` with the symbol at point prefilled and selected. If
+     there is no symbol at point, just run `consult-line` normally."
+  (interactive)
+  (let ((sym (my/thing-at-point)))
+    (if sym
+        (minibuffer-with-setup-hook
+            (lambda ()
+              (goto-char (minibuffer-prompt-end))
+              (set-mark (point-max))
+              (activate-mark))
+          (consult-line sym))
+      (consult-line))))
 
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.

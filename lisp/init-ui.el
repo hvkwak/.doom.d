@@ -7,16 +7,11 @@
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
-
 (menu-bar-mode 1)
-
-;; directly modify Doom's theme settings using custom-set-faces
-;; (after! solaire-mode
-;;   (solaire-global-mode -1))
 
 (custom-set-faces
   '(hl-line ((t (:background "#3e4451" :underline nil))))
-  '(cursor ((t (:background "green")))) ;; change cursor background to green.
+  ;; '(cursor ((t (:background "green")))) ;; change cursor background to green.
   '(region ((t (:background "#4671d5" :foreground "#ffffff"))))  ; Region selection
   '(centaur-tabs-selected ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
   '(centaur-tabs-selected-modified ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
@@ -24,9 +19,19 @@
   '(centaur-tabs-unselected-modified ((t (:background "#2b2b2b" :foreground "#888888"))))
   )
 
-;; keyboard cursor
+;; keyboard cursor - configured via evil-cursor specs
 (setq-default cursor-type 'bar)
 (blink-cursor-mode 1)
+
+;; Different cursor appearance for Evil modes using evil's cursor system
+(after! evil
+  (setq evil-normal-state-cursor   '(box "#d0d0d0")
+        evil-insert-state-cursor   '(bar "green")
+        evil-visual-state-cursor   '(box "#c3e88d")
+        evil-replace-state-cursor  '(hbar "orange")
+        evil-operator-state-cursor '(hollow "#d0d0d0")
+        evil-motion-state-cursor   '(box "#d0d0d0")
+        evil-emacs-state-cursor    '(bar "cyan")))
 
 ;; mouse cursor
 (setq-default void-text-area-pointer 'nil)

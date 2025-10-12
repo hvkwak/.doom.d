@@ -121,10 +121,31 @@ Assumes project layout with `src/` and `include/` at the root."
       (evil-define-key 'insert vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t))))
   ))
 
-;;; add jump points when using beginning-of-buffer.
-(after! better-jumper
-  (advice-add 'beginning-of-buffer :before #'better-jumper-set-jump)
-  (advice-add 'end-of-buffer :before #'better-jumper-set-jump))
+;;; Better-jumper integration - adds jump points before navigation commands
+;; One reusable advice fn
+(defun my/bj-before (&rest _)
+  (when (called-interactively-p 'interactive)
+    (better-jumper-set-jump)))
+
+;; Built-ins are always present
+(advice-add 'beginning-of-buffer :before #'my/bj-before)
+(advice-add 'end-of-buffer       :before #'my/bj-before)
+
+;; cc-mode defun motions live in cc-cmds
+(with-eval-after-load 'cc-cmds
+  (advice-add 'c-beginning-of-defun :before #'my/bj-before)
+  (advice-add 'c-end-of-defun       :before #'my/bj-before)) ;; optional but nice
+
+;; LSP/Xref jumps (cover both LSP and generic xref)
+(with-eval-after-load 'lsp-mode
+  (advice-add 'lsp-find-definition   :before #'my/bj-before)
+  (advice-add 'lsp-find-declaration  :before #'my/bj-before)
+  (advice-add 'lsp-find-references   :before #'my/bj-before))
+
+(with-eval-after-load 'xref
+  (advice-add 'xref-find-definitions      :before #'my/bj-before)
+  (advice-add 'xref-find-references       :before #'my/bj-before)
+  (advice-add 'xref-find-apropos          :before #'my/bj-before))
 
 
 ;;; add jump points when using consult-line or consult-ripgrip
@@ -231,6 +252,21 @@ If point is on an opening, go forward. If on a closing, go backward."
                          (or minor-name "") map binding)
                  (current-buffer))))
       (display-buffer (current-buffer)))))
+
+(defun my/save-and-escape ()
+  "save-buffer and back to normal state"
+  (interactive)
+  (call-interactively #'save-buffer)
+  (when (fboundp 'evil-escape)
+    (call-interactively #'evil-escape)))
+
+(defun my/insert-escape-and-clear ()
+  (interactive)
+  (evil-escape)
+  (run-at-time 0 nil
+               (lambda ()
+                 (when (use-region-p) (deactivate-mark))
+                 )))
 
 
 (provide 'init-behavior)

@@ -2,30 +2,39 @@
 ;;; Commentary:
 ;;; Code:
 
-(keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
-(keymap-global-unset "C-z" t)
+(after! (evil evil-snipe)
 
-;;; Global Map
-(after! evil
+  (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
+  (keymap-global-unset "C-z" t)
+
+  ;; stop evil-snipe from hijacking `s`/`S`
+  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
+        :n "s" nil
+        :n "S" nil
+        :v "s" nil
+        :v "S" nil)
+
+  ;; Global Map
+  (map! :g "M-q" #'doom/escape) ;; no normal, nor insert, nor visual
   (evil-define-key '(normal insert visual) global-map
-    (kbd "C-b")        #'view-echo-area-messages
-    (kbd "M-s M-e")    #'my/select-symbol-at-point
-    (kbd "C-w")        #'kill-region
-    (kbd "M-y")        #'yank
-    (kbd "C-S-z")      #'undo-fu-only-redo
-    (kbd "C-z")        #'undo-fu-only-undo
+
     (kbd "M-p")        #'lsp-ui-doc-toggle
     (kbd "M-P")        #'lsp-signature-toggle-full-docs
     (kbd "M-<f12>")    #'my/toggle-between-header-and-source
     (kbd "<f12>")      #'lsp-find-definition
-    (kbd "M-s M-s")    #'save-buffer
-    (kbd "C-x C-s")    #'save-buffer
-    (kbd "C-S-s")      #'save-all-c-h-buffers
+    (kbd "<f9>")       #'treemacs
+
     (kbd "M-,")        #'better-jumper-jump-backward
     (kbd "M-.")        #'better-jumper-jump-forward
     (kbd "M-9")        #'my/jump-matching-paren
-    (kbd "M-q")        #'doom/escape
-    (kbd "<f9>")       #'treemacs
+
+    (kbd "C-b")        #'view-echo-area-messages
+
+    (kbd "C-S-z")      #'undo-fu-only-redo
+    (kbd "C-z")        #'undo-fu-only-undo
+
+    (kbd "M-q")        #'evil-escape
+
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
     (kbd "<S-mouse-1>")      #'my/select-to-click
@@ -37,50 +46,141 @@
     (kbd "M-r")        #'projectile-find-references
     (kbd "M-R")        #'consult-ripgrep
     (kbd "M-'")        #'consult-imenu
-    (kbd "M-i")        #'previous-line
-    (kbd "M-k")        #'next-line
-    (kbd "M-j")        #'backward-char
-    (kbd "M-l")        #'forward-char
-    (kbd "M-h")        (lambda () (interactive))
-    (kbd "M-e")        #'execute-extended-command)
-)
+    (kbd "M-e")        #'execute-extended-command
+    )
 
-(after! evil
+  ;;; Original bindings for normal state(* denotes prefix)
+  ;; q : q-  record/play macro (q{register})
+  ;; w  : move forward to next word begin
+  ;; e  : move forward to next word end
+  ;; r  : replace single character under cursor
+  ;; t  : snipe 1 char
+  ;; y  : y-  yank (copy) motion/operator
+  ;; u  : undo
+  ;; i  : switch to insert mode
+  ;; o  : insert new line below and enter insert mode
+  ;; p  : paste after cursor
+  ;; a  : append after cursor
+  ;; s  : snipe 2 char
+  ;; d  : d-  delete motion/operator
+  ;; f  : move forward to {char}
+  ;; g* : g-  “goto” / various extended motions
+  ;; h  : move left
+  ;; j  : move down
+  ;; k  : move up
+  ;; l  : move right
+  ;;                                 ;  : repeat last f/t/F/T motion
+  ;; z* : z-  folding / scrolling / view adjustment commands
+  ;; x  : delete character under cursor
+  ;; c* : c-  change (delete + insert)
+  ;; v  : visual mode
+  ;; b  : move backward to word begin
+  ;; n  : repeat last search (next)
+  ;; m* : m-  mark position
+  ;; ,  : repeat last f/t/F/T in opposite direction
+  ;; .  : repeat last change
+  ;; /  : search forward
+
+  ;;; Reset Normal State Map: Available Keys
+  ;; lower-case + unshifted symbols
+  (dolist (k '("q"     "e" "r" "t"
+               "a"         "f" "g"                 ";"
+               "z" "x" "c" "v" "b" "n" "m" "," "." "/"))
+    (define-key evil-normal-state-map (kbd k) (lambda () (interactive))))
+  (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I"     "P"
+               "A" "S" "D" "F" "G"     "J" "K" "L"
+               "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?"))
+    (define-key evil-normal-state-map (kbd k) (lambda () (interactive))))
+
+  ;;; Unavailable keys
+  ;; "w" window move prefix
+  ;; "y" evil-yank
+  ;; "p" evil-paste-after
+  ;; "s" prefix. siehe unten.
+  ;; "d" keep evil-delete. it's useful.
+  ;; "h" ?
+  ;; "i" #'previous-line
+  ;; "k" #'next-line
+  ;; "j" #'backward-char
+  ;; "l" #'forward-char
+  ;; ";"
+  ;; "u" #'smart-beginning-of-line
+  ;; "o" #'move-end-of-line
+  ;; "b" #'evil-open-below
+  ;;
+  ;; "O" relevant to "o" move-end-of-line. otherwise it opens a new line
+  ;; "H" ?
+  ;; ":"
+
   ;;; Normal State: navigate, edit structure, execute commands
   (map! :map evil-normal-state-map
+
+        "b" #'evil-open-below
+
+        ;; Basic Navigation
+        "i" #'previous-line
+        "k" #'next-line
+        "j" #'backward-char
+        "l" #'forward-char
+        "M-j" #'backward-char ;; works well combined with SHIFT
+        "M-l" #'forward-char
+        "M-m" #'c-beginning-of-defun
+        "u" #'smart-beginning-of-line
+        "o" #'move-end-of-line
+        "M-i" #'evil-insert
+
         ;; Tabs Navigation
-        "8" #'centaur-tabs-backward
-        "9" #'centaur-tabs-forward
-        "*" #'centaur-tabs-move-current-tab-to-left
-        "(" #'centaur-tabs-move-current-tab-to-right
+        "h" #'centaur-tabs-backward
+        ";" #'centaur-tabs-forward ;; shift
+        "H" #'centaur-tabs-move-current-tab-to-left
+        ":" #'centaur-tabs-move-current-tab-to-right ;; shift
 
-        (:prefix ("K" . "Kill…")
-                 "f" #'kill-buffer
-                 "w" #'+workspace/kill)
+        "M-k" #'kill-buffer
+        (:prefix ("s" . "switch/save/select") ;;
+                 "e" #'my/select-symbol-at-point
+                 "s" #'my/save-and-escape
+                 "f" #'+vertico/switch-workspace-buffer
+                 "p" #'+workspace/switch-to ;; project
+                  )
 
-        ;; switch to file
-        "M-s M-f" #'+vertico/switch-workspace-buffer ;; needed for vterm
-        "M-s M-j" #'evil-window-left ;; switching windows
-        "M-s M-l" #'evil-window-right
-        "M-s M-i" #'evil-window-up
-        "M-s M-k" #'evil-window-down
+        (:prefix ("w" . "window")
+                 "j" #'evil-window-left ;; switching windows
+                 "l" #'evil-window-right
+                 "i" #'evil-window-up
+                 "k" #'evil-window-down
+                 )
 
         ;; dap
-        "<f3>" #'dap-ui-locals
-        "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
-        "<f5>" #'dap-debug
-        "<f6>" #'my/dap-debugger-setting
-        "<f7>" #'my/dap-debug-close
-        "M-v"  #'dap-eval
-        "M-b"  #'dap-breakpoint-add
-        "M-B"  #'dap-breakpoint-delete
-        "M-n"  #'dap-next
-        "M-m"  #'dap-continue
+        ;; "<f3>" #'dap-ui-locals
+        ;; "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
+        ;; "<f5>" #'dap-debug
+        ;; "<f6>" #'my/dap-debugger-setting
+        ;; "<f7>" #'my/dap-debug-close
+        ;; ""  #'dap-eval
+        ;; ""  #'dap-breakpoint-add
+        ;; ""  #'dap-breakpoint-delete
+        ;; ""  #'dap-continue
+        ;; ""  #'dap-next
         ;;; Normal Mode ends here
         )
 
   ;;; Insert State
   (map! :map evil-insert-state-map
+
+        "M-q" #'my/insert-escape-and-clear
+        "M-s M-e" #'my/select-symbol-at-point
+
+        ;; Copy and Paste
+        "C-w" #'kill-region
+        "M-y" #'yank
+
+        ;; Navigation
+        "M-i" #'previous-line
+        "M-k" #'next-line
+        "M-j" #'backward-char
+        "M-l" #'forward-char
+        "M-h" #'c-beginning-of-defun
+
         ;; Prefix M- but same
         "M-RET"     #'newline-and-indent            ;; same as ENTER
         "M-<next>"  #'scroll-up-command             ;; same as PgDn.
@@ -93,7 +193,11 @@
 
   ;;; Visual State
   (map! :map evil-visual-state-map
-
+        ;; Navigation
+        "M-i" #'previous-line
+        "M-k" #'next-line
+        "M-j" #'backward-char
+        "M-l" #'forward-char
         )
 
   ;;; Emacs State
@@ -101,13 +205,15 @@
         "C-a" #'evil-exit-emacs-state
         )
 
-  )
+)
 
 (after! (evil cc-mode)
   (map! :map c-mode-base-map
         :ni "C-d" #'consult-lsp-diagnostics
         :ni "C-h k" #'describe-key))  ;; optional
 
+(after! (evil help-mode)
+  (define-key help-mode-map (kbd "<normal-state> i") #'previous-line))
 
 ;;; Vertico candidate navigation
 (after! vertico
@@ -121,7 +227,7 @@
   (define-key vertico-map (kbd "M-u") #'smart-beginning-of-line) ; or move-beginning-of-line
   (define-key vertico-map (kbd "M-o") #'move-end-of-line)
   ;; quit M-q
-  (define-key vertico-map (kbd "M-q") #'doom/escape))
+  (define-key vertico-map (kbd "M-q") #'evil-escape))
 
 
 (provide 'init-keybinds)
