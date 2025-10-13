@@ -56,6 +56,9 @@
 (package! claude-code-ide
   :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
 (package! toc-org)
+(package! better-jumper :disable t)
+
+
 ;; use default: No nerd-icons, nor all-the-icons.
 (package! treemacs-nerd-icons :disable t)
 (package! treemacs-all-the-icons :disable t)

@@ -15,7 +15,9 @@
         :v "S" nil)
 
   ;; Global Map
-  (map! :g "M-q" #'doom/escape) ;; no normal, nor insert, nor visual
+  (map! :g "M-q" #'doom/escape
+        )
+
   (evil-define-key '(normal insert visual) global-map
 
     (kbd "M-p")        #'lsp-ui-doc-toggle
@@ -23,9 +25,8 @@
     (kbd "M-<f12>")    #'my/toggle-between-header-and-source
     (kbd "<f12>")      #'lsp-find-definition
     (kbd "<f9>")       #'treemacs
-
-    (kbd "M-,")        #'better-jumper-jump-backward
-    (kbd "M-.")        #'better-jumper-jump-forward
+    (kbd "M-,")        #'evil-jump-backward
+    (kbd "M-.")        #'evil-jump-forward
     (kbd "M-9")        #'my/jump-matching-paren
 
     (kbd "C-b")        #'view-echo-area-messages
@@ -33,7 +34,7 @@
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
 
-    (kbd "M-q")        #'evil-escape
+    ;;(kbd "M-q")        #'evil-escape
 
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
@@ -83,59 +84,66 @@
 
   ;;; Reset Normal State Map: Available Keys
   ;; lower-case + unshifted symbols
-  (dolist (k '("q"     "e" "r" "t"
-               "a"         "f" "g"                 ";"
-               "z" "x" "c" "v" "b" "n" "m" "," "." "/"))
+  (dolist (k '("q" "w" "e" "r" "t"
+               "a" "s"     "f"                     ";"
+                   "x" "c" "v"     "n" "m" "," "." "/"))
     (define-key evil-normal-state-map (kbd k) (lambda () (interactive))))
   (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I"     "P"
-               "A" "S" "D" "F" "G"     "J" "K" "L"
+               "A" "S" "D" "F"         "J" "K" "L" ":"
                "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?"))
     (define-key evil-normal-state-map (kbd k) (lambda () (interactive))))
 
-  ;;; Unavailable keys
-  ;; "w" window move prefix
-  ;; "y" evil-yank
-  ;; "p" evil-paste-after
-  ;; "s" prefix. siehe unten.
-  ;; "d" keep evil-delete. it's useful.
-  ;; "h" ?
+  ;;; Unavailable keys without M
   ;; "i" #'previous-line
   ;; "k" #'next-line
   ;; "j" #'backward-char
   ;; "l" #'forward-char
-  ;; ";"
   ;; "u" #'smart-beginning-of-line
   ;; "o" #'move-end-of-line
+  ;; "g" #'centaur-tabs-backward
+  ;; "h" #'centaur-tabs-forward ;; shift
+  ;; "G" #'centaur-tabs-move-current-tab-to-left
+  ;; "H" #'centaur-tabs-move-current-tab-to-right ;; shift
+  ;; "z" #'undo-fu-only-undo
+
   ;; "b" #'evil-open-below
-  ;;
+  ;; "y" evil-yank
+  ;; "p" evil-paste-after
+  ;; "d" keep evil-delete. it's useful.
   ;; "O" relevant to "o" move-end-of-line. otherwise it opens a new line
-  ;; "H" ?
-  ;; ":"
 
   ;;; Normal State: navigate, edit structure, execute commands
   (map! :map evil-normal-state-map
 
-        "b" #'evil-open-below
+        ;; Some of them after key requires Navigation with M-.
+        ;; This quite slows down.
+        ;; e.g. if M- in insert? M- in normal?
 
         ;; Basic Navigation
         "i" #'previous-line
         "k" #'next-line
         "j" #'backward-char
         "l" #'forward-char
-        "M-j" #'backward-char ;; works well combined with SHIFT
-        "M-l" #'forward-char
-        "M-m" #'c-beginning-of-defun
         "u" #'smart-beginning-of-line
         "o" #'move-end-of-line
+        "M-j" #'backward-char ;; works well combined with SHIFT
+        "M-l" #'forward-char
+        "M-h" nil
+        "M-s M-j" #'evil-window-left
+
+        ;; functions with M-
+        "M-m" #'c-beginning-of-defun
         "M-i" #'evil-insert
+        "M-k" #'kill-buffer
+        "M-q" #'evil-escape
 
         ;; Tabs Navigation
         "h" #'centaur-tabs-backward
-        ";" #'centaur-tabs-forward ;; shift
+        "g" #'centaur-tabs-forward ;; shift
         "H" #'centaur-tabs-move-current-tab-to-left
-        ":" #'centaur-tabs-move-current-tab-to-right ;; shift
+        "G" #'centaur-tabs-move-current-tab-to-right ;; shift
 
-        "M-k" #'kill-buffer
+        "z" #'undo-fu-only-undo
         (:prefix ("s" . "switch/save/select") ;;
                  "e" #'my/select-symbol-at-point
                  "s" #'my/save-and-escape
@@ -149,6 +157,9 @@
                  "i" #'evil-window-up
                  "k" #'evil-window-down
                  )
+
+        ;; enter inserst state
+        "b" #'evil-open-below
 
         ;; dap
         ;; "<f3>" #'dap-ui-locals

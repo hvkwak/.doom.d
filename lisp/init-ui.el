@@ -11,7 +11,7 @@
 
 (custom-set-faces
   '(hl-line ((t (:background "#3e4451" :underline nil))))
-  ;; '(cursor ((t (:background "green")))) ;; change cursor background to green.
+  ;;'(cursor ((t (:background "green")))) ;; change cursor background to green.
   '(region ((t (:background "#4671d5" :foreground "#ffffff"))))  ; Region selection
   '(centaur-tabs-selected ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
   '(centaur-tabs-selected-modified ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
@@ -25,7 +25,7 @@
 
 ;; Different cursor appearance for Evil modes using evil's cursor system
 (after! evil
-  (setq evil-normal-state-cursor   '(box "#d0d0d0")
+  (setq ;;evil-normal-state-cursor   '(box "#d0d0d0")
         evil-insert-state-cursor   '(bar "green")
         evil-visual-state-cursor   '(box "#c3e88d")
         evil-replace-state-cursor  '(hbar "orange")

@@ -57,6 +57,7 @@
           (consult-line sym))
       (consult-line))))
 
+
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.
   :general

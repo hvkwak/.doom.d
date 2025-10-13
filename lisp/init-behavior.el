@@ -121,45 +121,47 @@ Assumes project layout with `src/` and `include/` at the root."
       (evil-define-key 'insert vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t))))
   ))
 
-;;; Better-jumper integration - adds jump points before navigation commands
+
+;;; Make Evil's jump list work with Consult jumps (consult-line, ripgrep, etc.)
+(with-eval-after-load 'consult
+  (defun my/consult-push-evil-jump (&rest _)
+    (when (bound-and-true-p evil-mode)
+      (evil-set-jump)))              ;; record current point in evil's jumplist
+  ;; Prefer official hook (no spam from live preview)
+  (add-hook 'consult-before-jump-hook #'my/consult-push-evil-jump)
+
+  ;; Fallback for older Consult builds
+  (dolist (fn '(consult--jump consult--goto-location))
+    (when (fboundp fn)
+      (advice-add fn :around
+                  (lambda (orig &rest args)
+                    (my/consult-push-evil-jump)
+                    (apply orig args))))))
+
 ;; One reusable advice fn
-(defun my/bj-before (&rest _)
+(defun my/evil-set-jump-before (&rest _)
   (when (called-interactively-p 'interactive)
-    (better-jumper-set-jump)))
+    (evil-set-jump)))
 
 ;; Built-ins are always present
-(advice-add 'beginning-of-buffer :before #'my/bj-before)
-(advice-add 'end-of-buffer       :before #'my/bj-before)
+(advice-add 'beginning-of-buffer :before #'my/evil-set-jump-before)
+(advice-add 'end-of-buffer       :before #'my/evil-set-jump-before)
 
 ;; cc-mode defun motions live in cc-cmds
 (with-eval-after-load 'cc-cmds
-  (advice-add 'c-beginning-of-defun :before #'my/bj-before)
-  (advice-add 'c-end-of-defun       :before #'my/bj-before)) ;; optional but nice
+  (advice-add 'c-beginning-of-defun :before #'my/evil-set-jump-before)
+  (advice-add 'c-end-of-defun       :before #'my/evil-set-jump-before)) ;; optional but nice
 
 ;; LSP/Xref jumps (cover both LSP and generic xref)
 (with-eval-after-load 'lsp-mode
-  (advice-add 'lsp-find-definition   :before #'my/bj-before)
-  (advice-add 'lsp-find-declaration  :before #'my/bj-before)
-  (advice-add 'lsp-find-references   :before #'my/bj-before))
+  (advice-add 'lsp-find-definition   :before #'my/evil-set-jump-before)
+  (advice-add 'lsp-find-declaration  :before #'my/evil-set-jump-before)
+  (advice-add 'lsp-find-references   :before #'my/evil-set-jump-before))
 
 (with-eval-after-load 'xref
-  (advice-add 'xref-find-definitions      :before #'my/bj-before)
-  (advice-add 'xref-find-references       :before #'my/bj-before)
-  (advice-add 'xref-find-apropos          :before #'my/bj-before))
-
-
-;;; add jump points when using consult-line or consult-ripgrip
-;;; the following two are together.
-;; Make Consult-confirmed jumps integrate with better-jumper
-(defun my/better-jumper-before-consult-jump (orig-fn &rest args)
-  "Record a jump with better-jumper just before Consult performs a real jump."
-  (better-jumper-set-jump)
-  (apply orig-fn args))
-;; Consult uses these internal functions when you confirm a candidate.
-;; We advise them so previews don't spam the jump list, only confirmed jumps do.
-(dolist (fn '(consult--jump consult--goto-location))
-  (when (fboundp fn)
-    (advice-add fn :around #'my/better-jumper-before-consult-jump)))
+  (advice-add 'xref-find-definitions      :before #'my/evil-set-jump-before)
+  (advice-add 'xref-find-references       :before #'my/evil-set-jump-before)
+  (advice-add 'xref-find-apropos          :before #'my/evil-set-jump-before))
 
 
 (defun my/select-symbol-at-point ()
@@ -174,14 +176,6 @@ The region will deactivate automatically once you move the cursor."
       (message "No symbol at point."))
   )
 )
-
-;; (defun my-next-3-lines ()
-;;   (interactive)
-;;   (dotimes (_ 3) (next-line 1)))
-
-;; (defun my-previous-3-lines ()
-;;   (interactive)
-;;   (dotimes (_ 3) (previous-line 1)))
 
 (after! flycheck
   (global-flycheck-mode -1)
@@ -266,7 +260,7 @@ If point is on an opening, go forward. If on a closing, go backward."
   (run-at-time 0 nil
                (lambda ()
                  (when (use-region-p) (deactivate-mark))
-                 )))
+                 (when (evil-insert-state-p) (evil-exit)))))
 
 
 (provide 'init-behavior)
