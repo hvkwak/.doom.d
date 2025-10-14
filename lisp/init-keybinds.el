@@ -1,33 +1,34 @@
 ;;; init-keybinds.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
-
 (after! (evil evil-snipe)
-
   (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
   (keymap-global-unset "C-z" t)
 
   ;; stop evil-snipe from hijacking `s`/`S`
   (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
+        :n "f" nil
+        :n "F" nil
         :n "s" nil
         :n "S" nil
         :v "s" nil
-        :v "S" nil)
+        :v "S" nil
+        :v "f" nil
+        :v "F" nil)
 
-  ;; Global Map
-  (map! :g "M-q" #'doom/escape
-        )
+  ;; Global Map doom escape.
+  (map! :g "M-q" #'doom/escape)
 
   (map! :leader
       (:prefix ("k" . "kill")
        ;; search & jumps
        :desc "kill buffer"             "k" #'kill-buffer
        :desc "kill frame"              "f" #'delete-frame
-       :desc "kill workspace(project)" "p" #'+workspace/kill
-       ))
+       :desc "kill workspace(project)" "p" #'+workspace/kill))
 
   (evil-define-key '(normal insert visual) global-map
 
+    (kbd "M-m")        #'c-beginning-of-defun
     (kbd "M-p")        #'lsp-ui-doc-toggle
     (kbd "M-P")        #'lsp-signature-toggle-full-docs
     (kbd "M-<f12>")    #'my/toggle-between-header-and-source
@@ -36,17 +37,12 @@
     (kbd "M-,")        #'evil-jump-backward
     (kbd "M-.")        #'evil-jump-forward
     (kbd "M-9")        #'my/jump-matching-paren
-
     (kbd "C-b")        #'view-echo-area-messages
-
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
-
-    ;; M-s for select/save/switch
     (kbd "M-s M-e")    #'my/select-symbol-at-point
     (kbd "M-s M-s")    #'my/save-and-escape
     (kbd "M-s M-p")    #'+workspace/switch-to ;; project
-
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
     (kbd "<S-mouse-1>")      #'my/select-to-click
@@ -96,7 +92,7 @@
   ;;; Reset Normal State Map: Available Keys
   ;; lower-case + unshifted symbols
   (dolist (k '("q" "w" "e" "r" "t"
-               "a" "s"     "f"                     ";"
+               "a"         "f"                     ";"
                    "x" "c" "v"     "n" "m" "," "." "/"))
     (define-key evil-normal-state-map (kbd k) nil))
   (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I"     "P"
@@ -116,8 +112,8 @@
   ;; "G" #'centaur-tabs-move-current-tab-to-left
   ;; "H" #'centaur-tabs-move-current-tab-to-right ;; shift
   ;; "z" #'undo-fu-only-undo
+  ;; "s" prefix
 
-  ;; "b" #'evil-open-below
   ;; "y" evil-yank
   ;; "p" evil-paste-after
   ;; "d" keep evil-delete. it's useful.
@@ -126,52 +122,31 @@
   ;;; Normal State: navigate, edit structure, execute commands
   (map! :map evil-normal-state-map
 
-        ;; Some of them after key requires Navigation with M-.
-        ;; This quite slows down.
-        ;; e.g. if M- in insert? M- in normal?
-
-        ;; Basic Navigation
         "i" #'previous-line
         "k" #'next-line
         "j" #'backward-char
         "l" #'forward-char
         "u" #'smart-beginning-of-line
         "o" #'move-end-of-line
+        "M-i" #'evil-insert
         "M-j" #'backward-char ;; works well combined with SHIFT
         "M-l" #'forward-char
         "M-k" #'next-line
         "M-h" nil
-        "M-s M-j" #'evil-window-left
-
-        ;; functions with M-
-        "M-m" #'c-beginning-of-defun
-        "M-i" #'evil-insert
         "M-q" #'evil-escape
-
-        ;; Tabs Navigation
+        "M-s M-j" #'evil-window-left
+        "M-s M-l" #'evil-window-right
+        "M-s M-i" #'evil-window-up
+        "M-s M-k" #'evil-window-down
         "h" #'centaur-tabs-backward
-        "g" #'centaur-tabs-forward ;; shift
+        "g" #'centaur-tabs-forward
         "H" #'centaur-tabs-move-current-tab-to-left
-        "G" #'centaur-tabs-move-current-tab-to-right ;; shift
-
+        "G" #'centaur-tabs-move-current-tab-to-right
         "z" #'undo-fu-only-undo
         (:prefix ("s" . "save/snipe/switch") ;;
                  "s"   #'my/save-and-escape
                  "n"   #'evil-snipe-s
-                 "f"   #'+vertico/switch-workspace-buffer
-                 ;; "w"   #'+vertico/switch-to ;; M-1 works better
-                  )
-
-        (:prefix ("w" . "window")
-                 "j" #'evil-window-left ;; switching windows
-                 "l" #'evil-window-right
-                 "i" #'evil-window-up
-                 "k" #'evil-window-down
-                 )
-
-        ;; enter inserst state
-        ;; "b" #'evil-open-below
-
+                 "f"   #'+vertico/switch-workspace-buffer)
         ;; dap
         ;; "<f3>" #'dap-ui-locals
         ;; "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
@@ -188,45 +163,30 @@
 
   ;;; Insert State
   (map! :map evil-insert-state-map
-
-        "M-q" #'my/insert-escape-and-clear
-
-        ;; Copy and Paste
-        "C-w" #'kill-region
-        "M-y" #'yank
-
-        ;; Navigation
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
         "M-l" #'forward-char
-        "M-h" #'c-beginning-of-defun
-
-        ;; Prefix M- but same
+        "M-q" #'my/insert-escape-and-clear
+        "C-w" #'kill-region
+        "M-y" #'yank
         "M-RET"     #'newline-and-indent            ;; same as ENTER
         "M-<next>"  #'scroll-up-command             ;; same as PgDn.
         "M-<prior>" #'scroll-down-command           ;; same as PgUp
         "M-DEL"     #'delete-char                   ;; Delete
         "M-;"       (lambda () (interactive) (insert ";"));; same as ;
-        "M-/"       #'comment-dwim ;; insert comment
-        ;;; Insert Mode ends here
-        )
+        "M-/"       #'comment-dwim)
 
   ;;; Visual State
   (map! :map evil-visual-state-map
-        ;; Navigation
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
-        "M-l" #'forward-char
-        )
+        "M-l" #'forward-char)
 
   ;;; Emacs State
   (map! :map evil-emacs-state-map
-        "C-a" #'evil-exit-emacs-state
-        )
-
-)
+        "C-a" #'evil-exit-emacs-state))
 
 (after! (evil cc-mode)
   (map! :map c-mode-base-map
