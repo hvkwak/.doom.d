@@ -72,5 +72,6 @@
 (load! "lisp/init-llm")
 (load! "lisp/init-behavior")
 (load! "lisp/init-keybinds")
-(load! "lisp/init-keybinds-org-md")
+(load! "lisp/init-keybinds-org")
+(load! "lisp/init-keybinds-md")
 (load! "lisp/init-keybinds-treemacs")

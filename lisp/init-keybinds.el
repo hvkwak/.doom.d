@@ -18,6 +18,14 @@
   (map! :g "M-q" #'doom/escape
         )
 
+  (map! :leader
+      (:prefix ("k" . "kill")
+       ;; search & jumps
+       :desc "kill buffer"             "k" #'kill-buffer
+       :desc "kill frame"              "f" #'delete-frame
+       :desc "kill workspace(project)" "p" #'+workspace/kill
+       ))
+
   (evil-define-key '(normal insert visual) global-map
 
     (kbd "M-p")        #'lsp-ui-doc-toggle
@@ -34,7 +42,10 @@
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
 
-    ;;(kbd "M-q")        #'evil-escape
+    ;; M-s for select/save/switch
+    (kbd "M-s M-e")    #'my/select-symbol-at-point
+    (kbd "M-s M-s")    #'my/save-and-escape
+    (kbd "M-s M-p")    #'+workspace/switch-to ;; project
 
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
@@ -87,11 +98,11 @@
   (dolist (k '("q" "w" "e" "r" "t"
                "a" "s"     "f"                     ";"
                    "x" "c" "v"     "n" "m" "," "." "/"))
-    (define-key evil-normal-state-map (kbd k) (lambda () (interactive))))
+    (define-key evil-normal-state-map (kbd k) nil))
   (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I"     "P"
                "A" "S" "D" "F"         "J" "K" "L" ":"
                "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?"))
-    (define-key evil-normal-state-map (kbd k) (lambda () (interactive))))
+    (define-key evil-normal-state-map (kbd k) nil))
 
   ;;; Unavailable keys without M
   ;; "i" #'previous-line
@@ -128,13 +139,13 @@
         "o" #'move-end-of-line
         "M-j" #'backward-char ;; works well combined with SHIFT
         "M-l" #'forward-char
+        "M-k" #'next-line
         "M-h" nil
         "M-s M-j" #'evil-window-left
 
         ;; functions with M-
         "M-m" #'c-beginning-of-defun
         "M-i" #'evil-insert
-        "M-k" #'kill-buffer
         "M-q" #'evil-escape
 
         ;; Tabs Navigation
@@ -144,11 +155,11 @@
         "G" #'centaur-tabs-move-current-tab-to-right ;; shift
 
         "z" #'undo-fu-only-undo
-        (:prefix ("s" . "switch/save/select") ;;
-                 "e" #'my/select-symbol-at-point
-                 "s" #'my/save-and-escape
-                 "f" #'+vertico/switch-workspace-buffer
-                 "p" #'+workspace/switch-to ;; project
+        (:prefix ("s" . "save/snipe/switch") ;;
+                 "s"   #'my/save-and-escape
+                 "n"   #'evil-snipe-s
+                 "f"   #'+vertico/switch-workspace-buffer
+                 ;; "w"   #'+vertico/switch-to ;; M-1 works better
                   )
 
         (:prefix ("w" . "window")
@@ -159,7 +170,7 @@
                  )
 
         ;; enter inserst state
-        "b" #'evil-open-below
+        ;; "b" #'evil-open-below
 
         ;; dap
         ;; "<f3>" #'dap-ui-locals
@@ -179,7 +190,6 @@
   (map! :map evil-insert-state-map
 
         "M-q" #'my/insert-escape-and-clear
-        "M-s M-e" #'my/select-symbol-at-point
 
         ;; Copy and Paste
         "C-w" #'kill-region
