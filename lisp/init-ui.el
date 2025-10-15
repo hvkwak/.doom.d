@@ -11,6 +11,7 @@
 
 (custom-set-faces
   '(hl-line ((t (:background "#3e4451" :underline nil))))
+  '(header-line ((t (:foreground "#7ec0ee" :weight bold))))
   ;;'(cursor ((t (:background "green")))) ;; change cursor background to green.
   '(region ((t (:background "#4671d5" :foreground "#ffffff"))))  ; Region selection
   '(centaur-tabs-selected ((t (:background "#2b2b2b" :foreground "#c3e88d" :weight bold))))
@@ -76,8 +77,6 @@
     )
   )
 )
-
-
 
 
 (provide 'init-ui)

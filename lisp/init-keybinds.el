@@ -21,14 +21,19 @@
 
   (map! :leader
       (:prefix ("k" . "kill")
-       ;; search & jumps
        :desc "kill buffer"             "k" #'kill-buffer
        :desc "kill frame"              "f" #'delete-frame
-       :desc "kill workspace(project)" "p" #'+workspace/kill))
+       :desc "kill workspace(project)" "p" #'+workspace/kill)
+
+      (:prefix ("s" . "switch")
+        :desc "window left" "j" #'evil-window-left
+        :desc "window right" "l" #'evil-window-right
+        :desc "window up" "i" #'evil-window-up
+        :desc "window down" "k" #'evil-window-down))
 
   (evil-define-key '(normal insert visual) global-map
 
-    (kbd "M-m")        #'c-beginning-of-defun
+    (kbd "M-m")        #'my-defun-sig-header-mode
     (kbd "M-p")        #'lsp-ui-doc-toggle
     (kbd "M-P")        #'lsp-signature-toggle-full-docs
     (kbd "M-<f12>")    #'my/toggle-between-header-and-source
@@ -40,9 +45,9 @@
     (kbd "C-b")        #'view-echo-area-messages
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
+    (kbd "M-s M-f")    #'+vertico/switch-workspace-buffer
     (kbd "M-s M-e")    #'my/select-symbol-at-point
     (kbd "M-s M-s")    #'my/save-and-escape
-    (kbd "M-s M-p")    #'+workspace/switch-to ;; project
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
     (kbd "<S-mouse-1>")      #'my/select-to-click
@@ -93,7 +98,7 @@
   ;; lower-case + unshifted symbols
   (dolist (k '("q" "w" "e" "r" "t"
                "a"         "f"                     ";"
-                   "x" "c" "v"     "n" "m" "," "." "/"))
+                   "x" "c" "v" "b" "n" "m" "," "." "/"))
     (define-key evil-normal-state-map (kbd k) nil))
   (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I"     "P"
                "A" "S" "D" "F"         "J" "K" "L" ":"
@@ -134,19 +139,16 @@
         "M-k" #'next-line
         "M-h" nil
         "M-q" #'evil-escape
-        "M-s M-j" #'evil-window-left
-        "M-s M-l" #'evil-window-right
-        "M-s M-i" #'evil-window-up
-        "M-s M-k" #'evil-window-down
+        "M-y" #'yank
         "h" #'centaur-tabs-backward
         "g" #'centaur-tabs-forward
         "H" #'centaur-tabs-move-current-tab-to-left
         "G" #'centaur-tabs-move-current-tab-to-right
         "z" #'undo-fu-only-undo
         (:prefix ("s" . "save/snipe/switch") ;;
-                 "s"   #'my/save-and-escape
-                 "n"   #'evil-snipe-s
-                 "f"   #'+vertico/switch-workspace-buffer)
+                 :desc "Save" "s"   #'my/save-and-escape
+                 :desc "sNipe-s" "n"   #'evil-snipe-s
+                 :desc "switch buFfer" "f"   #'+vertico/switch-workspace-buffer)
         ;; dap
         ;; "<f3>" #'dap-ui-locals
         ;; "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close

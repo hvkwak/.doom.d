@@ -44,16 +44,21 @@
     (substring-no-properties s)))
 
 (defun my/consult-line-dwim ()
-  "Run `consult-line` with the symbol at point prefilled and selected. If
-     there is no symbol at point, just run `consult-line` normally."
+  "Run `consult-line` with symbol at point prefilled and selected.
+Typing replaces the selection; empty symbol -> plain `consult-line`."
   (interactive)
-  (let ((sym (my/thing-at-point)))
+  (let* ((sym (my/thing-at-point))
+         (sym (and sym (> (length sym) 0) sym))) ; avoid subr-x
     (if sym
         (minibuffer-with-setup-hook
             (lambda ()
-              (goto-char (minibuffer-prompt-end))
-              (set-mark (point-max))
+              ;; Enable the *mode*, not just the var
+              (delete-selection-mode 1)
+              ;; Select the whole initial input so typing replaces it
+              (set-mark (minibuffer-prompt-end))
+              (goto-char (point-max))
               (activate-mark))
+          ;; Prefer passing INITIAL to consult instead of inserting ourselves
           (consult-line sym))
       (consult-line))))
 

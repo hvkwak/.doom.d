@@ -146,6 +146,7 @@ Assumes project layout with `src/` and `include/` at the root."
 ;; Built-ins are always present
 (advice-add 'beginning-of-buffer :before #'my/evil-set-jump-before)
 (advice-add 'end-of-buffer       :before #'my/evil-set-jump-before)
+(advice-add 'beginning-of-defun :before #'my/evil-set-jump-before)
 
 ;; cc-mode defun motions live in cc-cmds
 (with-eval-after-load 'cc-cmds
@@ -261,6 +262,46 @@ If point is on an opening, go forward. If on a closing, go backward."
                (lambda ()
                  (when (use-region-p) (deactivate-mark))
                  (when (evil-insert-state-p) (evil-exit)))))
+
+
+;;; Toggle defun-signature
+(defun my/defun-sig ()
+  "One-line signature if point is inside the defun, else nil."
+  (save-excursion
+    (save-restriction
+      (condition-case nil
+          (progn
+            (narrow-to-defun)
+            (goto-char (point-min))
+            (while (and (re-search-forward "(" (line-end-position 60) t)
+                        (let ((s (syntax-ppss))) (or (nth 3 s) (nth 4 s)))))
+            (when (match-beginning 0)
+              (goto-char (match-beginning 0))
+              (when-let ((end (ignore-errors (scan-lists (point) 1 0))))
+                (let* ((raw (buffer-substring-no-properties (point-min) end))
+                       (flat (replace-regexp-in-string "[ \t\n]+" " " raw)))
+                  (replace-regexp-in-string "\\`[ \t]+\\|[ \t]+\\'" "" flat)))))
+        (error nil)))))
+
+;; header-line toggle machinery ---------------------------------------
+(defvar-local my/defun-sig--prev-header nil)
+
+(defun my/defun-sig--header ()
+  "Compute header content when the mode is enabled."
+  (or (my/defun-sig) my/defun-sig--prev-header))
+
+(define-minor-mode my-defun-sig-header-mode
+  "Show current defun signature in the header line (buffer-local)."
+  :lighter " SigHdr"
+  (if my-defun-sig-header-mode
+      (progn
+        ;; remember whatever was there before
+        (setq my/defun-sig--prev-header header-line-format)
+        ;; install dynamic header
+        (setq-local header-line-format '(:eval (my/defun-sig--header))))
+    ;; restore previous header when disabling
+    (setq-local header-line-format my/defun-sig--prev-header)
+    (kill-local-variable 'my/defun-sig--prev-header)))
 
 
 (provide 'init-behavior)

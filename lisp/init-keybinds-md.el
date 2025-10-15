@@ -1,11 +1,36 @@
 ;;; lisp/init-keybinds-md.el -*- lexical-binding: t; -*-
 
 (after! evil-markdown
+  (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
+  (keymap-global-unset "C-z" t)
+
+  ;; stop evil-snipe from hijacking `s`/`S`
+  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
+        :n "f" nil
+        :n "F" nil
+        :n "s" nil
+        :n "S" nil
+        :v "s" nil
+        :v "S" nil
+        :v "f" nil
+        :v "F" nil)
+
+  (dolist (k '("q" "w" "e" "r" "t"
+               "a"         "f"                     ";"
+                   "x" "c" "v" "b" "n" "m" "," "." "/"))
+    (define-key evil-markdown-mode-map (kbd k) nil))
+
   (map! :leader
         (:prefix ("k" . "kill")
          :desc "kill buffer"             "k" #'kill-buffer
          :desc "kill frame"              "f" #'delete-frame
-         :desc "kill workspace(project)" "p" #'+workspace/kill))
+         :desc "kill workspace(project)" "p" #'+workspace/kill)
+
+        (:prefix ("s" . "switch")
+        :desc "window left" "j" #'evil-window-left
+        :desc "window right" "l" #'evil-window-right
+        :desc "window up" "i" #'evil-window-up
+        :desc "window down" "k" #'evil-window-down))
 
   (evil-define-key '(normal insert visual) evil-markdown-mode-map
 
@@ -60,9 +85,9 @@
         :n "G" #'centaur-tabs-move-current-tab-to-right
         :n "z" #'undo-fu-only-undo
         (:prefix ("s" . "save/snipe/switch")
-                 "s"   #'my/save-and-escape
-                 "n"   #'evil-snipe-s
-                 "f"   #'+vertico/switch-workspace-buffer)
+                 :n "s"   #'my/save-and-escape
+                 :n "n"   #'evil-snipe-s
+                 :n "f"   #'+vertico/switch-workspace-buffer)
         :i "M-q" #'my/insert-escape-and-clear
         :i "C-w" #'kill-region
         :i "M-y" #'yank
