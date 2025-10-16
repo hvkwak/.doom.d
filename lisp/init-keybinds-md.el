@@ -1,9 +1,6 @@
 ;;; lisp/init-keybinds-md.el -*- lexical-binding: t; -*-
 
-(after! evil-markdown
-  (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
-  (keymap-global-unset "C-z" t)
-
+(after! evil-snipe
   ;; stop evil-snipe from hijacking `s`/`S`
   (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
         :n "f" nil
@@ -14,6 +11,11 @@
         :v "S" nil
         :v "f" nil
         :v "F" nil)
+  )
+
+(after! evil-markdown
+  (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
+  (keymap-global-unset "C-z" t)
 
   (dolist (k '("q" "w" "e" "r" "t"
                "a"         "f"                     ";"
@@ -41,7 +43,7 @@
     (kbd "C-b")        #'view-echo-area-messages
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
-    (kbd "M-s M-e")    #'my/select-symbol-at-point
+    (kbd "M-s M-j")    #'my/select-symbol-at-point
     (kbd "M-s M-s")    #'my/save-and-escape
     (kbd "M-s M-p")    #'+workspace/switch-to
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
@@ -74,10 +76,6 @@
         :niv "M-K" nil
         :niv "M-J" nil
         :niv "M-L" nil
-        :n "M-s M-j" #'evil-window-left
-        :n "M-s M-l" #'evil-window-right
-        :n "M-s M-i" #'evil-window-up
-        :n "M-s M-k" #'evil-window-down
         :n "M-q" #'evil-escape
         :n "h" #'centaur-tabs-backward
         :n "g" #'centaur-tabs-forward
@@ -90,7 +88,7 @@
                  :n "f"   #'+vertico/switch-workspace-buffer)
         :i "M-q" #'my/insert-escape-and-clear
         :i "C-w" #'kill-region
-        :i "M-y" #'yank
+        :i "M-p" #'yank
         :iv "M-i" #'previous-line
         :iv "M-k" #'next-line
         :iv "M-j" #'backward-char

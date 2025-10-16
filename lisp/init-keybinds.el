@@ -1,10 +1,8 @@
 ;;; init-keybinds.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
-(after! (evil evil-snipe)
-  (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
-  (keymap-global-unset "C-z" t)
-
+;;;
+(after! evil-snipe
   ;; stop evil-snipe from hijacking `s`/`S`
   (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
         :n "f" nil
@@ -15,27 +13,33 @@
         :v "S" nil
         :v "f" nil
         :v "F" nil)
+  )
+
+(after! evil
+  (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
+  (keymap-global-unset "C-z" t)
 
   ;; Global Map doom escape.
   (map! :g "M-q" #'doom/escape)
 
   (map! :leader
       (:prefix ("k" . "kill")
-       :desc "kill buffer"             "k" #'kill-buffer
+       :desc "kill current buffer"     "k" #'kill-current-buffer
        :desc "kill frame"              "f" #'delete-frame
        :desc "kill workspace(project)" "p" #'+workspace/kill)
 
-      (:prefix ("s" . "switch")
-        :desc "window left" "j" #'evil-window-left
+      (:prefix ("s" . "SPC switch")
+        :desc "window left"  "j" #'evil-window-left
         :desc "window right" "l" #'evil-window-right
-        :desc "window up" "i" #'evil-window-up
-        :desc "window down" "k" #'evil-window-down))
+        :desc "window up"    "i" #'evil-window-up
+        :desc "window down"  "k" #'evil-window-down))
 
   (evil-define-key '(normal insert visual) global-map
 
     (kbd "M-m")        #'my-defun-sig-header-mode
-    (kbd "M-p")        #'lsp-ui-doc-toggle
-    (kbd "M-P")        #'lsp-signature-toggle-full-docs
+    (kbd "M-M")        #'beginning-of-defun
+    (kbd "M-a")        #'lsp-ui-doc-toggle
+    (kbd "M-A")        #'lsp-signature-toggle-full-docs
     (kbd "M-<f12>")    #'my/toggle-between-header-and-source
     (kbd "<f12>")      #'lsp-find-definition
     (kbd "<f9>")       #'treemacs
@@ -45,8 +49,11 @@
     (kbd "C-b")        #'view-echo-area-messages
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
+    ;; "s" in evil normal mode
     (kbd "M-s M-f")    #'+vertico/switch-workspace-buffer
-    (kbd "M-s M-e")    #'my/select-symbol-at-point
+    (kbd "M-s M-j")    #'my/select-symbol-at-point
+    (kbd "M-s M-k")    #'mark-defun
+    (kbd "M-s M-l")    #'mark-page
     (kbd "M-s M-s")    #'my/save-and-escape
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
@@ -100,7 +107,7 @@
                "a"         "f"                     ";"
                    "x" "c" "v" "b" "n" "m" "," "." "/"))
     (define-key evil-normal-state-map (kbd k) nil))
-  (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I"     "P"
+  (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I" "O" "P"
                "A" "S" "D" "F"         "J" "K" "L" ":"
                "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?"))
     (define-key evil-normal-state-map (kbd k) nil))
@@ -122,7 +129,7 @@
   ;; "y" evil-yank
   ;; "p" evil-paste-after
   ;; "d" keep evil-delete. it's useful.
-  ;; "O" relevant to "o" move-end-of-line. otherwise it opens a new line
+  ;; "O" should be on the list due to "O" opens a new line
 
   ;;; Normal State: navigate, edit structure, execute commands
   (map! :map evil-normal-state-map
@@ -139,16 +146,19 @@
         "M-k" #'next-line
         "M-h" nil
         "M-q" #'evil-escape
-        "M-y" #'yank
         "h" #'centaur-tabs-backward
         "g" #'centaur-tabs-forward
         "H" #'centaur-tabs-move-current-tab-to-left
         "G" #'centaur-tabs-move-current-tab-to-right
         "z" #'undo-fu-only-undo
-        (:prefix ("s" . "save/snipe/switch") ;;
-                 :desc "Save" "s"   #'my/save-and-escape
-                 :desc "sNipe-s" "n"   #'evil-snipe-s
-                 :desc "switch buFfer" "f"   #'+vertico/switch-workspace-buffer)
+        (:prefix ("s" . "save/snipe/switch/select") ;;
+                 :desc "save"          "s"   #'my/save-and-escape
+                 :desc "snipe-s"       "n"   #'evil-snipe-s
+                 :desc "switch buffer" "f"   #'+vertico/switch-workspace-buffer
+                 :desc "mark word"     "j"   #'my/select-symbol-at-point
+                 :desc "mark defun(daf, yaf)"    "k"   #'mark-defun
+                 :desc "mark page"     "l"   #'mark-page
+                 )
         ;; dap
         ;; "<f3>" #'dap-ui-locals
         ;; "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
@@ -165,13 +175,18 @@
 
   ;;; Insert State
   (map! :map evil-insert-state-map
+        "S-<left>" nil
+        "S-<right>" nil
+        "S-<down>" nil
+        "S-<up>" nil
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
         "M-l" #'forward-char
         "M-q" #'my/insert-escape-and-clear
-        "C-w" #'kill-region
-        "M-y" #'yank
+        "M-Y" #'kill-region
+        "M-y" #'kill-ring-save
+        "M-p" #'yank
         "M-RET"     #'newline-and-indent            ;; same as ENTER
         "M-<next>"  #'scroll-up-command             ;; same as PgDn.
         "M-<prior>" #'scroll-down-command           ;; same as PgUp
@@ -190,13 +205,16 @@
   (map! :map evil-emacs-state-map
         "C-a" #'evil-exit-emacs-state))
 
-(after! (evil cc-mode)
+(after! cc-mode
   (map! :map c-mode-base-map
         :ni "C-d" #'consult-lsp-diagnostics
         :ni "C-h k" #'describe-key))  ;; optional
 
-(after! (evil help-mode)
-  (define-key help-mode-map (kbd "<normal-state> i") #'previous-line))
+
+
+(after! help-mode
+  (map! :map help-mode-map
+       :n "i" #'previous-line))
 
 ;;; Vertico candidate navigation
 (after! vertico
