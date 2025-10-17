@@ -1,8 +1,9 @@
 ;;; init-keybinds.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
-;;;
+
 (after! evil-snipe
+
   ;; stop evil-snipe from hijacking `s`/`S`
   (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
         :n "f" nil
@@ -26,13 +27,7 @@
       (:prefix ("k" . "kill")
        :desc "kill current buffer"     "k" #'kill-current-buffer
        :desc "kill frame"              "f" #'delete-frame
-       :desc "kill workspace(project)" "p" #'+workspace/kill)
-
-      (:prefix ("s" . "SPC switch")
-        :desc "window left"  "j" #'evil-window-left
-        :desc "window right" "l" #'evil-window-right
-        :desc "window up"    "i" #'evil-window-up
-        :desc "window down"  "k" #'evil-window-down))
+       :desc "kill workspace(project)" "p" #'+workspace/kill))
 
   (evil-define-key '(normal insert visual) global-map
 
@@ -49,11 +44,14 @@
     (kbd "C-b")        #'view-echo-area-messages
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
-    ;; "s" in evil normal mode
-    (kbd "M-s M-f")    #'+vertico/switch-workspace-buffer
-    (kbd "M-s M-j")    #'my/select-symbol-at-point
-    (kbd "M-s M-k")    #'mark-defun
-    (kbd "M-s M-l")    #'mark-page
+    (kbd "M-s M-j")    #'evil-window-left
+    (kbd "M-s M-l")    #'evil-window-right
+    (kbd "M-s M-i")    #'evil-window-up
+    (kbd "M-s M-k")    #'evil-window-down
+    (kbd "M-s M-e")    #'my/select-symbol-at-point
+    (kbd "M-s M-d")    #'mark-defun
+    (kbd "M-s M-p")    #'mark-page
+    (kbd "M-s M-f")    #'+vertico/switch-workspace-buffer ;; "s" in evil normal mode
     (kbd "M-s M-s")    #'my/save-and-escape
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
@@ -144,21 +142,30 @@
         "M-j" #'backward-char ;; works well combined with SHIFT
         "M-l" #'forward-char
         "M-k" #'next-line
-        "M-h" nil
+        "M-h" (lambda () (interactive))
+        "p" (lambda () (interactive))
+        "w"  #'evil-yank
+        "y" #'evil-paste-after
+        "M-w" #'evil-yank
+        "M-y" #'evil-paste-after
         "M-q" #'evil-escape
         "h" #'centaur-tabs-backward
         "g" #'centaur-tabs-forward
         "H" #'centaur-tabs-move-current-tab-to-left
         "G" #'centaur-tabs-move-current-tab-to-right
         "z" #'undo-fu-only-undo
-        (:prefix ("s" . "save/snipe/switch/select") ;;
-                 :desc "save"          "s"   #'my/save-and-escape
-                 :desc "snipe-s"       "n"   #'evil-snipe-s
-                 :desc "switch buffer" "f"   #'+vertico/switch-workspace-buffer
-                 :desc "mark word"     "j"   #'my/select-symbol-at-point
-                 :desc "mark defun(daf, yaf)"    "k"   #'mark-defun
-                 :desc "mark page"     "l"   #'mark-page
-                 )
+        (:prefix ("s" . "save/snipe/switch") ;;
+                 :desc "save"                   "s"   #'my/save-and-escape
+                 :desc "switch buffer"          "f"   #'+vertico/switch-workspace-buffer
+                 :desc "snipe-s"                "n"   #'evil-snipe-s
+                 :desc "select word"            "e"   #'my/select-symbol-at-point
+                 :desc "select fun(daf, yaf)"   "d"   #'mark-defun
+                 :desc "select page"            "p"   #'mark-page
+                 :desc "widnow left"            "j" #'evil-window-left
+                 :desc "widnow right"           "l" #'evil-window-right
+                 :desc "widnow up"              "i" #'evil-window-up
+                 :desc "widnow down"            "k" #'evil-window-down
+                )
         ;; dap
         ;; "<f3>" #'dap-ui-locals
         ;; "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
@@ -175,6 +182,7 @@
 
   ;;; Insert State
   (map! :map evil-insert-state-map
+        "M-y" #'yank
         "S-<left>" nil
         "S-<right>" nil
         "S-<down>" nil
@@ -184,9 +192,6 @@
         "M-j" #'backward-char
         "M-l" #'forward-char
         "M-q" #'my/insert-escape-and-clear
-        "M-Y" #'kill-region
-        "M-y" #'kill-ring-save
-        "M-p" #'yank
         "M-RET"     #'newline-and-indent            ;; same as ENTER
         "M-<next>"  #'scroll-up-command             ;; same as PgDn.
         "M-<prior>" #'scroll-down-command           ;; same as PgUp
@@ -196,6 +201,10 @@
 
   ;;; Visual State
   (map! :map evil-visual-state-map
+        "i"   (lambda () (interactive))
+        "k"   (lambda () (interactive))
+        "j"   (lambda () (interactive))
+        "l"   (lambda () (interactive))
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
@@ -215,6 +224,13 @@
 (after! help-mode
   (map! :map help-mode-map
        :n "i" #'previous-line))
+
+(after! image-mode
+  (map! :map image-mode-map
+        :n "g" #'centaur-tabs-forward
+        :n "G" #'centaur-tabs-move-current-tab-to-right
+        )
+  )
 
 ;;; Vertico candidate navigation
 (after! vertico

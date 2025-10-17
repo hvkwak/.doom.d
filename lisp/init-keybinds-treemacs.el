@@ -2,6 +2,10 @@
 (after! (treemacs evil-collection)
   ;; Works even if treemacs-evil isn't present
   (map! :map treemacs-mode-map
+        "M-s M-j"    #'evil-window-left
+        "M-s M-l"    #'evil-window-right
+        "M-s M-i"    #'evil-window-up
+        "M-s M-k"    #'evil-window-down
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
@@ -14,6 +18,10 @@
   ;; If treemacs-evil is enabled, bind there too
   (when (boundp 'evil-treemacs-state-map)
     (map! :map evil-treemacs-state-map
+        "M-s M-j"    #'evil-window-left
+        "M-s M-l"    #'evil-window-right
+        "M-s M-i"    #'evil-window-up
+        "M-s M-k"    #'evil-window-down
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
