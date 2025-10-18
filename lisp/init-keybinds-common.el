@@ -84,17 +84,17 @@
         :n "z"  #'undo-fu-only-undo
 
         ;; Local “s” prefix (save/snipe/switch/select)
-        (:prefix ("s" . "save/snipe/switch/select") :n
-         "s" #'my/save-and-escape
-         "f" #'+vertico/switch-workspace-buffer
-         "n" #'evil-snipe-s
-         "e" #'my/select-symbol-at-point
-         "d" #'mark-defun
-         "p" #'mark-page
-         "j" #'evil-window-left
-         "l" #'evil-window-right
-         "i" #'evil-window-up
-         "k" #'evil-window-down)
+        (:prefix ("s" . "save/snipe/switch/select")
+         :n "s" #'my/save-and-escape
+         :n "f" #'+vertico/switch-workspace-buffer
+         :n "n" #'evil-snipe-s
+         :n "e" #'my/select-symbol-at-point
+         :n "d" #'mark-defun
+         :n "p" #'mark-page
+         :n "j" #'evil-window-left
+         :n "l" #'evil-window-right
+         :n "i" #'evil-window-up
+         :n "k" #'evil-window-down)
 
         ;; Insert state (keep typing-friendly)
         :i "M-y"       #'yank

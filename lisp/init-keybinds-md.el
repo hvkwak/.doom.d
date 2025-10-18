@@ -5,10 +5,16 @@
 
 (require 'init-keybinds-common)
 
+
+
 (after! evil-markdown
   (evil-define-key '(normal insert visual) evil-markdown-mode-map
 
-    (kbd "M-I") nil ;; Unbind org-mode's Meta-Shift keys that conflict with our layout
+    (kbd "M-i") nil
+    (kbd "M-k") nil
+    (kbd "M-j") nil
+    (kbd "M-l") nil
+    (kbd "M-I") nil
     (kbd "M-K") nil
     (kbd "M-J") nil
     (kbd "M-L") nil)
