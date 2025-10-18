@@ -182,6 +182,17 @@ The region will deactivate automatically once you move the cursor."
   (global-flycheck-mode -1)
   (setq flycheck-global-modes nil))
 
+
+(defun my/evil-select-inside-paren ()
+  "Visual-select text inside the nearest (), {}, or []."
+  (interactive)
+  (require 'evil)
+  (condition-case nil
+      (let* ((open (save-excursion (cond ((looking-at "\\s(\\|\\s{\\|\\s[") (point)) ((looking-back "\\s)\\|\\s}\\|\\s]" 1) (backward-sexp 1) (point)) (t (backward-up-list 1) (point))))) (close (save-excursion (goto-char open) (forward-sexp 1) (point))))
+        (evil-visual-select (1+ open) (1- close) 'exclusive))
+    (error (user-error "No surrounding list found")))
+  )
+
 (defun my/jump-matching-paren ()
   "Jump to the matching parenthesis/bracket/brace.
 If point is on an opening, go forward. If on a closing, go backward."

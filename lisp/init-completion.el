@@ -62,6 +62,22 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
           (consult-line sym))
       (consult-line))))
 
+(defun my/consult-ripgrep-dwim ()
+  "Run `consult-ripgrep` with symbol-at-point prefilled & selected.
+If there is no symbol, run plain `consult-ripgrep`."
+  (interactive)
+  (let* ((sym (my/thing-at-point))
+         (sym (and sym (> (length sym) 0) sym)))
+    (if sym
+        (minibuffer-with-setup-hook
+            (lambda ()
+              (delete-selection-mode 1)
+              (goto-char (minibuffer-prompt-end))
+              (set-mark (point-max))
+              (activate-mark))
+          ;; NIL dir -> let Consult choose the project root
+          (consult-ripgrep nil sym))
+      (consult-ripgrep))))
 
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.

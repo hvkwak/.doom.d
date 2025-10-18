@@ -21,7 +21,11 @@
   (keymap-global-unset "C-z" t)
 
   ;; Global Map doom escape.
-  (map! :g "M-q" #'doom/escape)
+  (map! :g "M-q" #'doom/escape
+        :g "M-y" #'yank)
+
+  (map! :leader
+        "k" nil)
 
   (map! :leader
       (:prefix ("k" . "kill")
@@ -30,7 +34,8 @@
        :desc "kill workspace(project)" "p" #'+workspace/kill))
 
   (evil-define-key '(normal insert visual) global-map
-
+    (kbd "M-SPC")      (lambda () (interactive)) ;; no more cycle-spacing
+    (kbd "C-w")        #'kill-region
     (kbd "M-m")        #'my-defun-sig-header-mode
     (kbd "M-M")        #'beginning-of-defun
     (kbd "M-a")        #'lsp-ui-doc-toggle
@@ -40,6 +45,7 @@
     (kbd "<f9>")       #'treemacs
     (kbd "M-,")        #'evil-jump-backward
     (kbd "M-.")        #'evil-jump-forward
+    (kbd "M-8")        #'my/evil-select-inside-paren
     (kbd "M-9")        #'my/jump-matching-paren
     (kbd "C-b")        #'view-echo-area-messages
     (kbd "C-S-z")      #'undo-fu-only-redo
@@ -61,8 +67,7 @@
     (kbd "M-o")        #'move-end-of-line
     (kbd "C-f")        #'my/consult-line-dwim
     (kbd "M-f")        #'my/consult-line-dwim
-    (kbd "M-r")        #'projectile-find-references
-    (kbd "M-R")        #'consult-ripgrep
+    (kbd "M-r")        #'my/consult-ripgrep-dwim
     (kbd "M-'")        #'consult-imenu
     (kbd "M-e")        #'execute-extended-command
     )
@@ -154,12 +159,12 @@
         "H" #'centaur-tabs-move-current-tab-to-left
         "G" #'centaur-tabs-move-current-tab-to-right
         "z" #'undo-fu-only-undo
-        (:prefix ("s" . "save/snipe/switch") ;;
+        (:prefix ("s" . "save/snipe/switch/select") ;;
                  :desc "save"                   "s"   #'my/save-and-escape
                  :desc "switch buffer"          "f"   #'+vertico/switch-workspace-buffer
                  :desc "snipe-s"                "n"   #'evil-snipe-s
                  :desc "select word"            "e"   #'my/select-symbol-at-point
-                 :desc "select fun(daf, yaf)"   "d"   #'mark-defun
+                 :desc "select defun(daf, yaf)"   "d"   #'mark-defun
                  :desc "select page"            "p"   #'mark-page
                  :desc "widnow left"            "j" #'evil-window-left
                  :desc "widnow right"           "l" #'evil-window-right
@@ -201,10 +206,12 @@
 
   ;;; Visual State
   (map! :map evil-visual-state-map
-        "i"   (lambda () (interactive))
-        "k"   (lambda () (interactive))
-        "j"   (lambda () (interactive))
-        "l"   (lambda () (interactive))
+        "w"   #'evil-yank
+        "y"   #'evil-paste-after
+        "i" #'previous-line
+        "k" #'next-line
+        "j" #'backward-char
+        "l" #'forward-char
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
