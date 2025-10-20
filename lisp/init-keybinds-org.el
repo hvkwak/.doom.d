@@ -26,7 +26,13 @@
   ;;               (evil-define-key 'insert mode-map (kbd key) nil))))
 
   (evil-define-key '(normal insert visual) evil-org-mode-map
-
+    (kbd "M-o") nil
+    (kbd "M-h") nil
+    (kbd "M-r") nil
+    (kbd "M-i") nil
+    (kbd "M-k") nil
+    (kbd "M-j") nil
+    (kbd "M-l") nil
     (kbd "M-I") nil ;; Unbind org-mode's Meta-Shift keys that conflict with our layout
     (kbd "M-K") nil
     (kbd "M-J") nil

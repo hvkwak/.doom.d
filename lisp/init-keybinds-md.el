@@ -9,7 +9,7 @@
 
 (after! evil-markdown
   (evil-define-key '(normal insert visual) evil-markdown-mode-map
-
+    (kbd "M-r") nil ;; cancels browse-url-of-file
     (kbd "M-i") nil
     (kbd "M-k") nil
     (kbd "M-j") nil

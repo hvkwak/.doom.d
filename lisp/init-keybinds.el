@@ -8,12 +8,14 @@
   (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
         :n "f" nil
         :n "F" nil
+        :v "f" nil
+        :v "F" nil
+        :m "f" nil
+        :m "F" nil
         :n "s" nil
         :n "S" nil
         :v "s" nil
-        :v "S" nil
-        :v "f" nil
-        :v "F" nil)
+        :v "S" nil)
   )
 
 (after! evil
@@ -31,7 +33,7 @@
       (:prefix ("k" . "kill")
        :desc "kill current buffer"     "k" #'kill-current-buffer
        :desc "kill frame"              "f" #'delete-frame
-       :desc "kill workspace(project)" "p" #'+workspace/kill))
+       :desc "kill current workspace(project)" "p" #'+workspace/kill))
 
   (evil-define-key '(normal insert visual) global-map
     (kbd "M-SPC")      (lambda () (interactive)) ;; no more cycle-spacing
@@ -110,6 +112,10 @@
                "a"         "f"                     ";"
                    "x" "c" "v" "b" "n" "m" "," "." "/"))
     (define-key evil-normal-state-map (kbd k) nil))
+  (dolist (k '("q" "w" "e" "r" "t"
+               "a"         "f"                     ";"
+               "x" "c" "v" "b" "n" "m" "," "." "/"))
+    (define-key evil-motion-state-map (kbd k) nil))
   (dolist (k '("Q" "W" "E" "R" "T" "Y" "U" "I" "O" "P"
                "A" "S" "D" "F"         "J" "K" "L" ":"
                "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?"))
@@ -172,16 +178,16 @@
                  :desc "widnow down"            "k" #'evil-window-down
                 )
         ;; dap
-        ;; "<f3>" #'dap-ui-locals
-        ;; "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
-        ;; "<f5>" #'dap-debug
-        ;; "<f6>" #'my/dap-debugger-setting
-        ;; "<f7>" #'my/dap-debug-close
-        ;; ""  #'dap-eval
-        ;; ""  #'dap-breakpoint-add
-        ;; ""  #'dap-breakpoint-delete
-        ;; ""  #'dap-continue
-        ;; ""  #'dap-next
+        "<f3>" #'dap-ui-locals
+        "<f4>" #'dap-ui-breakpoints ;; was once eval-buffer-and-close
+        "<f5>" #'dap-debug
+        "<f6>" #'my/dap-debugger-setting
+        "<f7>" #'my/dap-debug-close
+        "v"  #'dap-eval
+        "b"  #'dap-breakpoint-add
+        "B"  #'dap-breakpoint-delete
+        "c"  #'dap-continue
+        "n"  #'dap-next
         ;;; Normal Mode ends here
         )
 

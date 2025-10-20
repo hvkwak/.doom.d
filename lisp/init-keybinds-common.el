@@ -138,8 +138,8 @@
   (map! :leader
         (:prefix ("k" . "kill")
          :desc "kill current buffer"     "k" #'kill-current-buffer
-         :desc "kill frame"              "f" #'delete-frame
-         :desc "kill workspace(project)" "p" #'+workspace/kill))
+         :desc "kill current frame"              "f" #'delete-frame
+         :desc "kill current workspace(project)" "p" #'+workspace/kill))
 
   ;; Enable common keybindings (with highest priority via emulation-mode-map-alists)
   (add-hook mode-hook #'my-common-keys-mode))
