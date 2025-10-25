@@ -5,14 +5,14 @@
 ;; Disable evil-snipe keybindings that conflict with our custom bindings
 (after! evil-snipe
   (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
-        :n "f" nil
-        :n "F" nil
-        :n "s" nil
-        :n "S" nil
-        :v "s" nil
-        :v "S" nil
-        :v "f" nil
-        :v "F" nil))
+        :nvm "f" nil
+        :nvm "F" nil
+        :nvm "s" nil
+        :nvm "S" nil
+        :nvm "s" nil
+        :nvm "S" nil
+        :nvm "f" nil
+        :nvm "F" nil))
 
 (defvar my-common-keys-mode-map (make-sparse-keymap)
   "Keymap for `my-writing-keys-mode'.")
@@ -43,9 +43,9 @@
         "M-s M-i"    #'evil-window-up
         "M-s M-k"    #'evil-window-down
         "M-s M-e"    #'my/select-symbol-at-point
-        "M-s M-d"    #'mark-defun
+        "M-s M-f"    #'mark-defun
         "M-s M-p"    #'mark-page
-        "M-s M-f"    #'+vertico/switch-workspace-buffer
+        "M-s M-b"    #'+vertico/switch-workspace-buffer
         "M-s M-s"    #'my/save-and-escape
         "M-="        #'centaur-tabs-extract-window-to-new-frame
         "<S-down-mouse-1>" #'ignore
@@ -86,10 +86,10 @@
         ;; Local “s” prefix (save/snipe/switch/select)
         (:prefix ("s" . "save/snipe/switch/select")
          :n "s" #'my/save-and-escape
-         :n "f" #'+vertico/switch-workspace-buffer
+         :n "b" #'+vertico/switch-workspace-buffer
          :n "n" #'evil-snipe-s
          :n "e" #'my/select-symbol-at-point
-         :n "d" #'mark-defun
+         :n "f" #'mark-defun
          :n "p" #'mark-page
          :n "j" #'evil-window-left
          :n "l" #'evil-window-right
@@ -139,7 +139,7 @@
         (:prefix ("k" . "kill")
          :desc "kill current buffer"     "k" #'kill-current-buffer
          :desc "kill current frame"              "f" #'delete-frame
-         :desc "kill current workspace(project)" "p" #'+workspace/kill))
+         :desc "kill current workspace(project)" "w" #'+workspace/kill))
 
   ;; Enable common keybindings (with highest priority via emulation-mode-map-alists)
   (add-hook mode-hook #'my-common-keys-mode))

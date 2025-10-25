@@ -27,13 +27,14 @@
         :g "M-y" #'yank)
 
   (map! :leader
-        "k" nil)
+        "k" nil
+        )
 
   (map! :leader
       (:prefix ("k" . "kill")
-       :desc "kill current buffer"     "k" #'kill-current-buffer
-       :desc "kill frame"              "f" #'delete-frame
-       :desc "kill current workspace(project)" "p" #'+workspace/kill))
+       :desc "kill current buffer"             "k" #'kill-current-buffer
+       :desc "kill frame"                      "f" #'delete-frame
+       :desc "kill current workspace(project)" "w" #'+workspace/kill))
 
   (evil-define-key '(normal insert visual) global-map
     (kbd "M-SPC")      (lambda () (interactive)) ;; no more cycle-spacing
@@ -57,9 +58,9 @@
     (kbd "M-s M-i")    #'evil-window-up
     (kbd "M-s M-k")    #'evil-window-down
     (kbd "M-s M-e")    #'my/select-symbol-at-point
-    (kbd "M-s M-d")    #'mark-defun
+    (kbd "M-s M-f")    #'mark-defun ;; f for function
     (kbd "M-s M-p")    #'mark-page
-    (kbd "M-s M-f")    #'+vertico/switch-workspace-buffer ;; "s" in evil normal mode
+    (kbd "M-s M-b")    #'+vertico/switch-workspace-buffer ;; "s" in evil normal mode
     (kbd "M-s M-s")    #'my/save-and-escape
     (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
     (kbd "<S-down-mouse-1>") #'ignore
@@ -167,10 +168,10 @@
         "z" #'undo-fu-only-undo
         (:prefix ("s" . "save/snipe/switch/select") ;;
                  :desc "save"                   "s"   #'my/save-and-escape
-                 :desc "switch buffer"          "f"   #'+vertico/switch-workspace-buffer
+                 :desc "switch buffer"          "b"   #'+vertico/switch-workspace-buffer
                  :desc "snipe-s"                "n"   #'evil-snipe-s
                  :desc "select word"            "e"   #'my/select-symbol-at-point
-                 :desc "select defun(daf, yaf)"   "d"   #'mark-defun
+                 :desc "select fun(daf, yaf)"   "f"   #'mark-defun
                  :desc "select page"            "p"   #'mark-page
                  :desc "widnow left"            "j" #'evil-window-left
                  :desc "widnow right"           "l" #'evil-window-right
@@ -184,8 +185,8 @@
         "<f6>" #'my/dap-debugger-setting
         "<f7>" #'my/dap-debug-close
         "v"  #'dap-eval
-        "b"  #'dap-breakpoint-add
-        "B"  #'dap-breakpoint-delete
+        "bb"  #'dap-breakpoint-add
+        "bk"  #'dap-breakpoint-delete ;; k for kill
         "c"  #'dap-continue
         "n"  #'dap-next
         ;;; Normal Mode ends here

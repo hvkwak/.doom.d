@@ -4,19 +4,20 @@
 (use-package! dap-mode
   :defer t
   :init
-  ;; Auto configure no features.
   (setq dap-auto-configure-features '())
 
   :config
   (require 'dap-gdb)
+
+  ;; Debug template without arguments
   (dap-register-debug-template
-  "GDB::Run with arguments"
-  (list :type "gdb"
-        :request "launch"
-        :name "GDB::Run with arguments"
-        :arguments "0 0 0 0"
-        :target nil
-        :cwd nil))
+   "GDB::Run with arguments"
+   (list :type "gdb"
+         :request "launch"
+         :name "GDB::Run with arguments"
+         :arguments (lambda () (read-string "Program arguments: "))
+         :target nil
+         :cwd nil))
 )
 
 (defconst my/dap-debug-frame-name "Debugger Frame")

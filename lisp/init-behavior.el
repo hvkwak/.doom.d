@@ -110,9 +110,23 @@ Assumes project layout with `src/` and `include/` at the root."
 (after! vterm
   (set-popup-rule! "^\\*vterm\\*" :size 0.25 :vslot -4 :select t :quit t :ttl 0)
   (with-eval-after-load 'vterm
-    ;; (define-key vterm-mode-map (kbd "M-8") nil)
-    ;; (define-key vterm-mode-map (kbd "M-9") nil)
-    ;; (define-key vterm-mode-map (kbd "M-f") nil)
+    (define-key vterm-mode-map (kbd "M-i") #'previous-line)
+    (define-key vterm-mode-map (kbd "M-k") #'next-line)
+    (define-key vterm-mode-map (kbd "M-j") #'backward-char)
+    (define-key vterm-mode-map (kbd "M-l") #'forward-char)
+    (define-key vterm-mode-map (kbd "M-u") #'smart-beginning-of-line)
+    (define-key vterm-mode-map (kbd "M-o") #'move-end-of-line)
+    (define-key vterm-mode-map (kbd "M-U") nil)
+    (define-key vterm-mode-map (kbd "M-O") nil)
+    (define-key vterm-mode-map (kbd "M-K") nil)
+    (define-key vterm-mode-map (kbd "M-I") nil)
+    (define-key vterm-mode-map (kbd "M-1") #'+workspace/switch-to-0)
+    (define-key vterm-mode-map (kbd "M-2") #'+workspace/switch-to-1)
+    (define-key vterm-mode-map (kbd "M-3") #'+workspace/switch-to-2)
+    (define-key vterm-mode-map (kbd "M-4") #'+workspace/switch-to-3)
+    (define-key vterm-mode-map (kbd "M-w") #'evil-yank)
+    (define-key vterm-mode-map (kbd "M-y") #'evil-paste-after)
+
     ;; (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
     ;; (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer)
     ;; (define-key vterm-mode-map (kbd "M-f") #'+vertico/switch-workspace-buffer)
@@ -294,13 +308,11 @@ If point is on an opening, go forward. If on a closing, go backward."
                   (replace-regexp-in-string "\\`[ \t]+\\|[ \t]+\\'" "" flat)))))
         (error nil)))))
 
-;; header-line toggle machinery ---------------------------------------
+;; To show current defun signature in the header line ---------------------------------------
 (defvar-local my/defun-sig--prev-header nil)
-
 (defun my/defun-sig--header ()
   "Compute header content when the mode is enabled."
   (or (my/defun-sig) my/defun-sig--prev-header))
-
 (define-minor-mode my-defun-sig-header-mode
   "Show current defun signature in the header line (buffer-local)."
   :lighter " SigHdr"
@@ -313,6 +325,9 @@ If point is on an opening, go forward. If on a closing, go backward."
     ;; restore previous header when disabling
     (setq-local header-line-format my/defun-sig--prev-header)
     (kill-local-variable 'my/defun-sig--prev-header)))
+;; header-line toggle machinery ends here------------------------------
+
+(setq-default tab-width 2)
 
 
 (provide 'init-behavior)

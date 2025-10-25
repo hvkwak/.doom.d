@@ -62,8 +62,10 @@
 )
 
 (after! treemacs
-  ;; follow the current project root
-  (treemacs-project-follow-mode 1)
+
+  ;; follow the current project root - Disabled
+  ;; (treemacs-project-follow-mode 1)  ; Commented out - leave disabled by default
+
   ;; show indent guides
   (treemacs-indent-guide-mode 1)
 
