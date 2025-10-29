@@ -2,18 +2,6 @@
 ;;; Commentary: common keybinds for init-keybinds-md.el and init-keybinds-org.el
 ;;; Code:
 
-;; Disable evil-snipe keybindings that conflict with our custom bindings
-(after! evil-snipe
-  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
-        :nvm "f" nil
-        :nvm "F" nil
-        :nvm "s" nil
-        :nvm "S" nil
-        :nvm "s" nil
-        :nvm "S" nil
-        :nvm "f" nil
-        :nvm "F" nil))
-
 (defvar my-common-keys-mode-map (make-sparse-keymap)
   "Keymap for `my-writing-keys-mode'.")
 
@@ -143,5 +131,18 @@
 
   ;; Enable common keybindings (with highest priority via emulation-mode-map-alists)
   (add-hook mode-hook #'my-common-keys-mode))
+
+
+;; Disable evil-snipe keybindings that conflict with our custom bindings
+(after! evil-snipe
+  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
+        :nvm "f" nil
+        :nvm "F" nil
+        :nvm "s" nil
+        :nvm "S" nil
+        :nvm "s" nil
+        :nvm "S" nil
+        :nvm "f" nil
+        :nvm "F" nil))
 
 (provide 'init-keybinds-common)

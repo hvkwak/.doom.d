@@ -1,24 +1,21 @@
 ;;; init-dap-gdb.el --- dap-gdb configuration -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
-(use-package! dap-mode
-  :defer t
-  :init
-  (setq dap-auto-configure-features '())
 
-  :config
+(after! dap-mode
   (require 'dap-gdb)
+  (setq dap-auto-configure-features '())
 
   ;; Debug template without arguments
   (dap-register-debug-template
-   "GDB::Run with arguments"
+   "GDB::Run"
    (list :type "gdb"
          :request "launch"
          :name "GDB::Run with arguments"
-         :arguments (lambda () (read-string "Program arguments: "))
+         :arguments ""
          :target nil
          :cwd nil))
-)
+  )
 
 (defconst my/dap-debug-frame-name "Debugger Frame")
 
@@ -119,7 +116,7 @@
   ;; Delete GDB::Run buffers
   (dolist (buf (buffer-list))
     (let ((name (buffer-name buf)))
-      (when (and name (string-prefix-p "*GDB::Run" name))
+      (when (and name (string-prefix-p "*GDB" name))
         (kill-buffer buf))))
 
   ;; Delete LLDB buffers
@@ -129,6 +126,9 @@
         (kill-buffer buf))))
 )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; add to list: display buffer alist                                          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my/dap-ui--show-buffer (buf)
   "Show BUF according to defined rules."
   (when-let (win (display-buffer buf))
@@ -137,9 +137,6 @@
 )
 (advice-add 'dap-ui--show-buffer :override #'my/dap-ui--show-buffer)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; add to list: display buffer alist                                          ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'display-buffer-alist
              '("\\*dap-ui-locals\\*"
                (display-buffer-use-some-frame display-buffer-in-side-window)

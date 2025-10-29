@@ -25,6 +25,9 @@
         '("--query-driver=/usr/bin/g++,/usr/bin/gcc,/usr/bin/clang++,/usr/bin/clang"
           "--compile-commands-dir=."
           "--header-insertion=never" ;; to not automatically insert #include statements
+          "--background-index"
+          "--clang-tidy"
+          "--log=error"
           )))
 
 ;; This enables C-h in c-mode

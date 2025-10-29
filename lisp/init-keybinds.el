@@ -2,32 +2,16 @@
 ;;; Commentary:
 ;;; Code:
 
-(after! evil-snipe
-
-  ;; stop evil-snipe from hijacking `s`/`S`
-  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
-        :n "f" nil
-        :n "F" nil
-        :v "f" nil
-        :v "F" nil
-        :m "f" nil
-        :m "F" nil
-        :n "s" nil
-        :n "S" nil
-        :v "s" nil
-        :v "S" nil)
-  )
-
 (after! evil
   (keymap-global-set "C-h" help-map) ;; enables C-h everywhere, + combined with init-lsp.el
   (keymap-global-unset "C-z" t)
 
-  ;; Global Map doom escape.
+  ;;; Global Map doom escape.
   (map! :g "M-q" #'doom/escape
         :g "M-y" #'yank)
 
   (map! :leader
-        "k" nil
+        "k" nil ;;frees k for kill
         )
 
   (map! :leader
@@ -36,6 +20,7 @@
        :desc "kill frame"                      "f" #'delete-frame
        :desc "kill current workspace(project)" "w" #'+workspace/kill))
 
+  ;;; global-map for three modes
   (evil-define-key '(normal insert visual) global-map
     (kbd "M-SPC")      (lambda () (interactive)) ;; no more cycle-spacing
     (kbd "C-w")        #'kill-region
@@ -141,9 +126,8 @@
   ;; "d" keep evil-delete. it's useful.
   ;; "O" should be on the list due to "O" opens a new line
 
-  ;;; Normal State: navigate, edit structure, execute commands
+  ;;; Normal State
   (map! :map evil-normal-state-map
-
         "i" #'previous-line
         "k" #'next-line
         "j" #'backward-char
@@ -163,6 +147,7 @@
         "M-q" #'evil-escape
         "h" #'centaur-tabs-backward
         "g" #'centaur-tabs-forward
+        "M-h" #'centaur-tabs-backward ;; no M-g for forward
         "H" #'centaur-tabs-move-current-tab-to-left
         "G" #'centaur-tabs-move-current-tab-to-right
         "z" #'undo-fu-only-undo
@@ -189,11 +174,11 @@
         "bk"  #'dap-breakpoint-delete ;; k for kill
         "c"  #'dap-continue
         "n"  #'dap-next
-        ;;; Normal Mode ends here
         )
 
   ;;; Insert State
   (map! :map evil-insert-state-map
+        "C-SPC" #'set-mark-command
         "M-y" #'yank
         "S-<left>" nil
         "S-<right>" nil
@@ -226,7 +211,9 @@
 
   ;;; Emacs State
   (map! :map evil-emacs-state-map
-        "C-a" #'evil-exit-emacs-state))
+        "C-a" #'evil-exit-emacs-state)
+
+  )
 
 (after! cc-mode
   (map! :map c-mode-base-map
@@ -260,6 +247,19 @@
   ;; quit M-q
   (define-key vertico-map (kbd "M-q") #'evil-escape))
 
+(after! evil-snipe
+  ;; stop evil-snipe from hijacking `s`/`S`
+  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
+        :n "f" nil
+        :n "F" nil
+        :v "f" nil
+        :v "F" nil
+        :m "f" nil
+        :m "F" nil
+        :n "s" nil
+        :n "S" nil
+        :v "s" nil
+        :v "S" nil))
 
 (provide 'init-keybinds)
 ;;; init-keybinds.el ends here

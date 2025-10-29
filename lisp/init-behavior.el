@@ -178,7 +178,7 @@ Assumes project layout with `src/` and `include/` at the root."
   (advice-add 'xref-find-references       :before #'my/evil-set-jump-before)
   (advice-add 'xref-find-apropos          :before #'my/evil-set-jump-before))
 
-
+;;; Cursor behavior ----------------------------------------------------------------------------
 (defun my/select-symbol-at-point ()
   "Select the symbol (word with _ and letters) at point.
 The region will deactivate automatically once you move the cursor."
@@ -191,6 +191,14 @@ The region will deactivate automatically once you move the cursor."
       (message "No symbol at point."))
   )
 )
+
+;; Don't jump one char left when leaving Insert
+(setq evil-move-cursor-back nil)
+
+;; Let point sit *after* the last character (Emacs style)
+(setq evil-move-beyond-eol t)
+;;; Cursor behavior ends here----------------------------------------------------------------------
+
 
 (after! flycheck
   (global-flycheck-mode -1)
@@ -328,6 +336,7 @@ If point is on an opening, go forward. If on a closing, go backward."
 ;; header-line toggle machinery ends here------------------------------
 
 (setq-default tab-width 2)
+
 
 
 (provide 'init-behavior)

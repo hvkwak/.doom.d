@@ -10,6 +10,8 @@
   ;; ORG-MODE SPECIFIC KEYBINDINGS
   ;; Add org-specific bindings here (e.g., org-agenda, org-capture, etc.)
   (evil-define-key '(normal insert visual) evil-org-mode-map
+    (kbd "M-<down>") #'org-move-item-down
+    (kbd "M-<up>") #'org-move-item-up
     (kbd "C-h") nil ;; frees C-h for C-h help command
     (kbd "u")   nil
     (kbd "O")   nil

@@ -18,11 +18,9 @@
       '(consult--source-project-buffer)  ;; Show only project buffers
       )
   (setq consult-project-function #'projectile-project-root)
-
   (setq consult-ripgrep-args
         "rg --null --line-buffered --color=never --max-columns=1000 \
-        --path-separator / --smart-case --no-heading --line-number --no-ignore-vcs"
-        )
+        --path-separator / --smart-case --no-heading --with-filename --line-number")
 
   ;; filter out several unrelated buffers
   (setq consult-buffer-filter '("\\`\\*scratch\\*"
@@ -38,6 +36,39 @@
                                 "\\*compilation\\*<\\.emacs\\.d>"
                                 ))
   )
+
+
+(defun my/rg-goto-and-quit ()
+  "Jump to the search result, delete the rg window, and kill the rg buffer."
+  (interactive)
+  (let ((rg-buffer (current-buffer))
+        (rg-window (selected-window)))
+    (compile-goto-error)
+    (when (window-live-p rg-window)
+      (delete-window rg-window))
+    (when (buffer-live-p rg-buffer)
+      (kill-buffer rg-buffer))))
+
+(defun my/rg-quit-and-kill ()
+  "Delete the rg window and kill the rg buffer."
+  (interactive)
+  (let ((rg-buffer (current-buffer))
+        (rg-window (selected-window)))
+    (when (window-live-p rg-window)
+      (delete-window rg-window))
+    (when (buffer-live-p rg-buffer)
+      (kill-buffer rg-buffer))))
+
+(add-hook 'rg-mode-hook
+  (lambda ()
+    (switch-to-buffer-other-window (current-buffer))
+    (define-key compilation-mode-map       (kbd "RET") #'my/rg-goto-and-quit)
+    (define-key compilation-minor-mode-map (kbd "RET") #'my/rg-goto-and-quit)
+    (define-key compilation-button-map     (kbd "RET") #'my/rg-goto-and-quit)
+    (define-key compilation-mode-map       (kbd "q")   #'my/rg-quit-and-kill)
+    (define-key compilation-minor-mode-map (kbd "q")   #'my/rg-quit-and-kill)
+    (define-key compilation-button-map     (kbd "q")   #'my/rg-quit-and-kill)
+    ))
 
 (defun my/thing-at-point ()
   (when-let ((s (thing-at-point 'symbol t)))
@@ -62,22 +93,38 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
           (consult-line sym))
       (consult-line))))
 
-(defun my/consult-ripgrep-dwim ()
-  "Run `consult-ripgrep` with symbol-at-point prefilled & selected.
-If there is no symbol, run plain `consult-ripgrep`."
-  (interactive)
-  (let* ((sym (my/thing-at-point))
-         (sym (and sym (> (length sym) 0) sym)))
-    (if sym
-        (minibuffer-with-setup-hook
-            (lambda ()
-              (delete-selection-mode 1)
-              (goto-char (minibuffer-prompt-end))
-              (set-mark (point-max))
-              (activate-mark))
-          ;; NIL dir -> let Consult choose the project root
-          (consult-ripgrep nil sym))
-      (consult-ripgrep))))
+;; (defun my/git-super-project-root ()
+;;   "Find the topmost git repository root (super project if in submodule).
+;; Returns the directory containing the outermost .git directory."
+;;   (when-let* ((default-directory (or (projectile-project-root)
+;;                                      default-directory))
+;;               (current-root (locate-dominating-file default-directory ".git")))
+;;     (let ((super-root current-root)
+;;           (parent (file-name-directory (directory-file-name current-root))))
+;;       ;; Keep looking up for .git directories
+;;       (while (and parent
+;;                   (setq parent (locate-dominating-file parent ".git")))
+;;         (setq super-root parent)
+;;         (setq parent (file-name-directory (directory-file-name parent))))
+;;       super-root)))
+
+;; (defun my/consult-ripgrep-dwim ()
+;;   "Run `consult-ripgrep` with symbol-at-point prefilled & selected.
+;; If there is no symbol, run plain `consult-ripgrep`.
+;; Searches from the super project root (handles submodules correctly)."
+;;   (interactive)
+;;   (let* ((sym (my/thing-at-point))
+;;          (sym (and sym (> (length sym) 0) sym))
+;;          (search-root (my/git-super-project-root)))
+;;     (if sym
+;;         (minibuffer-with-setup-hook
+;;             (lambda ()
+;;               (delete-selection-mode 1)
+;;               (goto-char (minibuffer-prompt-end))
+;;               (set-mark (point-max))
+;;               (activate-mark))
+;;           (consult-ripgrep search-root sym))
+;;       (consult-ripgrep search-root))))
 
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.

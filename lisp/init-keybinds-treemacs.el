@@ -36,6 +36,5 @@
         "l" #'forward-char
         "h" nil)
         ))
-  )
 
 (provide 'init-keybinds-treemacs)

@@ -62,3 +62,7 @@
 ;; use default: No nerd-icons, nor all-the-icons.
 (package! treemacs-nerd-icons :disable t)
 (package! treemacs-all-the-icons :disable t)
+
+(package! vdiff)
+(package! vdiff-magit)
+(package! rg)
