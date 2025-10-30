@@ -3,7 +3,11 @@
 ;;; Code:
 
 (after! tramp
-  (setq tramp-verbose 3))
+  (setq tramp-default-method "ssh")
+  (setq tramp-verbose 1)
+  (setq tramp-use-ssh-controlmaster-options nil)
+  (setq tramp-connection-timeout 10)  ; Initial connection timeout
+  )
 
 ;; define new general--unalias to reduce wrong type argument listp error. this will reduce some waiting time.
 (defun general--unalias (thing &optional state-p)

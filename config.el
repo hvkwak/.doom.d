@@ -60,19 +60,25 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-;; Whenever you reconfigure a package, make sure to wrap your config in an
+;; Load all custom configuration modules
 (load! "lisp/init-ui")
+(load! "lisp/init-editor")
+(load! "lisp/init-functions")
 (load! "lisp/init-org")
 (load! "lisp/init-completion")
 (load! "lisp/init-lsp")
+(load! "lisp/init-dap")
 (load! "lisp/init-dap-gdb")
 (load! "lisp/init-dap-lldb")
 (load! "lisp/init-projectile")
 (load! "lisp/init-tramp")
 (load! "lisp/init-llm")
 (load! "lisp/init-behavior")
+
+;; Load keybindings
 (load! "lisp/init-keybinds")
+(load! "lisp/init-keybinds-modes")
 (load! "lisp/init-keybinds-common")
-(load! "lisp/init-keybinds-org")
 (load! "lisp/init-keybinds-md")
+(load! "lisp/init-keybinds-org")
 (load! "lisp/init-keybinds-treemacs")
