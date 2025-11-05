@@ -255,5 +255,18 @@ If point is on an opening, go forward. If on a closing, go backward."
   (advice-add 'xref-find-apropos          :before #'my/evil-set-jump-before))
 
 
+
+(defun insert-doxygen-function-comment ()
+  "Insert a Doxygen-style comment block above a function."
+  (interactive)
+  (beginning-of-line)
+  (insert "/**\n")
+  (insert " * @brief \n")
+  (insert " * \n")
+  (insert " * @param \n")
+  (insert " * @return \n")
+  (insert " */"))
+
+
 (provide 'init-functions)
 ;;; init-functions.el ends here

@@ -89,52 +89,6 @@ Assumes project layout with `src/` and `include/` at the root."
           (save-buffer))))))
   (message "Saved all files."))
 
-(defun insert-doxygen-function-comment ()
-  "Insert a Doxygen-style comment block above a function."
-  (interactive)
-  (beginning-of-line)
-  (insert "/**\n")
-  (insert " * @brief \n")
-  (insert " * \n")
-  (insert " * @param \n")
-  (insert " * @return \n")
-  (insert " */"))
-
-;; (defun my/vterm-init ()
-;;   "Automatically source .profile at vterm start."
-;;   (sleep-for 2)
-;;   (vterm-send-string "source ~/.profile" t)
-;;   (vterm-send-return))
-;; (add-hook 'vterm-mode-hook #'my/vterm-init)
-
-(after! vterm
-  (set-popup-rule! "^\\*vterm\\*" :size 0.25 :vslot -4 :select t :quit t :ttl 0)
-  (with-eval-after-load 'vterm
-    (define-key vterm-mode-map (kbd "M-i") #'previous-line)
-    (define-key vterm-mode-map (kbd "M-k") #'next-line)
-    (define-key vterm-mode-map (kbd "M-j") #'backward-char)
-    (define-key vterm-mode-map (kbd "M-l") #'forward-char)
-    (define-key vterm-mode-map (kbd "M-u") #'smart-beginning-of-line)
-    (define-key vterm-mode-map (kbd "M-o") #'move-end-of-line)
-    (define-key vterm-mode-map (kbd "M-U") nil)
-    (define-key vterm-mode-map (kbd "M-O") nil)
-    (define-key vterm-mode-map (kbd "M-K") nil)
-    (define-key vterm-mode-map (kbd "M-I") nil)
-    (define-key vterm-mode-map (kbd "M-1") #'+workspace/switch-to-0)
-    (define-key vterm-mode-map (kbd "M-2") #'+workspace/switch-to-1)
-    (define-key vterm-mode-map (kbd "M-3") #'+workspace/switch-to-2)
-    (define-key vterm-mode-map (kbd "M-4") #'+workspace/switch-to-3)
-    (define-key vterm-mode-map (kbd "M-w") #'evil-yank)
-    (define-key vterm-mode-map (kbd "M-y") #'evil-paste-after)
-
-    ;; (define-key vterm-mode-map (kbd "M-8") #'switch-to-prev-buffer)
-    ;; (define-key vterm-mode-map (kbd "M-9") #'switch-to-next-buffer)
-    ;; (define-key vterm-mode-map (kbd "M-f") #'+vertico/switch-workspace-buffer)
-    (define-key vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t)))
-    (with-eval-after-load 'evil
-      (evil-define-key 'insert vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t))))
-  ))
-
 
 ;;; Make Evil's jump list work with Consult jumps (consult-line, ripgrep, etc.)
 (with-eval-after-load 'consult
@@ -200,9 +154,13 @@ The region will deactivate automatically once you move the cursor."
 ;;; Cursor behavior ends here----------------------------------------------------------------------
 
 
+
+;;; flycheck
 (after! flycheck
-  (global-flycheck-mode -1)
-  (setq flycheck-global-modes nil))
+  (flycheck-mode 1)
+  ;; (global-flycheck-mode -1)
+  ;; (setq flycheck-global-modes nil)
+  )
 
 
 (defun my/evil-select-inside-paren ()

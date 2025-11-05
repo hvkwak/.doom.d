@@ -5,9 +5,9 @@
 (after! evil
   (keymap-global-set "C-h" help-map)
   (keymap-global-unset "C-z" t)
+  (keymap-global-unset "M-SPC" t) ;; disables M-SPC in normal mode
 
   ;;; Global Map
-
   (map! :g "M-q" #'doom/escape
         :g "M-y" #'yank)
 
@@ -21,8 +21,7 @@
        :desc "kill current workspace(project)" "w" #'+workspace/kill))
 
   ;;; Global Map for All States
-  (evil-define-key '(normal insert visual) global-map
-    (kbd "M-SPC")      (lambda () (interactive))
+  (evil-define-key '(normal insert visual replace) global-map
     (kbd "C-w")        #'kill-region
     (kbd "M-m")        #'my-defun-sig-header-mode
     (kbd "M-M")        #'beginning-of-defun
@@ -135,7 +134,7 @@
         "M-l" #'forward-char
         "M-q" #'my/insert-escape-and-clear
         "M-RET"     #'newline-and-indent
-        "M-<next>"  #'scroll-up-command
+        "M-<next>"  #'scroll-up-command ;; whats this
         "M-<prior>" #'scroll-down-command
         "M-DEL"     #'delete-char
         "M-;"       (lambda () (interactive) (insert ";"))
@@ -143,12 +142,14 @@
 
   ;;; Visual State
   (map! :map evil-visual-state-map
-        "w"   #'evil-yank
+        "u"   #'smart-beginning-of-line
+        "o"   #'move-end-of-line
+        "w"   #'kill-ring-save
         "y"   #'evil-paste-after
-        "i" #'previous-line
-        "k" #'next-line
-        "j" #'backward-char
-        "l" #'forward-char
+        "i"   #'previous-line
+        "k"   #'next-line
+        "j"   #'backward-char
+        "l"   #'forward-char
         "M-i" #'previous-line
         "M-k" #'next-line
         "M-j" #'backward-char
@@ -156,8 +157,9 @@
 
   ;;; Emacs State
   (map! :map evil-emacs-state-map
-        "C-a" #'evil-exit-emacs-state))
+        "C-a" #'evil-exit-emacs-state)
 
+)
 
 (provide 'init-keybinds)
 ;;; init-keybinds.el ends here

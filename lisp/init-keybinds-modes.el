@@ -2,9 +2,25 @@
 ;;; Commentary:
 ;;; Code:
 
+
+;;; Dired
+(after! dired
+  (map! :map dired-mode-map
+        :n "i" #'dired-previous-line
+        :n "k" #'dired-next-line
+        :n "j" #'dired-up-directory
+        :n "l" #'dired-find-file
+        :i "M-i" #'dired-previous-line
+        :i "M-k" #'dired-next-line
+        :i "M-j" #'dired-up-directory
+        :i "M-l" #'dired-find-file
+        )
+  )
+
+
+
 ;;; Vterm
 (after! vterm
-  (set-popup-rule! "^\\*vterm\\*" :size 0.25 :vslot -4 :select t :quit t :ttl 0)
   (with-eval-after-load 'vterm
     (define-key vterm-mode-map (kbd "M-i") #'previous-line)
     (define-key vterm-mode-map (kbd "M-k") #'next-line)
@@ -25,6 +41,9 @@
     (define-key vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t)))
     (with-eval-after-load 'evil
       (evil-define-key 'insert vterm-mode-map (kbd "C-c") (lambda () (interactive) (vterm-send-key "c" nil nil t))))))
+
+
+
 
 ;;; Help Mode
 (after! help-mode

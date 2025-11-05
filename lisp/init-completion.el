@@ -1,22 +1,18 @@
 ;;; init-completion.el --- completion -*- lexical-binding: t; no-byte-compile: t; -*-
-;;; Commentary:
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; packages for better completion and regex
-;; these two are activated in init.el
-;; company - In-buffer code completion (like suggesting function names, variables, etc.)
-;; vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;; Commentary: packages for better completion and regex
+;;;             these two are activated in init.el
+;;;             company - In-buffer code completion (like suggesting function names, variables, etc.)
+;;;             vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
 ;;; Code:
 (use-package! consult
   ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
   :after projectile
   :config
   (setq consult-preview-key 'any) ;; Preview instantly as you cycle
+  ;; Use workspace-aware buffer sources to respect workspace boundaries
   (setq consult-buffer-sources
-      '(consult--source-project-buffer)  ;; Show only project buffers
-      )
+      '(+workspaces--consult-workspace-buffer-source  ;; Only show buffers in current workspace
+        consult--source-hidden-buffer))               ;; Optional: include hidden buffers with space prefix
   (setq consult-project-function #'projectile-project-root)
   (setq consult-ripgrep-args
         "rg --null --line-buffered --color=never --max-columns=1000 \
@@ -38,6 +34,14 @@
   )
 
 
+;;; rg
+(set-popup-rule! "^\\*rg\\*$"
+  :side 'bottom
+  :size 0.5
+  :slot 0
+  :select t
+  :quit t
+  :ttl nil)   ;; keep window until explicitly closed
 (defun my/rg-goto-and-quit ()
   "Jump to the search result, delete the rg window, and kill the rg buffer."
   (interactive)
@@ -47,7 +51,8 @@
     (when (window-live-p rg-window)
       (delete-window rg-window))
     (when (buffer-live-p rg-buffer)
-      (kill-buffer rg-buffer))))
+      (kill-buffer rg-buffer))
+    ))
 
 (defun my/rg-quit-and-kill ()
   "Delete the rg window and kill the rg buffer."
@@ -57,11 +62,15 @@
     (when (window-live-p rg-window)
       (delete-window rg-window))
     (when (buffer-live-p rg-buffer)
-      (kill-buffer rg-buffer))))
+      (kill-buffer rg-buffer))
+    ))
+
+(setq rg-custom-type-aliases
+      '(("MyC" . "*.c *.cu *.cpp *.cc *.cxx *.h *.hpp")))
 
 (add-hook 'rg-mode-hook
   (lambda ()
-    (switch-to-buffer-other-window (current-buffer))
+    ;;(switch-to-buffer-other-window (current-buffer))
     (define-key compilation-mode-map       (kbd "RET") #'my/rg-goto-and-quit)
     (define-key compilation-minor-mode-map (kbd "RET") #'my/rg-goto-and-quit)
     (define-key compilation-button-map     (kbd "RET") #'my/rg-goto-and-quit)
@@ -69,6 +78,7 @@
     (define-key compilation-minor-mode-map (kbd "q")   #'my/rg-quit-and-kill)
     (define-key compilation-button-map     (kbd "q")   #'my/rg-quit-and-kill)
     ))
+
 
 (defun my/thing-at-point ()
   (when-let ((s (thing-at-point 'symbol t)))

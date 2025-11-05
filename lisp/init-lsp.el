@@ -8,16 +8,25 @@
         lsp-ui-doc-include-signature t
         lsp-ui-doc-max-height 100
         lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-diagnostics t
+        ;; lsp-ui-sideline-diagnostic-max-lines 3
+        ;; lsp-ui-sideline-ignore-duplicate t
         lsp-ui-sideline-show-hover nil
-        lsp-ui-sideline-show-diagnostics nil
         lsp-ui-sideline-show-code-actions nil
         lsp-ui-peek-enable t
         lsp-enable-symbol-highlighting t
         lsp-signature-render-documentation t
         lsp-idle-delay 0.15
         lsp-ui-sideline-delay 0.1
-        lsp-diagnostics-provider :none
+        lsp-diagnostics-provider :flycheck
         )
+
+  (set-face-attribute 'lsp-face-highlight-textual nil
+    :background "#FFF6B3" :foreground 'unspecified :underline nil :weight 'bold)
+  (set-face-attribute 'lsp-face-highlight-read    nil
+    :background "#FFF6B3" :foreground 'unspecified :underline nil :weight 'bold)
+  (set-face-attribute 'lsp-face-highlight-write   nil
+    :background "#FFF6B3" :foreground 'unspecified :underline nil :weight 'bold)
   )
 
 (after! lsp-clangd

@@ -74,6 +74,7 @@
 (load! "lisp/init-tramp")
 (load! "lisp/init-llm")
 (load! "lisp/init-behavior")
+(load! "lisp/init-vterm")
 
 ;; Load keybindings
 (load! "lisp/init-keybinds")

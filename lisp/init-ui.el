@@ -15,7 +15,6 @@
 (menu-bar-mode 1)
 
 ;;; Face Customization
-
 (custom-set-faces
   '(hl-line ((t (:background "#e2e6ec" :underline nil))))
   '(header-line ((t (:foreground "#383a42" :weight bold))))
@@ -57,7 +56,6 @@
 (setq mouse-wheel-progressive-speed nil)
 
 ;;; LSP UI Customization
-
 (after! lsp-mode
   ;; Soft background highlights for readability
   (set-face-attribute 'lsp-face-highlight-textual nil
@@ -68,7 +66,6 @@
                       :background "#5e4c6e" :foreground 'unspecified' :weight 'bold))
 
 ;;; Which-Key UI
-
 (after! which-key
   (setq which-key-popup-type 'minibuffer ;; better than side-window
         which-key-side-window-location 'bottom
@@ -77,7 +74,6 @@
         which-key-min-display-lines 6))
 
 ;;; Treemacs UI
-
 (after! treemacs
 
   ;; follow the current project root - Disabled
@@ -92,8 +88,7 @@
   :config
   (progn
     (treemacs-create-icon :file "dir-src-closed.png" :extensions ("include-closed"))
-    (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open"))
-    )
+    (treemacs-create-icon :file "dir-src-open.png"   :extensions ("include-open")))
   ))
 
 
