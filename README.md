@@ -17,8 +17,9 @@ Configuration is modularized in `lisp/` directory:
 
 ### Core Configuration
 - `init-ui.el` - Visual appearance (theme, fonts, faces, cursors, scrolling)
-- `init-editor.el` - Editor behavior (tabs, indentation, evil cursor, flycheck)
-- `init-functions.el` - Utility functions (navigation, selection, file operations, jump lists)
+- `init-editor.el` - Editor settings (performance, tabs, indentation, evil cursor)
+- `init-behavior.el` - Behavioral modifications (advice, hooks, minor modes)
+- `init-functions.el` - Utility functions (navigation, buffer operations, file operations)
 
 ### Development Tools
 - `init-lsp.el` - LSP configuration (lsp-ui, clangd)
@@ -27,9 +28,8 @@ Configuration is modularized in `lisp/` directory:
 - `init-dap-lldb.el` - LLDB debugger configuration
 
 ### Keybindings (Modular)
-- `init-keybinds.el` - Core global and evil keybindings
+- `init-keybinds-common.el` - Common keybindings shared across all modes
 - `init-keybinds-modes.el` - Mode-specific bindings (vterm, vertico, help, image, cc-mode)
-- `init-keybinds-common.el` - Shared writing mode keybindings
 - `init-keybinds-org.el` - Org-mode specific keybindings
 - `init-keybinds-md.el` - Markdown-mode specific keybindings
 - `init-keybinds-treemacs.el` - Treemacs specific keybindings

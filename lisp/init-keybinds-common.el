@@ -1,95 +1,158 @@
 ;;; init-keybinds-common.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
-;;; Commentary: common keybinds for init-keybinds-md.el and init-keybinds-org.el
+;;; Commentary:
+;;; common keybinds for init-keybinds-md.el and init-keybinds-org.el
 ;;; Code:
 
+;;; Minor Mode Definition
+;; Minor mode that holds all shared keys
 (defvar my-common-keys-mode-map (make-sparse-keymap)
-  "Keymap for `my-writing-keys-mode'.")
+  "Keymap for `my-common-keys-mode'.")
 
 (define-minor-mode my-common-keys-mode
-  "Shared writing keys for Org/Markdown (and friends)."
+  "Shared common keys for Evil / Org / Markdown (and friends)."
   :init-value nil
   :keymap my-common-keys-mode-map)
 
-;; Use Doom's map! so we can do state-specific keys cleanly.
-(with-eval-after-load 'evil
-  (map! :map my-common-keys-mode-map
-        ;; Multistate
-        ;; (normal/insert/visual)
-        ;; If you want truly all three states: use evil-define-key on '(normal insert visual)'
-        "M-SPC"      (cmd! (ignore))          ;; no cycle-spacing
-        "C-w"        #'kill-region
-        "<f9>"       #'treemacs
-        "M-,"        #'evil-jump-backward
-        "M-."        #'evil-jump-forward
-        "M-9"        #'my/jump-matching-paren
-        "M-8"        #'my/evil-select-inside-paren
-        "C-b"        #'view-echo-area-messages
-        "C-S-z"      #'undo-fu-only-redo
-        "C-z"        #'undo-fu-only-undo
-        "M-s M-j"    #'evil-window-left
-        "M-s M-l"    #'evil-window-right
-        "M-s M-i"    #'evil-window-up
-        "M-s M-k"    #'evil-window-down
-        "M-s M-e"    #'my/select-symbol-at-point
-        "M-s M-f"    #'mark-defun
-        "M-s M-p"    #'mark-page
-        "M-s M-b"    #'+vertico/switch-workspace-buffer
-        "M-s M-s"    #'my/save-and-escape
-        "M-="        #'centaur-tabs-extract-window-to-new-frame
-        "<S-down-mouse-1>" #'ignore
-        "<S-mouse-1>"      #'my/select-to-click
-        "<home>"     #'smart-beginning-of-line
-        "M-u"        #'smart-beginning-of-line
-        "M-o"        #'move-end-of-line
-        "C-f"        #'my/consult-line-dwim
-        "M-f"        #'my/consult-line-dwim
-        "M-r"        #'my/consult-ripgrep-dwim
-        "M-'"        #'consult-imenu
-        "M-e"        #'execute-extended-command
-        "M-h"        nil
+;; Optional helper so you can reuse it in hooks
+(defun my-enable-common-keys ()
+  (my-common-keys-mode 1))
 
-        ;; Normal state: hjkl & friends
-        :n "i" #'previous-line
-        :n "k" #'next-line
-        :n "j" #'backward-char
-        :n "l" #'forward-char
-        :n "u" #'smart-beginning-of-line
-        :n "o" #'move-end-of-line
+
+;;; Globals
+(after! evil
+  ;; set help-map and unset undo
+  (keymap-global-set "C-h" help-map)
+  (keymap-global-unset "C-z" t)
+
+  ;; Leader Keys
+  ;; unset M-SPC key in insert mode
+  ;; doom-leader-alt-key in insert-state M-SPC is now "\\"
+  ;; doom-localleader-alt-key in insert-state M-SPC m is now "C-\\"
+  ;; inserting "\\" is M-\\
+  (setq doom-leader-alt-key "\\")
+  (setq doom-localleader-alt-key "C-\\")
+
+  (map! :leader
+        "k" nil
+        "o" nil
+        )
+
+  (map! :leader
+        (:prefix ("k" . "kill")
+         :desc "kill current buffer"             "k" #'kill-current-buffer
+         :desc "kill frame"                      "f" #'delete-frame
+         :desc "kill current workspace(project)" "w" #'+workspace/kill))
+
+  (map! :g "M-q" #'doom/escape
+        :g "M-y" #'yank)
+
+  (evil-define-key '(normal insert visual replace) global-map
+    (kbd "M-h")        (lambda () (interactive) ())
+    (kbd "M-k")        (lambda () (interactive) ())
+    (kbd "M-p")        (lambda () (interactive) ())
+    (kbd "M-t")        (lambda () (interactive) ())
+    (kbd "M-\\")       (lambda () (interactive) (insert "\\"))
+    (kbd "M-SPC")      (lambda () (interactive) (insert " "))
+    (kbd "C-w")        #'kill-region
+    (kbd "M-m")        #'my-defun-sig-header-mode
+    (kbd "M-M")        #'beginning-of-defun
+    (kbd "M-a")        #'lsp-ui-doc-toggle
+    (kbd "M-A")        #'lsp-signature-toggle-full-docs
+    (kbd "M-<f12>")    #'my/toggle-between-header-and-source
+    (kbd "<f12>")      #'lsp-find-definition
+    (kbd "<f9>")       #'treemacs
+    (kbd "M-,")        #'evil-jump-backward
+    (kbd "M-.")        #'evil-jump-forward
+    (kbd "M-8")        #'my/evil-select-inside-paren
+    (kbd "M-9")        #'my/jump-matching-paren
+    (kbd "C-b")        #'view-echo-area-messages
+    (kbd "C-S-z")      #'undo-fu-only-redo
+    (kbd "C-z")        #'undo-fu-only-undo
+    (kbd "M-s M-j")    #'evil-window-left
+    (kbd "M-s M-l")    #'evil-window-right
+    (kbd "M-s M-i")    #'evil-window-up
+    (kbd "M-s M-k")    #'evil-window-down
+    (kbd "M-s M-e")    #'my/select-symbol-at-point
+    (kbd "M-s M-f")    #'mark-defun
+    (kbd "M-s M-p")    #'mark-page
+    (kbd "M-s M-b")    #'+vertico/switch-workspace-buffer
+    (kbd "M-s M-s")    #'my/save-and-escape
+    (kbd "M-=")        #'centaur-tabs-extract-window-to-new-frame
+    (kbd "<S-down-mouse-1>") #'ignore
+    (kbd "<S-mouse-1>")      #'my/select-to-click
+    (kbd "<home>")     #'smart-beginning-of-line
+    (kbd "M-u")        #'smart-beginning-of-line
+    (kbd "M-o")        #'move-end-of-line
+    (kbd "C-f")        #'my/consult-line-dwim
+    (kbd "M-f")        #'my/consult-line-dwim
+    (kbd "M-r")        #'rg-dwim
+    (kbd "M-'")        #'consult-imenu
+    (kbd "M-e")        #'execute-extended-command)
+  )
+
+;;; Evil Mode - exceptions.
+(after! evil
+  (map! :nm "i" #'previous-line
+        :nm "k" #'next-line
+        :nm "j" #'backward-char
+        :nm "l" #'forward-char
+        )
+
+  (map! :map evil-motion-state-map
+        "<C-i>"  nil ;; disable to use C-i evil-scroll-up
+        )
+  )
+
+(after! evil
+
+  ;;; Normal
+  (map! :map my-common-keys-mode-map
+        :nm "u" #'smart-beginning-of-line
+        :nm "o" #'move-end-of-line
         :n "M-i" #'evil-insert
-        :n "M-j" #'backward-char
-        :n "M-l" #'forward-char
-        :n "M-k" #'next-line
-        :n "M-h" (cmd! (message ""))   ;; noop
         :n "w"  #'evil-yank
         :n "y"  #'evil-paste-after
         :n "M-w" #'evil-yank
         :n "M-y" #'evil-paste-after
         :n "M-q" #'evil-escape
-        :n "h"  #'centaur-tabs-backward
-        :n "g"  #'centaur-tabs-forward
-        :n "H"  #'centaur-tabs-move-current-tab-to-left
-        :n "G"  #'centaur-tabs-move-current-tab-to-right
-        :n "z"  #'undo-fu-only-undo
+        :n "M-j"  #'centaur-tabs-backward
+        :n "M-l"  #'centaur-tabs-forward
+        :n "M-J"  #'centaur-tabs-move-current-tab-to-left
+        :n "M-L"  #'centaur-tabs-move-current-tab-to-right
+        :n "z"  #'undo-fu-only-undo)
 
-        ;; Local “s” prefix (save/snipe/switch/select)
+  ;;; Normal prefix "s" prefix
+  (map! :map my-common-keys-mode-map
         (:prefix ("s" . "save/snipe/switch/select")
-         :n "s" #'my/save-and-escape
-         :n "b" #'+vertico/switch-workspace-buffer
-         :n "n" #'evil-snipe-s
-         :n "e" #'my/select-symbol-at-point
-         :n "f" #'mark-defun
-         :n "p" #'mark-page
-         :n "j" #'evil-window-left
-         :n "l" #'evil-window-right
-         :n "i" #'evil-window-up
-         :n "k" #'evil-window-down)
+         :desc "save"          :n "s" #'my/save-and-escape
+         :desc "switch buffer" :n "b" #'+vertico/switch-workspace-buffer
+         :desc "snipe-s"       :n "n" #'evil-snipe-s
+         :desc "snipe-t"       :n "n" #'evil-snipe-t
+         :desc "select wrod"   :n "e" #'my/select-symbol-at-point
+         :desc "select fun"    :n "f" #'mark-defun
+         :desc "select page"   :n "p" #'mark-page
+         :desc "window left"   :n "j" #'evil-window-left
+         :desc "window right"  :n "l" #'evil-window-right
+         :desc "window up"     :n "i" #'evil-window-up
+         :desc "window down"   :n "k" #'evil-window-down))
 
-        ;; Insert state (keep typing-friendly)
-        :i "M-y"       #'yank
+  ;;; Motion
+  (map! :map my-common-keys-mode-map
+        :nm "h" nil
+        :nm "k" #'next-line
+        :nm "<C-i>" nil
+        :nm "C-i" #'evil-scroll-up
+        :nm "C-k" #'evil-scroll-down)
+
+  ;;; Insert
+  (map! :map my-common-keys-mode-map
         :i "S-<left>"  nil
         :i "S-<right>" nil
         :i "S-<down>"  nil
         :i "S-<up>"    nil
+        :i "M-SPC"     (lambda () (interactive) (insert " "))
+        :i "C-SPC"     #'set-mark-command
+        :i "M-y"       #'yank
         :i "M-i"       #'previous-line
         :i "M-k"       #'next-line
         :i "M-j"       #'backward-char
@@ -98,51 +161,36 @@
         :i "M-RET"     #'newline-and-indent
         :i "M-<next>"  #'scroll-up-command
         :i "M-<prior>" #'scroll-down-command
-        ;; If you want defaults, comment the next two lines:
         :i "M-DEL"     #'delete-char
-        :i "M-;"       (cmd! (insert ";"))
-        :i "M-/"       #'comment-dwim
+        :i "M-;"       (lambda () (interactive) (insert ";"))
+        :i "M-/"       #'comment-dwim)
 
-        ;; Visual state
-        :v "w"   #'evil-yank
+  ;;; Visual
+  (map! :map my-common-keys-mode-map
+        :v "u"   #'smart-beginning-of-line
+        :v "o"   #'move-end-of-line
+        :v "w"   #'kill-ring-save
         :v "y"   #'evil-paste-after
-        :v "i" #'previous-line
-        :v "k" #'next-line
-        :v "j" #'backward-char
-        :v "l" #'forward-char
+        :v "i"   #'previous-line
+        :v "k"   #'next-line
+        :v "j"   #'backward-char
+        :v "l"   #'forward-char
         :v "M-i" #'previous-line
         :v "M-k" #'next-line
         :v "M-j" #'backward-char
-        :v "M-l" #'forward-char))
+        :v "M-l" #'forward-char)
+  )
 
-;;; Shared setup for writing modes
-(defun my-setup-writing-mode (mode-map mode-hook)
-  "Configure common writing mode settings for MODE-MAP and enable via MODE-HOOK."
-  ;; Enable C-h as help prefix globally
-  (keymap-global-set "C-h" help-map)
-  (keymap-global-unset "C-z" t)
+;;; emacs-state
+(after! evil
+  (map! :map evil-emacs-state-map
+        "C-a" #'evil-exit-emacs-state))
 
-  ;; Leader key bindings
-  (map! :leader
-        (:prefix ("k" . "kill")
-         :desc "kill current buffer"     "k" #'kill-current-buffer
-         :desc "kill current frame"              "f" #'delete-frame
-         :desc "kill current workspace(project)" "w" #'+workspace/kill))
-
-  ;; Enable common keybindings (with highest priority via emulation-mode-map-alists)
-  (add-hook mode-hook #'my-common-keys-mode))
-
-
-;; Disable evil-snipe keybindings that conflict with our custom bindings
-(after! evil-snipe
-  (map! :map (evil-snipe-local-mode-map evil-snipe-override-mode-map)
-        :nvm "f" nil
-        :nvm "F" nil
-        :nvm "s" nil
-        :nvm "S" nil
-        :nvm "s" nil
-        :nvm "S" nil
-        :nvm "f" nil
-        :nvm "F" nil))
+;;; ENABLE common keys!
+(after! evil
+  ;;; add hook to use common-keys
+  (add-hook 'evil-local-mode-hook #'my-enable-common-keys)
+  )
 
 (provide 'init-keybinds-common)
+;;; init-keybinds-common.el ends here

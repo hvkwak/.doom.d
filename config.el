@@ -61,6 +61,9 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 ;; Load all custom configuration modules
+;;; add to ~/.doom.d/config.el
+
+
 (load! "lisp/init-ui")
 (load! "lisp/init-editor")
 (load! "lisp/init-functions")
@@ -77,9 +80,8 @@
 (load! "lisp/init-vterm")
 
 ;; Load keybindings
-(load! "lisp/init-keybinds")
-(load! "lisp/init-keybinds-modes")
 (load! "lisp/init-keybinds-common")
+(load! "lisp/init-keybinds-modes")
 (load! "lisp/init-keybinds-md")
 (load! "lisp/init-keybinds-org")
 (load! "lisp/init-keybinds-treemacs")

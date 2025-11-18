@@ -4,6 +4,8 @@
 ;;;             company - In-buffer code completion (like suggesting function names, variables, etc.)
 ;;;             vertico - Minibuffer completion UI (for commands like M-x, find-file, etc.)
 ;;; Code:
+
+;;; consult
 (use-package! consult
   ;; Enhances Emacs commands like buffer switching, searching, and navigation with better interfaces and previews.
   :after projectile
@@ -32,53 +34,6 @@
                                 "\\*compilation\\*<\\.emacs\\.d>"
                                 ))
   )
-
-
-;;; rg
-(set-popup-rule! "^\\*rg\\*$"
-  :side 'bottom
-  :size 0.5
-  :slot 0
-  :select t
-  :quit t
-  :ttl nil)   ;; keep window until explicitly closed
-(defun my/rg-goto-and-quit ()
-  "Jump to the search result, delete the rg window, and kill the rg buffer."
-  (interactive)
-  (let ((rg-buffer (current-buffer))
-        (rg-window (selected-window)))
-    (compile-goto-error)
-    (when (window-live-p rg-window)
-      (delete-window rg-window))
-    (when (buffer-live-p rg-buffer)
-      (kill-buffer rg-buffer))
-    ))
-
-(defun my/rg-quit-and-kill ()
-  "Delete the rg window and kill the rg buffer."
-  (interactive)
-  (let ((rg-buffer (current-buffer))
-        (rg-window (selected-window)))
-    (when (window-live-p rg-window)
-      (delete-window rg-window))
-    (when (buffer-live-p rg-buffer)
-      (kill-buffer rg-buffer))
-    ))
-
-(setq rg-custom-type-aliases
-      '(("MyC" . "*.c *.cu *.cpp *.cc *.cxx *.h *.hpp")))
-
-(add-hook 'rg-mode-hook
-  (lambda ()
-    ;;(switch-to-buffer-other-window (current-buffer))
-    (define-key compilation-mode-map       (kbd "RET") #'my/rg-goto-and-quit)
-    (define-key compilation-minor-mode-map (kbd "RET") #'my/rg-goto-and-quit)
-    (define-key compilation-button-map     (kbd "RET") #'my/rg-goto-and-quit)
-    (define-key compilation-mode-map       (kbd "q")   #'my/rg-quit-and-kill)
-    (define-key compilation-minor-mode-map (kbd "q")   #'my/rg-quit-and-kill)
-    (define-key compilation-button-map     (kbd "q")   #'my/rg-quit-and-kill)
-    ))
-
 
 (defun my/thing-at-point ()
   (when-let ((s (thing-at-point 'symbol t)))
@@ -136,6 +91,7 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
 ;;           (consult-ripgrep search-root sym))
 ;;       (consult-ripgrep search-root))))
 
+;;; marginalia
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.
   :general
@@ -147,6 +103,7 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
   :init
   (marginalia-mode))
 
+;;; orderless
 (use-package! orderless
   ;; Matches your typed input orderless minibuffer completions.
   :custom
@@ -167,29 +124,94 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
      ;; orderless-without-literal          ; Recommended for dispatches instead
      ))
   (setq orderless-case-sensitivity 'smart) ;; TODO: keep it smart? or not sensitive?
-)
+  )
 
+;;; company
 (after! company
   (setq company-auto-commit nil
         company-minimum-prefix-length 1
         company-idle-delay 0.0
-        company-selection-wrap-around t)
+        company-selection-wrap-around t))
 
-  ;; Make TAB cycle candidates instead of accepting immediately
-  (define-key company-active-map (kbd "M-i") #'company-select-previous)
-  (define-key company-active-map (kbd "M-k") #'company-select-next)
-  (define-key company-active-map (kbd "M-SPC") #'company-abort)
-  ;; (define-key company-active-map (kbd "TAB") #'company-select-next)
-  ;; (define-key company-active-map (kbd "<tab>") #'company-select-next)
-  ;; (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
-  ;; (define-key company-active-map (kbd "<backtab>") #'company-select-previous)
-)
+(defun my/company-accept-and-trim-duplicate ()
+  "Accept Company candidate and remove duplicated suffix ahead of point.
+Example: 'material.pecular' + candidate 'materialSpecular'
+→ leaves exactly 'materialSpecular'."
+  (interactive)
+  (when (and (bound-and-true-p company-candidates)
+             (>= (or company-selection 0) 0))
+    (let* ((cand (nth company-selection company-candidates))
+           (ahead (save-excursion
+                    (buffer-substring-no-properties
+                     (point)
+                     (progn (skip-chars-forward "_[:alnum:]") (point))))))
+      ;; Do the normal insert first.
+      (company-complete-selection)
+      ;; Then trim any overlap between CAND's suffix and the text ahead.
+      (when (and cand (> (length ahead) 0))
+        (let ((n (cl-loop for i from (min (length ahead) (length cand)) downto 1
+                          when (string-suffix-p (substring ahead 0 i) cand)
+                          return i)))
+          (when n (delete-char n)))))))
+;;; corfu
+;; Accept Corfu candidate and delete any duplicate tail after point.
+;; (defun my/corfu-accept-and-trim-duplicate ()
+;;   "Accept current Corfu candidate and remove duplicated suffix ahead of point.
+;; For example: 'material.pecular' + candidate 'materialSpecular'
+;; → inserts 'materialSpecular' and kills the following 'pecular'."
+;;   (interactive)
+;;   (let* ((cand (and (boundp 'corfu--index)
+;;                     (>= corfu--index 0)
+;;                     (nth corfu--index corfu--candidates)))
+;;          (ahead (save-excursion
+;;                   (buffer-substring-no-properties
+;;                    (point)
+;;                    (progn (skip-chars-forward "_[:alnum:]") (point))))))
+;;     ;; Fallback: if no candidate, just insert newline (or do whatever RET does).
+;;     (unless cand (call-interactively #'corfu-insert))
+;;     (let ((suffix-len
+;;            (when (and cand (> (length ahead) 0))
+;;              ;; Longest prefix of AHEAD that is a suffix of CAND
+;;              (cl-loop for i from (min (length ahead) (length cand)) downto 1
+;;                       when (string-suffix-p (substring ahead 0 i) cand)
+;;                       return i))))
+;;       (call-interactively #'corfu-insert)
+;;       (when suffix-len
+;;         (delete-char suffix-len)))))
 
-(with-eval-after-load 'yasnippet
-  (define-key yas-keymap (kbd "TAB")       #'yas-next-field)
-  (define-key yas-keymap (kbd "<tab>")     #'yas-next-field)
-  (define-key yas-keymap (kbd "S-TAB")     #'yas-prev-field)
-  (define-key yas-keymap (kbd "<backtab>") #'yas-prev-field))
+;;; rg
+(set-popup-rule! "^\\*rg\\*$"
+  :side 'bottom
+  :size 0.5
+  :slot 0
+  :select t
+  :quit t
+  :ttl nil)   ;; keep window until explicitly closed
+(defun my/rg-goto-and-quit ()
+  "Jump to the search result, delete the rg window, and kill the rg buffer."
+  (interactive)
+  (let ((rg-buffer (current-buffer))
+        (rg-window (selected-window)))
+    (compile-goto-error)
+    (when (window-live-p rg-window)
+      (delete-window rg-window))
+    (when (buffer-live-p rg-buffer)
+      (kill-buffer rg-buffer))
+    ))
+(defun my/rg-quit-and-kill ()
+  "Delete the rg window and kill the rg buffer."
+  (interactive)
+  (let ((rg-buffer (current-buffer))
+        (rg-window (selected-window)))
+    (when (window-live-p rg-window)
+      (delete-window rg-window))
+    (when (buffer-live-p rg-buffer)
+      (kill-buffer rg-buffer))
+    ))
+(setq rg-custom-type-aliases
+      '(("MyC" . "*.c *.cu *.cpp *.cc *.cxx *.h *.hpp")))
+
+
 
 
 (provide 'init-completion)
