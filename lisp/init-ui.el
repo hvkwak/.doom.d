@@ -2,9 +2,22 @@
 ;;; Commentary:
 ;;; Code:
 
-;;; Theme & Fonts
+;;; Theme
+(load-file (expand-file-name "themes/professional-theme.el" doom-user-dir))
+(setq doom-theme 'professional)
 
-(setq doom-theme 'doom-one-light)
+;;; Theme Subs
+;; (load-file (expand-file-name "themes/leuven-theme.el" doom-user-dir))
+;; (load-file (expand-file-name "themes/sunny-day-theme.el" doom-user-dir))
+;; (load-file (expand-file-name "themes/aalto-light-theme-source-code.el" doom-user-dir))
+;; (setq doom-theme 'leuven)
+;; (setq leuven-scale-outline-headlines nil)
+;; (setq leuven-scale-org-document-title nil)
+;; (setq doom-theme 'aalto-light)
+;; (setq doom-theme 'doom-one-light)
+;; (setq doom-theme 'doom-solarized-light)
+
+;;; Fonts
 (setq doom-font (font-spec :family "JetBrains Mono" :size 20))
 
 ;;; Display Settings
@@ -24,9 +37,15 @@
   '(centaur-tabs-selected-modified ((t (:background "#eaeef2" :foreground "#0f66c8" :weight bold))))
   '(centaur-tabs-unselected ((t (:background "#eaeef2" :foreground "#888888"))))
   '(centaur-tabs-unselected-modified ((t (:background "#eaeef2" :foreground "#888888"))))
-  )
 
-;;; Cursor Configuration
+  ;; this works good with professional
+  '(doom-modeline-buffer-modified ((t (:foreground "#666666" :weight bold))))
+  '(doom-modeline-buffer-path ((t (:foreground "#00aa00" :weight bold))))
+  '(doom-modeline-project-dir ((t (:foreground "#0000aa" :weight bold))))
+  '(doom-modeline-warning ((t (:foreground "#aa0000" :weight bold))))
+  '(show-paren-match ((t (:foreground "#e45649" :background "#f0f0f0" :weight bold))))
+  '(font-lock-string-face ((t (:foreground "#00AA00")))) ;; changes colors of string
+  )
 
 ;; Default keyboard cursor
 (setq-default cursor-type 'bar)
@@ -46,7 +65,6 @@
 (setq-default void-text-area-pointer 'nil)
 
 ;;; Mouse & Scrolling
-
 (setq scroll-preserve-screen-position nil)
 
 ;; Scroll one line at a time

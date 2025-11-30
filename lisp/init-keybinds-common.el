@@ -92,10 +92,18 @@
 
 ;;; Evil Mode - exceptions.
 (after! evil
-  (map! :nm "i" #'previous-line
-        :nm "k" #'next-line
-        :nm "j" #'backward-char
-        :nm "l" #'forward-char
+  (map! :vnm "i"         #'previous-line
+        :vnm "k"         #'next-line
+        :vnm "j"         #'backward-char
+        :vnm "l"         #'forward-char
+        :vm "M-i"       #'previous-line
+        :vnm "M-k"       #'next-line
+        :vnm "M-j"       #'backward-char
+        :vnm "M-l"       #'forward-char
+        :nm "h"         #'centaur-tabs-backward
+        ;; :nm "g"         #'centaur-tabs-forward
+        :nm "H"         #'centaur-tabs-move-current-tab-to-left
+        ;; :nm "G"         #'centaur-tabs-move-current-tab-to-right
         )
 
   (map! :map evil-motion-state-map
@@ -115,10 +123,6 @@
         :n "M-w" #'evil-yank
         :n "M-y" #'evil-paste-after
         :n "M-q" #'evil-escape
-        :n "M-j"  #'centaur-tabs-backward
-        :n "M-l"  #'centaur-tabs-forward
-        :n "M-J"  #'centaur-tabs-move-current-tab-to-left
-        :n "M-L"  #'centaur-tabs-move-current-tab-to-right
         :n "z"  #'undo-fu-only-undo)
 
   ;;; Normal prefix "s" prefix
@@ -126,15 +130,16 @@
         (:prefix ("s" . "save/snipe/switch/select")
          :desc "save"          :n "s" #'my/save-and-escape
          :desc "switch buffer" :n "b" #'+vertico/switch-workspace-buffer
-         :desc "snipe-s"       :n "n" #'evil-snipe-s
-         :desc "snipe-t"       :n "n" #'evil-snipe-t
+         :desc "snipe-s"       :n "ns" #'evil-snipe-s
+         :desc "snipe-t"       :n "nt" #'evil-snipe-t
          :desc "select wrod"   :n "e" #'my/select-symbol-at-point
          :desc "select fun"    :n "f" #'mark-defun
          :desc "select page"   :n "p" #'mark-page
          :desc "window left"   :n "j" #'evil-window-left
          :desc "window right"  :n "l" #'evil-window-right
          :desc "window up"     :n "i" #'evil-window-up
-         :desc "window down"   :n "k" #'evil-window-down))
+         :desc "window down"   :n "k" #'evil-window-down)
+        )
 
   ;;; Motion
   (map! :map my-common-keys-mode-map

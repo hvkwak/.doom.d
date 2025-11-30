@@ -1,11 +1,45 @@
-;;; lisp/init-org.el --- org-mode configuration -*- lexical-binding: t; -*-
+;;; lisp/init-org.el --- org-mode configuration -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
 ;;; Code:
 
+;;; Enable TOC
 (use-package! toc-org
-  :hook (org-mode . toc-org-mode)
+  :init
+  (add-hook 'org-mode-hook #'toc-org-mode)
   :config
   (setq toc-org-max-depth 3))
+
+;;; Insert Template at find file
+(after! org
+  (defun my/org-insert-header-template ()
+    "Insert default Org header into new, empty .org files."
+    (when (and (buffer-file-name)
+               (string-match-p "\\.org\\'" (buffer-file-name))
+               (= (point-min) (point-max))) ;; buffer is empty
+      (insert "#+title: \n"
+              "#+DESCRIPTION:\n"
+              "#+AUTHOR: H. Kwak\n"
+              "#+DATE: " (format-time-string "<%Y-%m-%d %a>") "\n"
+              "#+OPTIONS: toc:t num:t\n\n")))
+
+  (add-hook 'find-file-hook #'my/org-insert-header-template))
+
+;;; Set org level colors
+(after! org
+  (setq org-n-level-faces 9)
+
+  (custom-set-faces!
+    ;; all vivid, no black, chosen to pop on a warm/yellow bg
+    '(org-level-1  :foreground "#0033FF" :weight bold)  ; strong blue
+    '(org-level-2  :foreground "#FF00AF" :weight bold)  ; hot magenta
+    '(org-level-3  :foreground "#00AFAF" :weight bold)  ; teal
+    '(org-level-4  :foreground "#8700FF" :weight bold)  ; bright violet
+    '(org-level-5  :foreground "#D70000" :weight bold)  ; vivid red
+    '(org-level-6  :foreground "#008080" :weight bold)  ; dark cyan
+    '(org-level-7  :foreground "#008700" :weight bold)  ; bright green
+    '(org-level-8  :foreground "#4B0082" :weight bold)  ; deep indigo
+    '(org-level-9 :foreground "#00A000" :weight bold))  ; emerald
+)
 
 (after! org
   ;; If you use `org' and don't want your org files in the default location below,
@@ -24,7 +58,7 @@
 
   ;; Make math formulas big and readable
   (setq org-format-latex-options
-        (plist-put org-format-latex-options :scale 2.0)) ; tweak 2.0–2.6 if you want
+        (plist-put org-format-latex-options :scale 0.1)) ; tweak 2.0–2.6 if you want
 
   ;; High-quality transparent PNGs
   (setq org-preview-latex-process-alist
@@ -35,13 +69,13 @@
                   :image-output-type "png"
                   :image-size-adjust (1.0 . 1.0)
                   :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
-                  :image-converter ("dvipng -D 300 -T tight -bg Transparent -o %O %f"))))
+                  :image-converter ("dvipng -D 200 -T tight -bg Transparent -o %O %f"))))
 
   ;; Automatically preview math on open (optional)
   (setq org-startup-with-latex-preview t))
 
 ;; Optional: if your screen is HiDPI
-(setq image-scaling-factor 1.2)
+(setq image-scaling-factor 1.0)
 
 (defun my/org-wrap-region-as-src (lang)
   "Wrap the active region in an Org src block for LANG.

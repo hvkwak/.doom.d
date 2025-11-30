@@ -10,9 +10,16 @@
 
   ;; ORG-MODE SPECIFIC KEYBINDINGS
   ;; Add org-specific bindings here (e.g., org-agenda, org-capture, etc.)
+  (evil-define-key '(normal insert visual) outline-mode-map
+    (kbd "M-j")      nil ;; this becomes backward-char
+    (kbd "M-l")      nil ;; this becomes forward-char
+    (kbd "M-k")      #'next-line
+    (kbd "M-i")      nil ;;
+    )
+
   (evil-define-key '(normal insert visual) evil-org-mode-map
-    (kbd "M-<down>") #'org-move-item-down
-    (kbd "M-<up>") #'org-move-item-up
+    (kbd "M-<down>") #'org-metadown
+    (kbd "M-<up>")   #'org-metaup
     (kbd "C-h") nil ;; frees C-h for C-h help command
     (kbd "u")   nil
     (kbd "O")   nil
@@ -42,6 +49,14 @@
          ))
 
   (map! :map evil-org-mode-map
+        :v "i"   #'previous-line
+        :v "k"   #'next-line
+        :v "j"   #'backward-char
+        :v "l"   #'forward-char
+        :n "ㅑ"   #'previous-line
+        :n "ㅏ"   #'next-line
+        :n "ㅓ"   #'backward-char
+        :n "ㅣ"   #'forward-char
         :n "src" #'my/org-wrap-region-as-c
         :n "srp" #'my/org-wrap-region-as-python)
   )

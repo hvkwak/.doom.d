@@ -67,9 +67,9 @@
 (load! "lisp/init-ui")
 (load! "lisp/init-editor")
 (load! "lisp/init-functions")
-(load! "lisp/init-org")
 (load! "lisp/init-completion")
 (load! "lisp/init-lsp")
+(load! "lisp/init-dape")
 (load! "lisp/init-dap")
 (load! "lisp/init-dap-gdb")
 (load! "lisp/init-dap-lldb")
@@ -78,6 +78,7 @@
 (load! "lisp/init-llm")
 (load! "lisp/init-behavior")
 (load! "lisp/init-vterm")
+(load! "lisp/init-org")
 
 ;; Load keybindings
 (load! "lisp/init-keybinds-common")

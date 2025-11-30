@@ -130,7 +130,7 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
 (after! company
   (setq company-auto-commit nil
         company-minimum-prefix-length 1
-        company-idle-delay 0.0
+        company-idle-delay 0.5
         company-selection-wrap-around t))
 
 (defun my/company-accept-and-trim-duplicate ()
@@ -153,6 +153,7 @@ Example: 'material.pecular' + candidate 'materialSpecular'
                           when (string-suffix-p (substring ahead 0 i) cand)
                           return i)))
           (when n (delete-char n)))))))
+
 ;;; corfu
 ;; Accept Corfu candidate and delete any duplicate tail after point.
 ;; (defun my/corfu-accept-and-trim-duplicate ()
