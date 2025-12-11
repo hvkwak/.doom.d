@@ -177,6 +177,7 @@
        ;;yaml              ; JSON, but readable
        ;;zig               ; C, but simpler
        latex
+       (glsl +lsp)
 
        :email
        ;;(mu4e +org +gmail)

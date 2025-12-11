@@ -26,19 +26,17 @@
 
 ;;; Set org level colors
 (after! org
-  (setq org-n-level-faces 9)
-
+  (setq org-n-level-faces 8)
   (custom-set-faces!
-    ;; all vivid, no black, chosen to pop on a warm/yellow bg
-    '(org-level-1  :foreground "#0033FF" :weight bold)  ; strong blue
-    '(org-level-2  :foreground "#FF00AF" :weight bold)  ; hot magenta
-    '(org-level-3  :foreground "#00AFAF" :weight bold)  ; teal
-    '(org-level-4  :foreground "#8700FF" :weight bold)  ; bright violet
-    '(org-level-5  :foreground "#D70000" :weight bold)  ; vivid red
-    '(org-level-6  :foreground "#008080" :weight bold)  ; dark cyan
-    '(org-level-7  :foreground "#008700" :weight bold)  ; bright green
-    '(org-level-8  :foreground "#4B0082" :weight bold)  ; deep indigo
-    '(org-level-9 :foreground "#00A000" :weight bold))  ; emerald
+  ;; vivid blues & greens, from normal → bright, tuned for yellow background
+  '(org-level-1 :foreground "#0000FF" :weight bold)  ; normal strong blue
+  '(org-level-2 :foreground "#00AA00" :weight bold)  ; normal strong green
+  '(org-level-3 :foreground "#2563EB" :weight bold)  ; medium-bright blue
+  '(org-level-4 :foreground "#16A34A" :weight bold)  ; medium-bright green
+  '(org-level-5 :foreground "#3B82F6" :weight bold)  ; bright blue
+  '(org-level-6 :foreground "#22C55E" :weight bold)  ; bright green
+  '(org-level-7 :foreground "#60A5FA" :weight bold)  ; very bright blue
+  '(org-level-8 :foreground "#4ADE80" :weight bold)) ; very bright green
 )
 
 (after! org

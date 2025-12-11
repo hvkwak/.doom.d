@@ -41,7 +41,7 @@
   ;; this works good with professional
   '(doom-modeline-buffer-modified ((t (:foreground "#666666" :weight bold))))
   '(doom-modeline-buffer-path ((t (:foreground "#00aa00" :weight bold))))
-  '(doom-modeline-project-dir ((t (:foreground "#0000aa" :weight bold))))
+  '(doom-modeline-project-dir ((t (:foreground "#57b2ec" :weight bold))))
   '(doom-modeline-warning ((t (:foreground "#aa0000" :weight bold))))
   '(show-paren-match ((t (:foreground "#e45649" :background "#f0f0f0" :weight bold))))
   '(font-lock-string-face ((t (:foreground "#00AA00")))) ;; changes colors of string
@@ -75,13 +75,23 @@
 
 ;;; LSP UI Customization
 (after! lsp-mode
-  ;; Soft background highlights for readability
+  ;; (custom-set-faces!
+  ;; '(lsp-face-highlight-textual :background "darkseagreen2" :foreground "#ffffff" :weight bold)
+  ;; '(lsp-face-highlight-read    :background "darkseagreen2" :foreground "#ffffff" :weight bold)
+  ;; '(lsp-face-highlight-write   :background "darkseagreen2" :foreground "#ffffff" :weight bold))
+  ;; ;; Soft background highlights for readability
+  ;; (set-face-attribute 'lsp-face-highlight-textual nil
+  ;;                   :inherit nil
+  ;;                   :background "darkseagreen2"
+  ;;                   :foreground "#ffffff"
+  ;;                   :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-textual nil
-                      :background "#2f3e5e" :foreground 'unspecified' :weight 'bold)
+                      :background "darkseagreen2" :foreground "#000000" :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-read nil
-                      :background "#3e4d6c" :foreground 'unspecified' :weight 'bold)
+                      :background "darkseagreen2" :foreground "#000000" :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-write nil
-                      :background "#5e4c6e" :foreground 'unspecified' :weight 'bold))
+                      :background "darkseagreen2" :foreground "#000000" :weight 'bold)
+  )
 
 ;;; Which-Key UI
 (after! which-key

@@ -79,6 +79,7 @@
 (load! "lisp/init-behavior")
 (load! "lisp/init-vterm")
 (load! "lisp/init-org")
+(load! "lisp/init-glsl")
 
 ;; Load keybindings
 (load! "lisp/init-keybinds-common")

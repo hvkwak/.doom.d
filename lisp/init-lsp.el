@@ -20,13 +20,6 @@
         lsp-ui-sideline-delay 0.1
         lsp-diagnostics-provider :flycheck
         )
-
-  (set-face-attribute 'lsp-face-highlight-textual nil
-    :background "#FFF6B3" :foreground 'unspecified :underline nil :weight 'bold)
-  (set-face-attribute 'lsp-face-highlight-read    nil
-    :background "#FFF6B3" :foreground 'unspecified :underline nil :weight 'bold)
-  (set-face-attribute 'lsp-face-highlight-write   nil
-    :background "#FFF6B3" :foreground 'unspecified :underline nil :weight 'bold)
   )
 
 (after! lsp-clangd
