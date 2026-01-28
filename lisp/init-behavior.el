@@ -85,11 +85,10 @@
     (kill-local-variable 'my/defun-sig--prev-header)))
 
 ;;; Flycheck
+;; Note: Flycheck is already provided by Doom's `:checkers syntax' module.
+;; This just ensures it's globally enabled.
 (after! flycheck
-  (flycheck-mode 1)
-  ;; (global-flycheck-mode -1)
-  ;; (setq flycheck-global-modes nil)
-  )
+  (global-flycheck-mode +1))
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here

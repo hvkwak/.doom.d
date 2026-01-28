@@ -27,7 +27,7 @@
                :cwd "/home/hyobin/Documents/projects/helloworld"
                :args []
                ;;:stopAtBeginningOfMainSubprogram t
-               :defer-launch-attach nil
+               :defer-launch-attach t
                )
    (raytracer modes (c-mode c++-mode)
               command-cwd "~/"

@@ -36,9 +36,9 @@
 ;;; Code:
 (deftheme professional "port of Vim's professional theme")
 
-(let* ((pro/bgyellow "#FFFFDD") 
+(let* ((pro/bgyellow "#FFFFDD")
        (pro/fg "#000000")
-       (pro/blood "#993300") 
+       (pro/blood "#993300")
        (pro/blue "#0000C8")
        (pro/lightblue "#5180B3")
        (pro/darkgreen "#006600")
@@ -57,14 +57,14 @@
        (pro/brightred "#FF0000")
        (pro/darkgray "#757575")
        (pro/mediumgray "#C0C0C0")
-       (pro/lightgray "#E8E8E8") 
+       (pro/lightgray "#E8E8E8")
        (pro/brightyellow "#FFFF00"))
 
 
   ;; Set faces
   (custom-theme-set-faces
    `professional
-   `(default ((t (:foreground ,pro/fg :background ,pro/bgyellow))))
+   `(default ((t (:foreground ,pro/fg :background ,pro/white))))
    `(cursor  ((t (:foreground ,pro/bgyellow :background ,pro/pastelgreen))))
    `(region  ((t (:background "grey"))))
    `(font-lock-builtin-face		((t (:foreground ,pro/blue))))

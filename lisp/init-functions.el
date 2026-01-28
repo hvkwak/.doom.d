@@ -119,7 +119,7 @@ If point is on an opening, go forward. If on a closing, go backward."
 
 ;;; File Operations
 (defun save-all-c-h-buffers ()
-  "Save all open buffers visiting .c or .h files."
+  "Save all open buffers visiting C/C++ source files (.c, .h, .cpp) and Python files."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
@@ -130,7 +130,7 @@ If point is on an opening, go forward. If on a closing, go backward."
                        (string-suffix-p ".cpp" file t)
                        (string-suffix-p ".py" file t)))
           (save-buffer)))))
-  (message "Saved all files."))
+  (message "Saved all C/C++/Python files."))
 
 ;;; Code Documentation
 (defun insert-doxygen-function-comment ()
@@ -153,12 +153,13 @@ If point is on an opening, go forward. If on a closing, go backward."
     (call-interactively #'evil-escape)))
 
 (defun my/insert-escape-and-clear ()
+  "Escape from insert mode and deactivate any active region."
   (interactive)
   (evil-escape)
   (run-at-time 0 nil
                (lambda ()
                  (when (use-region-p) (deactivate-mark))
-                 (when (evil-insert-state-p) (evil-exit)))))
+                 (when (evil-insert-state-p) (evil-normal-state)))))
 
 ;;; Debugging & Inspection
 (defun my/locate-key (key)

@@ -1,5 +1,9 @@
-;;; init-ui.el --- LSP UI Settings -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; init-lsp.el --- LSP configuration -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
+;;
+;; LSP-mode and LSP-UI configuration.
+;; Includes clangd setup for C/C++ development.
+;;
 ;;; Code:
 (after! lsp-ui
   (setq lsp-ui-doc-enable t
@@ -33,14 +37,14 @@
           )))
 
 
-;; This enables C-h in c-mode
+;;; Unbind C-h/j/k/l in C modes to allow custom navigation bindings
 (with-eval-after-load 'ccls
   (dolist (m '(c-mode-map c++-mode-map objc-mode-map c-ts-mode-map c++-ts-mode-map))
     (when (boundp m)
       (evil-define-key 'normal (symbol-value m)
         (kbd "C-h") nil (kbd "C-j") nil (kbd "C-k") nil (kbd "C-l") nil))))
 
-;; This enables C-h in c-mode
+;; Unbind C-h in lsp-mode to preserve help-map access
 (with-eval-after-load 'lsp-mode
   (define-key lsp-mode-map (kbd "C-h") nil))
 

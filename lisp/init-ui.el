@@ -1,9 +1,13 @@
-;;; init-ui.el --- Change how UI looks -*- lexical-binding: t; no-byte-compile: t; -*-
+;;; init-ui.el --- UI appearance configuration -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
+;;
+;; Visual configuration: theme, fonts, cursors, faces, scrolling behavior,
+;; and UI customizations for LSP, which-key, and treemacs.
+;;
 ;;; Code:
 
 ;;; Theme
-(load-file (expand-file-name "themes/professional-theme.el" doom-user-dir))
+(add-to-list 'custom-theme-load-path (expand-file-name "themes/" doom-user-dir))
 (setq doom-theme 'professional)
 
 ;;; Theme Subs
@@ -74,24 +78,14 @@
 (setq mouse-wheel-progressive-speed nil)
 
 ;;; LSP UI Customization
+;; Symbol highlighting faces (when cursor is on a symbol)
 (after! lsp-mode
-  ;; (custom-set-faces!
-  ;; '(lsp-face-highlight-textual :background "darkseagreen2" :foreground "#ffffff" :weight bold)
-  ;; '(lsp-face-highlight-read    :background "darkseagreen2" :foreground "#ffffff" :weight bold)
-  ;; '(lsp-face-highlight-write   :background "darkseagreen2" :foreground "#ffffff" :weight bold))
-  ;; ;; Soft background highlights for readability
-  ;; (set-face-attribute 'lsp-face-highlight-textual nil
-  ;;                   :inherit nil
-  ;;                   :background "darkseagreen2"
-  ;;                   :foreground "#ffffff"
-  ;;                   :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-textual nil
                       :background "darkseagreen2" :foreground "#000000" :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-read nil
                       :background "darkseagreen2" :foreground "#000000" :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-write nil
-                      :background "darkseagreen2" :foreground "#000000" :weight 'bold)
-  )
+                      :background "darkseagreen2" :foreground "#000000" :weight 'bold))
 
 ;;; Which-Key UI
 (after! which-key
@@ -103,9 +97,8 @@
 
 ;;; Treemacs UI
 (after! treemacs
-
-  ;; follow the current project root - Disabled
-  (treemacs-project-follow-mode 1)  ; Commented out - leave disabled by default
+  ;; Automatically switch to the project root of the current buffer
+  (treemacs-project-follow-mode 1)
 
   ;; show indent guides
   (treemacs-indent-guide-mode 1)

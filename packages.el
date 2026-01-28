@@ -48,21 +48,26 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+;;; Completion enhancements
 (package! consult)
 (package! marginalia)
 (package! orderless)
-(package! vterm)
+
+;;; LLM integration
 (package! gptel :recipe (:nonrecursive t))
-(package! claude-code-ide
-  :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
+(package! claude-code-ide :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
+
+;;; Org-mode
 (package! toc-org)
-(package! better-jumper :disable t)
 
+;;; Search
+(package! rg)
 
-;; use default: No nerd-icons, nor all-the-icons.
-(package! treemacs-nerd-icons :disable t)
-(package! treemacs-all-the-icons :disable t)
-
+;;; Diff tools
 (package! vdiff)
 (package! vdiff-magit)
-(package! rg)
+
+;;; Disabled packages
+(package! better-jumper :disable t)         ; Using evil's built-in jump list instead
+(package! treemacs-nerd-icons :disable t)   ; Using default treemacs icons
+(package! treemacs-all-the-icons :disable t)

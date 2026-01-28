@@ -44,6 +44,9 @@
   ;; change `org-directory'. It must be set before org loads!
   (setq org-directory "~/org/")
 
+  ;; startup folded
+  (setq org-startup-folded 'overview)
+
   ;; enable font-lock for bold/italic/underline/etc.
   (setq org-fontify-emphasized-text t)
   (setq org-hide-emphasis-markers t)
@@ -56,7 +59,7 @@
 
   ;; Make math formulas big and readable
   (setq org-format-latex-options
-        (plist-put org-format-latex-options :scale 0.1)) ; tweak 2.0–2.6 if you want
+        (plist-put org-format-latex-options :scale 1.0)) ; tweak 2.0–2.6 if you want
 
   ;; High-quality transparent PNGs
   (setq org-preview-latex-process-alist

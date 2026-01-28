@@ -1,6 +1,22 @@
 ;;; init-keybinds-common.el --- Keybindings for Doom Emacs -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
-;;; common keybinds for init-keybinds-md.el and init-keybinds-org.el
+;;
+;; Common keybindings shared across modes (org, markdown, etc.)
+;;
+;; Movement Model (IJKL instead of HJKL):
+;;   i = up       (standard vim: enter insert mode)
+;;   k = down     (standard vim: up)
+;;   j = left     (standard vim: down)
+;;   l = right    (unchanged)
+;;   h = tab switching (standard vim: left)
+;;
+;; Insert mode is accessed via M-i in normal mode.
+;;
+;; Additional remaps:
+;;   w = yank (copy)      y = paste
+;;   u = beginning of line   o = end of line
+;;   z = undo
+;;
 ;;; Code:
 
 ;;; Minor Mode Definition
@@ -46,13 +62,15 @@
   (map! :g "M-q" #'doom/escape
         :g "M-y" #'yank)
 
+  ;; Disable certain Meta keys to prevent accidental triggers
+  ;; (M-h=mark-paragraph, M-k=kill-sentence, M-p/M-t=various)
   (evil-define-key '(normal insert visual replace) global-map
-    (kbd "M-h")        (lambda () (interactive) ())
-    (kbd "M-k")        (lambda () (interactive) ())
-    (kbd "M-p")        (lambda () (interactive) ())
-    (kbd "M-t")        (lambda () (interactive) ())
-    (kbd "M-\\")       (lambda () (interactive) (insert "\\"))
-    (kbd "M-SPC")      (lambda () (interactive) (insert " "))
+    (kbd "M-h")        #'ignore
+    (kbd "M-k")        #'ignore
+    (kbd "M-p")        #'ignore
+    (kbd "M-t")        #'ignore
+    (kbd "M-\\")       (cmd! (insert "\\"))
+    (kbd "M-SPC")      (cmd! (insert " "))
     (kbd "C-w")        #'kill-region
     (kbd "M-m")        #'my-defun-sig-header-mode
     (kbd "M-M")        #'beginning-of-defun
@@ -63,8 +81,8 @@
     (kbd "<f9>")       #'treemacs
     (kbd "M-,")        #'evil-jump-backward
     (kbd "M-.")        #'evil-jump-forward
-    (kbd "M-8")        #'my/evil-select-inside-paren
-    (kbd "M-9")        #'my/jump-matching-paren
+    (kbd "M-9")        #'my/evil-select-inside-paren
+    (kbd "M-0")        #'my/jump-matching-paren
     (kbd "C-b")        #'view-echo-area-messages
     (kbd "C-S-z")      #'undo-fu-only-redo
     (kbd "C-z")        #'undo-fu-only-undo
@@ -90,7 +108,7 @@
     (kbd "M-e")        #'execute-extended-command)
   )
 
-;;; Evil Mode - exceptions.
+;;; More - Evil Mode
 (after! evil
   (map! :vnm "i"         #'previous-line
         :vnm "k"         #'next-line
@@ -132,7 +150,7 @@
          :desc "switch buffer" :n "b" #'+vertico/switch-workspace-buffer
          :desc "snipe-s"       :n "ns" #'evil-snipe-s
          :desc "snipe-t"       :n "nt" #'evil-snipe-t
-         :desc "select wrod"   :n "e" #'my/select-symbol-at-point
+         :desc "select word"   :n "e" #'my/select-symbol-at-point
          :desc "select fun"    :n "f" #'mark-defun
          :desc "select page"   :n "p" #'mark-page
          :desc "window left"   :n "j" #'evil-window-left
@@ -155,7 +173,7 @@
         :i "S-<right>" nil
         :i "S-<down>"  nil
         :i "S-<up>"    nil
-        :i "M-SPC"     (lambda () (interactive) (insert " "))
+        :i "M-SPC"     (cmd! (insert " "))
         :i "C-SPC"     #'set-mark-command
         :i "M-y"       #'yank
         :i "M-i"       #'previous-line
@@ -167,7 +185,7 @@
         :i "M-<next>"  #'scroll-up-command
         :i "M-<prior>" #'scroll-down-command
         :i "M-DEL"     #'delete-char
-        :i "M-;"       (lambda () (interactive) (insert ";"))
+        :i "M-;"       (cmd! (insert ";"))
         :i "M-/"       #'comment-dwim)
 
   ;;; Visual
@@ -183,7 +201,9 @@
         :v "M-i" #'previous-line
         :v "M-k" #'next-line
         :v "M-j" #'backward-char
-        :v "M-l" #'forward-char)
+        :v "M-l" #'forward-char
+        :v "<tab>" #'indent-for-tab-command
+        )
   )
 
 ;;; emacs-state

@@ -36,6 +36,7 @@
   )
 
 (defun my/thing-at-point ()
+  "Return the symbol at point as a plain string, or nil if none."
   (when-let ((s (thing-at-point 'symbol t)))
     (substring-no-properties s)))
 
@@ -49,7 +50,7 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
         (minibuffer-with-setup-hook
             (lambda ()
               ;; Enable the *mode*, not just the var
-              (delete-selection-mode 1)
+              ;; (delete-selection-mode 1)
               ;; Select the whole initial input so typing replaces it
               (set-mark (minibuffer-prompt-end))
               (goto-char (point-max))
@@ -57,39 +58,6 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
           ;; Prefer passing INITIAL to consult instead of inserting ourselves
           (consult-line sym))
       (consult-line))))
-
-;; (defun my/git-super-project-root ()
-;;   "Find the topmost git repository root (super project if in submodule).
-;; Returns the directory containing the outermost .git directory."
-;;   (when-let* ((default-directory (or (projectile-project-root)
-;;                                      default-directory))
-;;               (current-root (locate-dominating-file default-directory ".git")))
-;;     (let ((super-root current-root)
-;;           (parent (file-name-directory (directory-file-name current-root))))
-;;       ;; Keep looking up for .git directories
-;;       (while (and parent
-;;                   (setq parent (locate-dominating-file parent ".git")))
-;;         (setq super-root parent)
-;;         (setq parent (file-name-directory (directory-file-name parent))))
-;;       super-root)))
-
-;; (defun my/consult-ripgrep-dwim ()
-;;   "Run `consult-ripgrep` with symbol-at-point prefilled & selected.
-;; If there is no symbol, run plain `consult-ripgrep`.
-;; Searches from the super project root (handles submodules correctly)."
-;;   (interactive)
-;;   (let* ((sym (my/thing-at-point))
-;;          (sym (and sym (> (length sym) 0) sym))
-;;          (search-root (my/git-super-project-root)))
-;;     (if sym
-;;         (minibuffer-with-setup-hook
-;;             (lambda ()
-;;               (delete-selection-mode 1)
-;;               (goto-char (minibuffer-prompt-end))
-;;               (set-mark (point-max))
-;;               (activate-mark))
-;;           (consult-ripgrep search-root sym))
-;;       (consult-ripgrep search-root))))
 
 ;;; marginalia
 (use-package! marginalia
@@ -123,7 +91,7 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
      ;; orderless-strict-full-initialism
      ;; orderless-without-literal          ; Recommended for dispatches instead
      ))
-  (setq orderless-case-sensitivity 'smart) ;; TODO: keep it smart? or not sensitive?
+  (orderless-case-sensitivity 'smart)
   )
 
 ;;; company
@@ -153,32 +121,6 @@ Example: 'material.pecular' + candidate 'materialSpecular'
                           when (string-suffix-p (substring ahead 0 i) cand)
                           return i)))
           (when n (delete-char n)))))))
-
-;;; corfu
-;; Accept Corfu candidate and delete any duplicate tail after point.
-;; (defun my/corfu-accept-and-trim-duplicate ()
-;;   "Accept current Corfu candidate and remove duplicated suffix ahead of point.
-;; For example: 'material.pecular' + candidate 'materialSpecular'
-;; → inserts 'materialSpecular' and kills the following 'pecular'."
-;;   (interactive)
-;;   (let* ((cand (and (boundp 'corfu--index)
-;;                     (>= corfu--index 0)
-;;                     (nth corfu--index corfu--candidates)))
-;;          (ahead (save-excursion
-;;                   (buffer-substring-no-properties
-;;                    (point)
-;;                    (progn (skip-chars-forward "_[:alnum:]") (point))))))
-;;     ;; Fallback: if no candidate, just insert newline (or do whatever RET does).
-;;     (unless cand (call-interactively #'corfu-insert))
-;;     (let ((suffix-len
-;;            (when (and cand (> (length ahead) 0))
-;;              ;; Longest prefix of AHEAD that is a suffix of CAND
-;;              (cl-loop for i from (min (length ahead) (length cand)) downto 1
-;;                       when (string-suffix-p (substring ahead 0 i) cand)
-;;                       return i))))
-;;       (call-interactively #'corfu-insert)
-;;       (when suffix-len
-;;         (delete-char suffix-len)))))
 
 ;;; rg
 (set-popup-rule! "^\\*rg\\*$"
@@ -211,9 +153,6 @@ Example: 'material.pecular' + candidate 'materialSpecular'
     ))
 (setq rg-custom-type-aliases
       '(("MyC" . "*.c *.cu *.cpp *.cc *.cxx *.h *.hpp")))
-
-
-
 
 (provide 'init-completion)
 ;;; init-completion.el ends here
