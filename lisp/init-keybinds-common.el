@@ -62,8 +62,18 @@
   (map! :g "M-q" #'doom/escape
         :g "M-y" #'yank)
 
+  ;; Override default Meta bindings with movement keys (due to dape!)
+  ;; (M-i=tab-to-tab-stop, M-j=default-indent-new-line, M-k=kill-sentence,
+  ;;  M-l=downcase-word, M-u=upcase-word, M-o=facemenu-keymap)
+  (define-key global-map (kbd "M-i") #'previous-line)
+  (define-key global-map (kbd "M-k") #'next-line)
+  (define-key global-map (kbd "M-j") #'backward-char)
+  (define-key global-map (kbd "M-l") #'forward-char)
+  (define-key global-map (kbd "M-u") #'smart-beginning-of-line)
+  (define-key global-map (kbd "M-o") #'move-end-of-line)
+
   ;; Disable certain Meta keys to prevent accidental triggers
-  ;; (M-h=mark-paragraph, M-k=kill-sentence, M-p/M-t=various)
+  ;; (M-h=mark-paragraph, M-p/M-t=various)
   (evil-define-key '(normal insert visual replace) global-map
     (kbd "M-h")        #'ignore
     (kbd "M-k")        #'ignore

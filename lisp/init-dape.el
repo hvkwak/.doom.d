@@ -3,43 +3,30 @@
 ;;; Code:
 ;;;
 
-(after! gdb-mi
-  (setq gdb-many-windows t)
-  (setq gdb-show-main t))
+(setq dap-cpptools-extension-path "~/.emacs.d/debug-adapters/cpptools")
 
-(after! dape
-  ;; RESET dape-configs to ensure no old broken configs survive
-  (setq dape-configs `(
-   ;; (helloworld modes (c-mode c++-mode)
-   ;;             command-cwd "/home/hyobin/Documents/projects/helloworld"
-   ;;             :program "/home/hyobin/Documents/projects/helloworld/build/helloworld"
-   ;;             :args ""
-   ;;             :stopAtBeginningOfMainSubprogram nil
-   ;;      )
-   (helloworld modes (c-mode c++-mode)
-               ;; how to start the adapter (gdb)
-               command-cwd dape-command-cwd
-               command "gdb"
-               command-args ("--interpreter=dap")
-               :request "launch"
-               :type "gdb"
-               :program "/home/hyobin/Documents/projects/helloworld/build/helloworld"
-               :cwd "/home/hyobin/Documents/projects/helloworld"
-               :args []
-               ;;:stopAtBeginningOfMainSubprogram t
-               :defer-launch-attach t
-               )
-   (raytracer modes (c-mode c++-mode)
-              command-cwd "~/"
-              command "ssh"
-              command-args ("root@141.195.21.87" "-p" "40418" "gdb" "--interpreter=dap")
-              :cwd "/workspace/gdv-raytracer/build/"
-              :program "/workspace/gdv-raytracer/build/raytracer"
-              :prefix-local "/ssh:root@141.195.21.87#40418:/"
-              :prefix-remote "/"
-              )
-   ))
-  )
+;; Path to the binary YOU built today
+(setq dap-cpptools-lldb-mi-path "~/lldb-mi/build/src/lldb-mi")
+
+(with-eval-after-load 'dape
+  (add-to-list 'dape-configs
+               `(cpptools
+                 modes (c-mode c++-mode rust-mode)
+                 ;; This points to the VS Code extension binary we unpacked earlier
+                 command ,(expand-file-name "~/.emacs.d/debug-adapters/cpptools/extension/debugAdapters/bin/OpenDebugAD7")
+                 :type "cppdbg"
+                 :request "launch"
+                 :state "launch"
+                 :MIMode "lldb"
+                 ;; This points to the lldb-mi binary YOU built!
+                 :miDebuggerPath ,(expand-file-name "~/lldb-mi/build/src/lldb-mi")
+                 ;; AUTOMATION: This finds the executable in your build folder automatically
+                 :program ,(lambda ()
+                             (let ((debug-file (concat (dape-cwd) "build/" (file-name-all-completions "" (concat (dape-cwd) "build/")))))
+                               ;; If 'helloworld' exists in build/, use it, otherwise ask
+                               (read-file-name "Select binary: " (concat (dape-cwd) "build/"))))
+                 :cwd ,(lambda () (dape-cwd))
+                 :environment [])))
 
 (provide 'init-dape)
 ;;; init-dape.el ends here
