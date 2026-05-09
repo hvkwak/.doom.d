@@ -21,8 +21,9 @@
 ;; (setq doom-theme 'doom-one-light)
 ;; (setq doom-theme 'doom-solarized-light)
 
+
 ;;; Fonts
-(setq doom-font (font-spec :family "JetBrains Mono" :size 20))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 27))
 
 ;;; Display Settings
 
