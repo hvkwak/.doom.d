@@ -79,7 +79,8 @@
     (kbd "M-k")        #'ignore
     (kbd "M-p")        #'ignore
     (kbd "M-t")        #'ignore
-    (kbd "M-\\")       (cmd! (insert "\\"))
+    ;; (kbd "M-\\")       (cmd! (insert "\\"))
+    (kbd "M-\\")       #'consult-imenu
     (kbd "M-SPC")      (cmd! (insert " "))
     (kbd "C-w")        #'kill-region
     (kbd "M-m")        #'my-defun-sig-header-mode
