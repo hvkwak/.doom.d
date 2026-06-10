@@ -48,8 +48,9 @@
 (after! compile
   (defun my/select-glsl-compilation (buffer _status)
     "Focus GLSL validation window when it finishes."
-    (when (string-match-p "^\\*glsl-validate.*\\*$"
-                          (buffer-name buffer))
+    (when (and (buffer-live-p buffer)
+               (string-match-p "^\\*glsl-validate.*\\*$"
+                               (buffer-name buffer)))
       (when-let ((win (get-buffer-window buffer)))
         (select-window win))))
   (add-hook 'compilation-finish-functions #'my/select-glsl-compilation)

@@ -213,7 +213,8 @@
         :v "M-k" #'next-line
         :v "M-j" #'backward-char
         :v "M-l" #'forward-char
-        :v "<tab>" #'indent-for-tab-command
+        :v "M-/" #'comment-dwim
+        ;; :v "<tab>" #'indent-for-tab-command
         )
   )
 

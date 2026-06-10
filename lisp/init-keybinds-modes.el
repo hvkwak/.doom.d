@@ -82,7 +82,8 @@
 (after! cc-mode
   (map! :map c-mode-base-map
         :ni "C-d" #'consult-lsp-diagnostics
-        :ni "C-h k" #'describe-key))
+        :ni "C-h k" #'describe-key
+        :v  "<tab>" #'c-indent-line-or-region))
 
 (after! company
   (define-key company-active-map (kbd "M-i") #'company-select-previous)

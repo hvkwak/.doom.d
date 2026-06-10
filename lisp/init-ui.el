@@ -23,7 +23,7 @@
 
 
 ;;; Fonts
-(setq doom-font (font-spec :family "JetBrains Mono" :size 27))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 17))
 
 ;;; Display Settings
 
@@ -100,6 +100,7 @@
 (after! treemacs
   ;; Automatically switch to the project root of the current buffer
   (treemacs-project-follow-mode 1)
+  (treemacs-follow-mode 1)
 
   ;; show indent guides
   (treemacs-indent-guide-mode 1)
