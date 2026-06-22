@@ -48,6 +48,9 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
 
+;;; editor
+(package! drag-stuff)
+
 ;;; Completion enhancements
 (package! consult)
 (package! marginalia)

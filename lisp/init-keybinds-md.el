@@ -8,8 +8,8 @@
 
 (after! evil-markdown
   (evil-define-key '(normal insert visual) evil-markdown-mode-map
-    (kbd "M-<down>") #'markdown-move-down
-    (kbd "M-<up>") #'markdown-move-up
+    (kbd "M-<down>") #'markdown-move-list-item-down
+    (kbd "M-<up>") #'markdown-move-list-item-up
     (kbd "M-r") nil ;; cancels browse-url-of-file
     (kbd "M-i") nil
     (kbd "M-k") nil

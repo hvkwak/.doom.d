@@ -1,6 +1,8 @@
 # .doom.d
-
 Personal Doom Emacs configuration with modular customizations.
+
+## TODOs
+rg-dwim not connected to evil-jump-backward M-, probably M-f (my/consult-line-dwim)
 
 ## Key Features
 

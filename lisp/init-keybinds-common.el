@@ -116,7 +116,9 @@
     (kbd "M-f")        #'my/consult-line-dwim
     (kbd "M-r")        #'rg-dwim
     (kbd "M-'")        #'consult-imenu
-    (kbd "M-e")        #'execute-extended-command)
+    (kbd "M-e")        #'execute-extended-command
+    (kbd "M-<up>")     #'drag-stuff-up
+    (kbd "M-<down>")   #'drag-stuff-down)
   )
 
 ;;; More - Evil Mode
