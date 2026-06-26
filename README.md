@@ -3,6 +3,7 @@ Personal Doom Emacs configuration with modular customizations.
 
 ## TODOs
 rg-dwim not connected to evil-jump-backward M-, probably M-f (my/consult-line-dwim)
+M-w in visual/insert mode works differently when M-y.
 
 ## Key Features
 
