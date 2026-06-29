@@ -17,6 +17,9 @@
 ;;; Tab & Indentation
 (setq tab-width 4)
 
+;;; Imenu
+(setq imenu-sort-function nil)
+
 ;;; Evil Cursor Behavior
 ;; Don't jump one char left when leaving Insert
 (setq evil-move-cursor-back nil)
