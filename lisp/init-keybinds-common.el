@@ -56,7 +56,8 @@
   (map! :leader
         (:prefix ("k" . "kill")
          :desc "kill current buffer"             "k" #'kill-current-buffer
-         :desc "kill frame"                      "f" #'delete-frame
+         :desc "kill window"                     "f" #'+workspace/close-window-or-workspace
+         ;;:desc "kill frame"                    "f" #'delete-frame
          :desc "kill current workspace(project)" "w" #'+workspace/kill))
 
   (map! :g "M-q" #'doom/escape
