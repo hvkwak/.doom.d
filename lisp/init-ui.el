@@ -24,16 +24,15 @@
 
 ;;; Fonts
 ;; (setq doom-font (font-spec :family "JetBrains Mono" :size 28.0 )) ;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 28 :weight 'semi-bold))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 18 :weight 'bold))
 
-;; Emacs가 시스템 가독성 설정을 강제로 가져오도록 지정
-;; (setq x-underline-at-descent-line t) ; 밑줄이 글자 아래 딱 붙게 하여 가독성 향상
+
 ;;; Display Settings
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
-(menu-bar-mode 1)
+(menu-bar-mode -1)
 
 ;;; Face Customization
 (custom-set-faces
