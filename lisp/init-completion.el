@@ -99,7 +99,10 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
   (setq company-auto-commit nil
         company-minimum-prefix-length 1
         company-idle-delay 0.5
-        company-selection-wrap-around t))
+        company-selection-wrap-around t)
+
+  ;; disable company auto completion at dape-repl-mode
+  (add-hook 'dape-repl-mode-hook (lambda () (company-mode -1))))
 
 (defun my/company-accept-and-trim-duplicate ()
   "Accept Company candidate and remove duplicated suffix ahead of point.
