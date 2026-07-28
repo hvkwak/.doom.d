@@ -64,6 +64,15 @@
   ;; Evil keybindings while debugging is active
   (remove-hook 'dape-stopped-hook #'dape-active-mode)
 
+  ;; Upstream binds `dape-key-prefix' (`C-x C-a') straight to the full
+  ;; `dape-global-map', so every letter shortcut (n/c/s/o/r/q/...) keeps
+  ;; firing even after `dape-quit' -- there's just no connection left for
+  ;; them to act on.  Outside of a session the prefix should only be able
+  ;; to start one, so collapse it down to plain `dape' until a session is
+  ;; actually active again.
+  (when dape-key-prefix
+    (global-set-key dape-key-prefix #'dape))
+
   ;; `n'/`b' live in `evil-motion-state-map' upstream, so a local motion-state
   ;; override is enough.  `c'/`s'/`o'/`r'/`q'/`e' are upstream bound in
   ;; `evil-normal-state-map' instead, which Evil checks *before* the
@@ -74,6 +83,8 @@
   (defun +dape-active-mode-h ()
     (if dape-active-mode
         (progn
+          (when dape-key-prefix
+            (global-set-key dape-key-prefix dape-global-map))
           (evil-local-set-key 'motion "n" #'dape-next)
           (evil-local-set-key 'motion "b" #'dape-breakpoint-toggle)
           (evil-local-set-key 'normal "c" #'dape-continue)
@@ -91,6 +102,8 @@
       ;; toggling `hl-line-mode' for no reason mid-restart.
       (unless (cl-some #'dape--restart-in-progress-p dape--connections)
         (dape--stack-frame-cleanup)
+        (when dape-key-prefix
+          (global-set-key dape-key-prefix #'dape))
         (evil-local-set-key 'motion "n" nil)
         (evil-local-set-key 'motion "b" nil)
         (evil-local-set-key 'normal "c" nil)

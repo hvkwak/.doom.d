@@ -56,9 +56,8 @@
 (package! marginalia)
 (package! orderless)
 
-;;; LLM integration
-(package! gptel :recipe (:nonrecursive t))
-(package! claude-code-ide :recipe (:host github :repo "manzaltu/claude-code-ide.el"))
+;; theme
+(package! modus-themes) ;; modus-theme-code?
 
 ;;; Org-mode
 (package! toc-org)

@@ -2,6 +2,7 @@
 Personal Doom Emacs configuration with modular customizations.
 
 ## TODOs
+dape doesn't return to normal keymaps after dape-quit
 rg-dwim not connected to evil-jump-backward M-, probably M-f (my/consult-line-dwim)
 M-w in visual/insert mode works differently when M-y.
 comments that starts with "//" in .cpp cannot be indented with <tab>
