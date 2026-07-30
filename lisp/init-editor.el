@@ -6,6 +6,7 @@
 
 ;;; Performance
 (setq native-comp-jit-compilation t)
+(setq native-comp-async-jobs-number 2)
 
 (defun my-indent-setup ()
   "Set up the TAB key to indent with a single press."
