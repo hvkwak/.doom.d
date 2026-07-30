@@ -1,7 +1,9 @@
 ;;; init-functions.el --- Utility functions -*- lexical-binding: t; no-byte-compile: t; -*-
 ;;; Commentary:
-;;; Pure utility functions - all defun declarations that are interactive commands.
-;;; No configuration, hooks, or advice - just callable commands.
+;;; General-purpose utility functions - interactive commands not tied to any
+;;; one package or mode. No configuration, hooks, or advice - just callable
+;;; commands. Helpers specific to a single feature (e.g. rg, org, glsl, dape)
+;;; live alongside that feature's own init-*.el instead.
 ;;; Code:
 
 ;;; Buffer & Evaluation

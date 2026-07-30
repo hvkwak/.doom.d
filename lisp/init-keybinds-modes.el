@@ -87,6 +87,13 @@
         )
   )
 
+;; Unbind C-h/j/k/l in C modes to allow custom navigation bindings
+(with-eval-after-load 'ccls
+  (dolist (m '(c-mode-map c++-mode-map objc-mode-map c-ts-mode-map c++-ts-mode-map))
+    (when (boundp m)
+      (evil-define-key 'normal (symbol-value m)
+        (kbd "C-h") nil (kbd "C-j") nil (kbd "C-k") nil (kbd "C-l") nil))))
+
 (after! company
   (define-key company-active-map (kbd "M-i") #'company-select-previous)
   (define-key company-active-map (kbd "M-k") #'company-select-next)
