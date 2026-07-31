@@ -76,6 +76,7 @@
 (load! "lisp/init-vterm")
 (load! "lisp/init-org")
 (load! "lisp/init-glsl")
+(load! "lisp/init-modeline")
 
 ;; Load keybindings
 (load! "lisp/init-keybinds-common")
