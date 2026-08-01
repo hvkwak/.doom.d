@@ -57,7 +57,7 @@
 (package! orderless)
 
 ;; theme
-(package! modus-themes) ;; modus-theme-code?
+(package! professional-theme)
 
 ;;; Org-mode
 (package! toc-org)
