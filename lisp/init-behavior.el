@@ -88,7 +88,23 @@
 ;; Note: Flycheck is already provided by Doom's `:checkers syntax' module.
 ;; This just ensures it's globally enabled.
 (after! flycheck
-  (global-flycheck-mode +1))
+  (global-flycheck-mode +1)
+
+  ;; show error left side
+  (setq flycheck-indication-mode 'left-fringe)
+  (fringe-mode '(16 . 16))
+  (define-fringe-bitmap 'flycheck-fringe-bitmap-arrow
+    (vector #b11111000
+            #b11111100
+            #b11111110
+            #b11111111
+            #b11111111
+            #b11111110
+            #b11111000
+            #b11100000
+            #b11000000)
+    nil nil 'center)
+  )
 
 (provide 'init-behavior)
 ;;; init-behavior.el ends here
