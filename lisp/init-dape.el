@@ -16,7 +16,6 @@
               dape-disconnect-quit dape-quit))
   (autoload fn "dape" nil t))
 
-;; Dape가 global-map을 오염시키지 않도록 prefix 차단
 (setq dape-key-prefix nil)
 
 ;; =============================================================================
@@ -24,10 +23,7 @@
 ;; =============================================================================
 
 (with-eval-after-load 'dape
-  ;; 기존 설정 캐시 초기화
   (setq dape-configs nil)
-
-  ;; Native-lldb 설정 (CMake build/ 디렉터리 내 최신 실행 파일 자동 탐색)
   (add-to-list 'dape-configs
                `(native-lldb
                  modes (c-mode c++-mode rust-mode)
