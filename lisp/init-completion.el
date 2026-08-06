@@ -11,10 +11,9 @@
   :after projectile
   :config
   (setq consult-preview-key 'any) ;; Preview instantly as you cycle
-  ;; Use workspace-aware buffer sources to respect workspace boundaries
   (setq consult-buffer-sources
-      '(+workspaces--consult-workspace-buffer-source  ;; Only show buffers in current workspace
-        consult--source-hidden-buffer))               ;; Optional: include hidden buffers with space prefix
+      '(consult--source-buffer                        ;; Standard buffer list
+        consult--source-hidden-buffer))                ;; Optional: include hidden buffers with space prefix
   (setq consult-project-function #'projectile-project-root)
   (setq consult-ripgrep-args
         "rg --null --line-buffered --color=never --max-columns=1000 \

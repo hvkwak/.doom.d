@@ -11,7 +11,7 @@
 
 ;;; Fonts
 ;; (setq doom-font (font-spec :family "JetBrains Mono" :size 28.0 )) ;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 32 :weight 'bold))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 18 :weight 'bold))
 
 
 ;;; Display Settings
@@ -23,7 +23,7 @@
 
 
 ;;; Theme
-;; (add-to-list 'custom-theme-load-path (expand-file-name "themes/" doom-user-dir))
+;;(add-to-list 'custom-theme-load-path (expand-file-name "themes/" doom-user-dir))
 (setq doom-theme 'professional)
 
 ;;; Face Customization
@@ -96,7 +96,7 @@
   ;; Automatically switch to the project root of the current buffer
   (treemacs-project-follow-mode 1)
   (treemacs-follow-mode 1)
-  (treemacs-resize-icons 36)
+  (treemacs-resize-icons 18)
 
   ;; show indent guides
   (treemacs-indent-guide-mode 1)
