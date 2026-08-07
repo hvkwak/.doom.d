@@ -85,10 +85,9 @@
     (kbd "M-SPC")      (cmd! (insert " "))
     (kbd "C-w")        #'kill-region
     (kbd "M-m")        #'my-defun-sig-header-mode
-    (kbd "M-M")        #'beginning-of-defun
+    ;; (kbd "M-M")        #'beginning-of-defun
     (kbd "M-a")        #'lsp-ui-doc-toggle
     (kbd "M-A")        #'lsp-signature-toggle-full-docs
-    (kbd "M-<f12>")    #'my/toggle-between-header-and-source
     (kbd "<f12>")      #'lsp-find-definition
     (kbd "<f9>")       #'treemacs
     (kbd "M-,")        #'evil-jump-backward

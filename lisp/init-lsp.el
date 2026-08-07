@@ -38,11 +38,38 @@
           "--log=error"
           )))
 
-
 ;; Unbind C-h in lsp-mode to preserve help-map access
 (with-eval-after-load 'lsp-mode
   (define-key lsp-mode-map (kbd "C-h") nil))
 
+
+;;; Flycheck
+;; Note: Flycheck is already provided by Doom's `:checkers syntax' module.
+;; This just ensures it's globally enabled.
+(after! flycheck
+  (global-flycheck-mode +1)
+
+  ;; show error left side
+  ;; Errors/warnings are indicated by a bitmap glyph in the left fringe
+  ;; (instead of e.g. underlining) — `fringe-mode' widens both fringes to
+  ;; 16px so the custom arrow bitmap below has room to render clearly.
+  (setq flycheck-indication-mode 'left-fringe)
+  (fringe-mode '(16 . 16))
+  ;; Custom arrow-shaped fringe bitmap: each byte is one row (8 rows total,
+  ;; MSB-first), forming a right-pointing triangle used as the flycheck
+  ;; indicator glyph instead of Emacs' default fringe bitmap.
+  (define-fringe-bitmap 'flycheck-fringe-bitmap-arrow
+    (vector #b11111000
+            #b11111100
+            #b11111110
+            #b11111111
+            #b11111111
+            #b11111110
+            #b11111000
+            #b11100000
+            #b11000000)
+    nil nil 'center)
+  )
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here

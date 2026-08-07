@@ -11,19 +11,15 @@
 
 ;;; Fonts
 ;; (setq doom-font (font-spec :family "JetBrains Mono" :size 28.0 )) ;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 18 :weight 'bold))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 32 :weight 'bold))
 
 
 ;;; Display Settings
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
+;; This determines the style of line numbers in effect. set standard absolute numbers.
 (setq display-line-numbers-type t)
 (menu-bar-mode -1)
 
-
 ;;; Theme
-;;(add-to-list 'custom-theme-load-path (expand-file-name "themes/" doom-user-dir))
 (setq doom-theme 'professional)
 
 ;;; Face Customization
@@ -45,7 +41,6 @@
   '(show-paren-match ((t (:foreground "#e45649" :background "#f0f0f0" :weight bold))))
   '(font-lock-string-face ((t (:foreground "#00AA00")))) ;; changes colors of string
   )
-
 
 ;; Default keyboard cursor
 (setq-default cursor-type 'bar)

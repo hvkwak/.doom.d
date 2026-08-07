@@ -107,16 +107,6 @@
   (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
   (define-key company-active-map (kbd "<backtab>") #'company-select-previous))
 
-(add-hook 'rg-mode-hook
-  (lambda ()
-    ;;(switch-to-buffer-other-window (current-buffer))
-    (define-key compilation-mode-map       (kbd "RET") #'my/rg-goto-and-quit)
-    (define-key compilation-minor-mode-map (kbd "RET") #'my/rg-goto-and-quit)
-    (define-key compilation-button-map     (kbd "RET") #'my/rg-goto-and-quit)
-    (define-key compilation-mode-map       (kbd "q")   #'my/rg-quit-and-kill)
-    (define-key compilation-minor-mode-map (kbd "q")   #'my/rg-quit-and-kill)
-    (define-key compilation-button-map     (kbd "q")   #'my/rg-quit-and-kill)
-    ))
 
 (after! yasnippet
   (define-key yas-keymap (kbd "TAB")       #'yas-next-field)
@@ -125,4 +115,4 @@
   (define-key yas-keymap (kbd "<backtab>") #'yas-prev-field))
 
 (provide 'init-keybinds-modes)
-;; ;;; init-keybinds-modes.el ends here
+;;; init-keybinds-modes.el ends here

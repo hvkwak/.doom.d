@@ -22,24 +22,21 @@
               "#+DATE: " (format-time-string "<%Y-%m-%d %a>") "\n"
               "#+OPTIONS: toc:t num:t\n\n")))
 
-  (add-hook 'find-file-hook #'my/org-insert-header-template))
+  (add-hook 'find-file-hook #'my/org-insert-header-template)
 
-;;; Set org level colors
-(after! org
+  ;;; Set org level colors
   (setq org-n-level-faces 8)
   (custom-set-faces!
-  ;; vivid blues & greens, from normal → bright, tuned for yellow background
-  '(org-level-1 :foreground "#0000FF" :weight bold)  ; normal strong blue
-  '(org-level-2 :foreground "#00AA00" :weight bold)  ; normal strong green
-  '(org-level-3 :foreground "#2563EB" :weight bold)  ; medium-bright blue
-  '(org-level-4 :foreground "#16A34A" :weight bold)  ; medium-bright green
-  '(org-level-5 :foreground "#3B82F6" :weight bold)  ; bright blue
-  '(org-level-6 :foreground "#22C55E" :weight bold)  ; bright green
-  '(org-level-7 :foreground "#60A5FA" :weight bold)  ; very bright blue
-  '(org-level-8 :foreground "#4ADE80" :weight bold)) ; very bright green
-)
+    ;; vivid blues & greens, from normal → bright, tuned for yellow background
+    '(org-level-1 :foreground "#0000FF" :weight bold)  ; normal strong blue
+    '(org-level-2 :foreground "#00AA00" :weight bold)  ; normal strong green
+    '(org-level-3 :foreground "#2563EB" :weight bold)  ; medium-bright blue
+    '(org-level-4 :foreground "#16A34A" :weight bold)  ; medium-bright green
+    '(org-level-5 :foreground "#3B82F6" :weight bold)  ; bright blue
+    '(org-level-6 :foreground "#22C55E" :weight bold)  ; bright green
+    '(org-level-7 :foreground "#60A5FA" :weight bold)  ; very bright blue
+    '(org-level-8 :foreground "#4ADE80" :weight bold)) ; very bright green
 
-(after! org
   ;; If you use `org' and don't want your org files in the default location below,
   ;; change `org-directory'. It must be set before org loads!
   (setq org-directory "~/org/")
@@ -64,20 +61,20 @@
   ;; High-quality transparent PNGs
   (setq org-preview-latex-process-alist
         '((dvipng :programs ("latex" "dvipng")
-                  :description "dvi > png"
-                  :message "Install: texlive texlive-latex-extra dvipng"
-                  :image-input-type "dvi"
-                  :image-output-type "png"
-                  :image-size-adjust (1.0 . 1.0)
-                  :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
-                  :image-converter ("dvipng -D 200 -T tight -bg Transparent -o %O %f"))))
+           :description "dvi > png"
+           :message "Install: texlive texlive-latex-extra dvipng"
+           :image-input-type "dvi"
+           :image-output-type "png"
+           :image-size-adjust (1.0 . 1.0)
+           :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("dvipng -D 200 -T tight -bg Transparent -o %O %f"))))
 
   ;; Automatically preview math on open (optional)
-  (setq org-startup-with-latex-preview t))
+  (setq org-startup-with-latex-preview t)
+  )
 
-;; Optional: if your screen is HiDPI
-(setq image-scaling-factor 1.0)
 
+;; wrap region
 (defun my/org-wrap-region-as-src (lang)
   "Wrap the active region in an Org src block for LANG.
 Expands to whole lines. Indents #+begin_src / #+end_src by two spaces."

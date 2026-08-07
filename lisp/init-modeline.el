@@ -13,24 +13,20 @@
   (custom-set-faces!
     '(mode-line
       :family "JetBrains Mono"
-      :weight medium)
+      :weight medium
+      :box (:line-width (1 . 1) :color "#000000" :style nil)
+      )
     '(mode-line-inactive
       :family "JetBrains Mono"
-      :weight regular)))
-
-;; Initial execution
-(my/set-modeline-faces)
-
-;; Register hooks to preserve font styling across theme switches
-(add-hook 'doom-load-theme-hook #'my/set-modeline-faces)
-(add-hook 'modus-themes-after-load-theme-hook #'my/set-modeline-faces)
+      :weight regular
+      :box (:line-width (1 . 1) :color "#000000" :style nil))))
 
 ;; 2. Doom Modeline Package Configuration
 (use-package! doom-modeline
   :init (doom-modeline-mode 1)
   :config
   ;; Dedicated modeline font (controls size and font globally to ensure proper vertical alignment)
-  (setq doom-modeline-font (font-spec :family "JetBrains Mono" :size 16 :weight 'medium))
+  (setq doom-modeline-font (font-spec :family "JetBrains Mono" :size 32 :weight 'medium))
 
   ;; Modeline height and left bar width (30–32 height works well for a 16px font)
   (setq doom-modeline-height 32)
@@ -66,6 +62,13 @@
 
   ;; Battery status
   (setq doom-modeline-battery nil))
+
+;; Initial execution
+(my/set-modeline-faces)
+
+;; Register hooks to preserve font styling across theme switches
+(add-hook 'doom-load-theme-hook #'my/set-modeline-faces)
+(add-hook 'modus-themes-after-load-theme-hook #'my/set-modeline-faces)
 
 (provide 'init-modeline)
 ;;; init-modeline.el ends here
