@@ -5,22 +5,22 @@
 ;;; Code:
 
 ;;; Evil Jump List Integration
-;; Goal: whenever point moves "far" (consult jump, buffer-boundary motions,
-;; defun motions, LSP/xref jumps), record the origin in Evil's jump list
-;; first, so `C-o' / `C-i' can hop back to where you were before the jump.
+;; Whenever point moves "far" (consult jump, buffer-boundary motions, defun
+;; motions, LSP/xref jumps), record the origin in Evil's jump list first, so
+;; `C-o' / `C-i' (or `M-,' / `M-.') can hop back to where you were before the jump.
 
-;; Make Evil's jump list work with Consult jumps (consult-line, ripgrep, etc.)
+;; Consult jumps (consult-line, ripgrep, etc.) don't touch Evil's jump list
+;; by default, so wire them in explicitly.
 (with-eval-after-load 'consult
   (defun my/consult-push-evil-jump (&rest _)
     (when (bound-and-true-p evil-mode)
-      (evil-set-jump)))              ;; record current point in evil's jumplist
-  ;; Prefer official hook (no spam from live preview)
-  ;; consult-before-jump-hook fires once, right before the real jump commits
-  ;; (unlike per-candidate preview updates, which would spam the jump list).
+      (evil-set-jump)))
+  ;; Fires once right before the real jump commits, not on every live-preview
+  ;; candidate, so it won't spam the jump list.
   (add-hook 'consult-before-jump-hook #'my/consult-push-evil-jump)
 
-  ;; Fallback for older Consult builds that predate `consult-before-jump-hook':
-  ;; wrap the low-level jump functions directly so the jump is still recorded.
+  ;; Older Consult builds lack `consult-before-jump-hook'; advise the
+  ;; low-level jump functions instead so the jump still gets recorded.
   (dolist (fn '(consult--jump consult--goto-location))
     (when (fboundp fn)
       (advice-add fn :around
@@ -28,62 +28,51 @@
                     (my/consult-push-evil-jump)
                     (apply orig args))))))
 
-;; One reusable advice fn: record an Evil jump-list entry before a motion
-;; command runs, but only when called interactively (so programmatic/internal
-;; calls to these functions don't pollute the jump list).
+;; Reusable advice: record an Evil jump before a motion command, but only
+;; when called interactively, so internal/programmatic calls don't pollute
+;; the jump list. Shared by the built-ins below and by rg/company in
+;; init-utils.el.
 (defun my/evil-set-jump-before (&rest _)
   (when (called-interactively-p 'interactive)
     (evil-set-jump)))
 
-;; Built-ins are always present, so these advices can be added unconditionally
-;; at load time (no `with-eval-after-load' needed).
+;; Built-in motions - always present, so no `with-eval-after-load' needed.
 (advice-add 'beginning-of-buffer :before #'my/evil-set-jump-before)
 (advice-add 'end-of-buffer       :before #'my/evil-set-jump-before)
-(advice-add 'beginning-of-defun :before #'my/evil-set-jump-before)
+(advice-add 'beginning-of-defun  :before #'my/evil-set-jump-before)
 
-;; cc-mode defun motions live in cc-cmds
-;; (c-beginning-of-defun/c-end-of-defun are C/C++/Java-mode's own defun
-;; motions, separate from the generic `beginning-of-defun' above.)
+;; cc-mode's own defun motions (C/C++/Java), separate from the generic
+;; `beginning-of-defun' above.
 (with-eval-after-load 'cc-cmds
   (advice-add 'c-beginning-of-defun :before #'my/evil-set-jump-before)
-  (advice-add 'c-end-of-defun       :before #'my/evil-set-jump-before)) ;; optional but nice
+  (advice-add 'c-end-of-defun       :before #'my/evil-set-jump-before))
 
-;; LSP/Xref jumps (cover both LSP and generic xref)
-;; lsp-mode has its own find-definition/declaration/references commands
-;; distinct from Emacs' built-in xref frontend.
+;; LSP's own find-definition/declaration/references commands.
 (with-eval-after-load 'lsp-mode
   (advice-add 'lsp-find-definition   :before #'my/evil-set-jump-before)
   (advice-add 'lsp-find-declaration  :before #'my/evil-set-jump-before)
   (advice-add 'lsp-find-references   :before #'my/evil-set-jump-before))
 
-;; xref is the generic jump backend used by e.g. eglot and etags;
-;; advise it too so those code paths also register jumps.
+;; Generic xref backend (used by e.g. eglot and etags).
 (with-eval-after-load 'xref
-  (advice-add 'xref-find-definitions      :before #'my/evil-set-jump-before)
-  (advice-add 'xref-find-references       :before #'my/evil-set-jump-before)
-  (advice-add 'xref-find-apropos          :before #'my/evil-set-jump-before))
+  (advice-add 'xref-find-definitions :before #'my/evil-set-jump-before)
+  (advice-add 'xref-find-references  :before #'my/evil-set-jump-before)
+  (advice-add 'xref-find-apropos     :before #'my/evil-set-jump-before))
 
 ;;; Function Signature in Header Line
 ;; A buffer-local minor mode that shows the signature of the defun point is
 ;; currently inside, in the header line — handy for long functions where the
 ;; `(defun foo (...)' line has scrolled off screen.
-
 (defun my/defun-sig ()
-  "One-line signature if point is inside the defun, else nil.
-Narrows to the enclosing defun, then scans forward for the first
-top-level `(' that is *not* inside a string or comment (checked via
-`syntax-ppss': (nth 3 s) = in-string, (nth 4 s) = in-comment) — that
-paren starts the argument list. `scan-lists' finds its matching close
-paren, and everything from the start of the defun up to there
-(typically `defun NAME (ARGS)') is flattened to one line and trimmed
-to form the signature. Returns nil (via `condition-case') if point
-isn't inside a defun or anything else goes wrong."
+  "One-line signature of the defun point is inside, or nil if not inside one."
   (save-excursion
     (save-restriction
       (condition-case nil
           (progn
             (narrow-to-defun)
             (goto-char (point-min))
+            ;; Find the arg-list's opening paren, skipping any that are
+            ;; inside a string or comment (via `syntax-ppss').
             (while (and (re-search-forward "(" (line-end-position 60) t)
                         (let ((s (syntax-ppss))) (or (nth 3 s) (nth 4 s)))))
             (when (match-beginning 0)
@@ -103,6 +92,7 @@ Falls back to the previous header (rather than blank/nil) when point
 isn't inside a defun, e.g. between functions or at top of file."
   (or (my/defun-sig) my/defun-sig--prev-header))
 
+;; TODO: update this into automatic sig header for long implementations.
 (define-minor-mode my-defun-sig-header-mode
   "Show current defun signature in the header line (buffer-local)."
   :lighter " SigHdr"

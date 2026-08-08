@@ -18,7 +18,8 @@
     (auto-save-mode -1)))
 (add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
 
-;; TODO: Redefining general--unalias could break silently when general.el updates. This is fragile.
+;; TODO: delete this?
+;; NOTE: Redefining general--unalias could break silently when general.el updates. This is fragile.
 ;; define new general--unalias to reduce wrong type argument listp error. this will reduce some waiting time.
 ;; (defun general--unalias (thing &optional state-p)
 ;;   "Safe general--unalias that guards against nil and bad inputs."

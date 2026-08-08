@@ -6,7 +6,7 @@
 ;;; live alongside that feature's own init-*.el instead.
 ;;; Code:
 
-;;; Navigation & Movement
+;;; Movement
 (defun smart-beginning-of-line ()
   "Move point to first non-whitespace character or beginning-of-line.
 If point is already at the beginning of the line, move to the beginning of the
@@ -17,6 +17,19 @@ of the line. Extend the selection when used with the Shift key."
     (back-to-indentation)
     (when (= orig-pos (point))
       (move-beginning-of-line 1))))
+
+(defun my/jump-matching-paren ()
+  "Jump to the matching parenthesis/bracket/brace.
+If point is on an opening, go forward. If on a closing, go backward."
+  (interactive)
+  (cond
+   ((looking-at "\\s(") (forward-sexp 1))
+   ((looking-at "\\s{") (forward-sexp 1))
+   ((looking-at "\\s[") (forward-sexp 1))
+   ((looking-back "\\s)" 1) (backward-sexp 1))
+   ((looking-back "\\s}" 1) (backward-sexp 1))
+   ((looking-back "\\s]" 1) (backward-sexp 1))
+   (t (user-error "Not on a paren/brace/bracket"))))
 
 ;;; Selection & Region
 (defun my/select-to-click (event)
@@ -40,8 +53,6 @@ The region will deactivate automatically once you move the cursor."
           (push-mark (cdr bounds) nil t)) ; transient mark
       (message "No symbol at point."))))
 
-
-;;; Parentheses & Matching
 (defun my/evil-select-inside-paren ()
   "Visual-select text inside the nearest (), {}, or []."
   (interactive)
@@ -51,21 +62,7 @@ The region will deactivate automatically once you move the cursor."
         (evil-visual-select (1+ open) (1- close) 'exclusive))
     (error (user-error "No surrounding list found"))))
 
-(defun my/jump-matching-paren ()
-  "Jump to the matching parenthesis/bracket/brace.
-If point is on an opening, go forward. If on a closing, go backward."
-  (interactive)
-  (cond
-   ((looking-at "\\s(") (forward-sexp 1))
-   ((looking-at "\\s{") (forward-sexp 1))
-   ((looking-at "\\s[") (forward-sexp 1))
-   ((looking-back "\\s)" 1) (backward-sexp 1))
-   ((looking-back "\\s}" 1) (backward-sexp 1))
-   ((looking-back "\\s]" 1) (backward-sexp 1))
-   (t (user-error "Not on a paren/brace/bracket"))))
-
-
-;;; Code Documentation
+;;; Snippets & Insertion
 (defun insert-doxygen-function-comment ()
   "Insert a Doxygen-style comment block above a function."
   (interactive)

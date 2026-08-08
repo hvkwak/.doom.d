@@ -146,15 +146,16 @@
 
   ;;; Normal
   (map! :map my-common-keys-mode-map
-        :nm "u" #'smart-beginning-of-line
-        :nm "o" #'move-end-of-line
+        :nm "u"  #'smart-beginning-of-line
+        :nm "o"  #'move-end-of-line
         :n "M-i" #'evil-insert
-        :n "w"  #'evil-yank
-        :n "y"  #'evil-paste-after
+        :n "w"   #'evil-yank
+        :n "y"   #'evil-paste-after
         :n "M-w" #'evil-yank
         :n "M-y" #'evil-paste-after
         :n "M-q" #'evil-escape
-        :n "z"  #'undo-fu-only-undo)
+        :n "M-/" #'comment-dwim
+        :n "z"   #'undo-fu-only-undo)
 
   ;;; Normal prefix "s" prefix
   (map! :map my-common-keys-mode-map
