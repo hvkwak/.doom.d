@@ -102,7 +102,7 @@ Example: 'material.pecular' + candidate 'materialSpecular'
                           return i)))
           (when n (delete-char n)))))))
 
-;;; Ripgrep
+;;; rg
 (set-popup-rule! "^\\*rg\\*$"
   :side 'bottom
   :size 0.5
@@ -112,6 +112,7 @@ Example: 'material.pecular' + candidate 'materialSpecular'
   :ttl nil)   ;; keep window until explicitly closed
 
 (advice-add 'rg-dwim :before #'my/evil-set-jump-before)
+(add-hook 'rg-mode-hook #'next-error-follow-minor-mode)
 
 (setq rg-custom-type-aliases
       '(("MyC" . "*.c *.cu *.cpp *.cc *.cxx *.h *.hpp")))

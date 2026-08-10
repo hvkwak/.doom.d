@@ -77,7 +77,7 @@
   ;; (M-h=mark-paragraph, M-p/M-t=various)
   (evil-define-key '(normal insert visual replace) global-map
     (kbd "M-h")        #'ignore
-    (kbd "M-k")        #'ignore
+    ;;(kbd "M-k")        #'ignore ;; TODO: bring this back to use kill-current-buffer
     (kbd "M-p")        #'ignore
     (kbd "M-t")        #'ignore
     ;; (kbd "M-\\")       (cmd! (insert "\\"))
@@ -127,14 +127,15 @@
         :vnm "k"         #'next-line
         :vnm "j"         #'backward-char
         :vnm "l"         #'forward-char
-        :vm "M-i"       #'previous-line
-        :vnm "M-k"       #'next-line
-        :vnm "M-j"       #'backward-char
-        :vnm "M-l"       #'forward-char
+        ;; :vm "M-i"       #'previous-line
+        ;; :vnm "M-k"       #'next-line
+        ;; :vnm "M-j"       #'backward-char
+        ;; :vnm "M-l"       #'forward-char
         :nm "h"         #'centaur-tabs-backward
         ;; :nm "g"         #'centaur-tabs-forward
         :nm "H"         #'centaur-tabs-move-current-tab-to-left
         ;; :nm "G"         #'centaur-tabs-move-current-tab-to-right
+        :n "M-k"         #'kill-current-buffer
         )
 
   (map! :map evil-motion-state-map
