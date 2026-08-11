@@ -11,7 +11,7 @@
 
 ;;; Fonts
 ;; (setq doom-font (font-spec :family "JetBrains Mono" :size 28.0 )) ;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 32 :weight 'bold))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 20 :weight 'bold))
 
 
 ;;; Display Settings
@@ -76,7 +76,8 @@
   (set-face-attribute 'lsp-face-highlight-read nil
                       :background "darkseagreen2" :foreground "#000000" :weight 'bold)
   (set-face-attribute 'lsp-face-highlight-write nil
-                      :background "darkseagreen2" :foreground "#000000" :weight 'bold))
+                      :background "darkseagreen2" :foreground "#000000" :weight 'bold)
+  )
 
 ;;; Which-Key UI
 (after! which-key
