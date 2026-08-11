@@ -11,8 +11,8 @@ comments that starts with "//" in .cpp cannot be indented with <tab>
 - **IJKL navigation model** - Arrow-key style movement (see Keybindings section)
 - Completion framework (Consult, Vertico, Orderless, Company)
 - LSP integration with clangd for C/C++ development
-- DAP/Dape debugging support (GDB/LLDB)
-- Custom light theme (`professional`)
+- Dape debugging support (native lldb-dap)
+- Custom light theme (`professional-theme`)
 - Org-mode and Markdown configurations
 - Remote development support (TRAMP)
 
@@ -42,15 +42,16 @@ Configuration is modularized in `lisp/` directory:
 - `init-ui.el` - Visual appearance (theme, fonts, faces, cursors, scrolling)
 - `init-editor.el` - Editor settings (performance, tabs, indentation, evil cursor)
 - `init-behavior.el` - Behavioral modifications (advice, hooks, minor modes)
-- `init-functions.el` - Utility functions (navigation, selection, file operations)
+- `init-functions.el` - General-purpose utility commands (navigation, selection, file operations)
+- `init-utils.el` - Completion & search package config (consult, marginalia, orderless, company, rg)
+- `init-modeline.el` - Doom Modeline visual configuration (faces, font scaling, icons)
 
 ### Development Tools
-- `init-lsp.el` - LSP configuration (lsp-ui, clangd)
-- `init-dape.el` - Dape debugger configuration
-- `init-dap.el` - DAP UI and multi-monitor frame management
-- `init-dap-gdb.el` - GDB debugger configuration
-- `init-dap-lldb.el` - LLDB debugger configuration
+- `init-lsp.el` - LSP-UI configuration (clangd setup for C/C++)
+- `init-dape.el` - Dape debugger configuration (native lldb-dap)
 - `init-glsl.el` - GLSL shader support
+- `init-projectile.el` - Projectile settings (indexing, caching, compile commands)
+- `init-tramp.el` - Remote file editing configuration (TRAMP)
 
 ### Keybindings (Modular)
 - `init-keybinds-common.el` - Common keybindings shared across all modes (IJKL model)
@@ -58,19 +59,13 @@ Configuration is modularized in `lisp/` directory:
 - `init-keybinds-org.el` - Org-mode specific keybindings
 - `init-keybinds-md.el` - Markdown-mode specific keybindings
 - `init-keybinds-treemacs.el` - Treemacs specific keybindings
+- `init-keybinds-magit.el` - Magit keybindings adapted to the IJKL model
 
 ### Other Modules
-- `init-completion.el` - Completion framework (Consult, Marginalia, Orderless, Company, rg)
-- `init-org.el` - Org-mode configuration (LaTeX preview, TOC, source blocks)
-- `init-vterm.el` - Terminal emulator configuration
-- `init-llm.el` - LLM integration templates (GPTel, Claude Code IDE)
-- `init-projectile.el` - Project management settings
-- `init-tramp.el` - Remote file editing configuration
+- `init-org.el` - Org-mode configuration (TOC, LaTeX preview, source blocks)
 
 ### Themes
-- `themes/professional-theme.el` - Light theme with white background (active)
-- `themes/leuven-theme.el` - Alternative light theme
-- `themes/sunny-day-theme.el` - Alternative light theme
+- `professional-theme` package (see `packages.el`) - Light theme with white background (active)
 
 ## Installation
 
