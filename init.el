@@ -176,7 +176,7 @@
        ;;web               ; the tubes
        ;;yaml              ; JSON, but readable
        ;;zig               ; C, but simpler
-       latex
+       ;;latex
        (glsl +lsp)
 
        :email

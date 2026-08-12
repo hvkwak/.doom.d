@@ -136,7 +136,7 @@
         ;; :nm "g"         #'centaur-tabs-forward
         :nm "H"         #'centaur-tabs-move-current-tab-to-left
         ;; :nm "G"         #'centaur-tabs-move-current-tab-to-right
-        :n "M-k"         #'kill-current-buffer
+        :n "C-M-k"         #'kill-current-buffer
         :n "q"         #'ignore
         )
 

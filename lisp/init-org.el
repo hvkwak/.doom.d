@@ -51,26 +51,26 @@
   ;; (optional) also prettify symbols like ->, <=, etc.
   (setq org-pretty-entities t)
 
-  ;; Use dvipng (compatible with every Emacs build)
-  (setq org-preview-latex-default-process 'dvipng)
+  ;; ;; Use dvipng (compatible with every Emacs build)
+  ;; (setq org-preview-latex-default-process 'dvipng)
 
-  ;; Make math formulas big and readable
-  (setq org-format-latex-options
-        (plist-put org-format-latex-options :scale 1.0)) ; tweak 2.0–2.6 if you want
+  ;; ;; Make math formulas big and readable
+  ;; (setq org-format-latex-options
+  ;;       (plist-put org-format-latex-options :scale 1.0)) ; tweak 2.0–2.6 if you want
 
-  ;; High-quality transparent PNGs
-  (setq org-preview-latex-process-alist
-        '((dvipng :programs ("latex" "dvipng")
-           :description "dvi > png"
-           :message "Install: texlive texlive-latex-extra dvipng"
-           :image-input-type "dvi"
-           :image-output-type "png"
-           :image-size-adjust (1.0 . 1.0)
-           :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
-           :image-converter ("dvipng -D 200 -T tight -bg Transparent -o %O %f"))))
+  ;; ;; High-quality transparent PNGs
+  ;; (setq org-preview-latex-process-alist
+  ;;       '((dvipng :programs ("latex" "dvipng")
+  ;;          :description "dvi > png"
+  ;;          :message "Install: texlive texlive-latex-extra dvipng"
+  ;;          :image-input-type "dvi"
+  ;;          :image-output-type "png"
+  ;;          :image-size-adjust (1.0 . 1.0)
+  ;;          :latex-compiler ("latex -interaction nonstopmode -output-directory %o %f")
+  ;;          :image-converter ("dvipng -D 200 -T tight -bg Transparent -o %O %f"))))
 
-  ;; Automatically preview math on open (optional)
-  (setq org-startup-with-latex-preview t)
+  ;; ;; Automatically preview math on open (optional)
+  ;; (setq org-startup-with-latex-preview t)
   )
 
 

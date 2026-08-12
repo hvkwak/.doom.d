@@ -61,5 +61,14 @@
   (custom-set-faces!
     '(dape-source-line-face :background "#a8e6a3" :foreground "black" :extend t)))
 
+(defun my/dape-refresh-hl-line ()
+  "Toggle `hl-line-mode' when dape is over."
+  (when (and (not dape-active-mode)
+             (bound-and-true-p hl-line-mode))
+    (hl-line-mode -1)
+    (hl-line-mode 1)))
+
+(add-hook 'dape-active-mode-hook #'my/dape-refresh-hl-line)
+
 (provide 'init-dape)
 ;;; init-dape.el ends here
