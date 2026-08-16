@@ -109,13 +109,68 @@ Example: 'material.pecular' + candidate 'materialSpecular'
   :slot 0
   :select t
   :quit t
-  :ttl nil)   ;; keep window until explicitly closed
+  :ttl nil)
 
 (advice-add 'rg-dwim :before #'my/evil-set-jump-before)
 (add-hook 'rg-mode-hook #'next-error-follow-minor-mode)
 
 (setq rg-custom-type-aliases
       '(("MyC" . "*.c *.cu *.cpp *.cc *.cxx *.h *.hpp")))
+
+(defvar my/rg-ephemeral-buffer nil
+  "The single ephemeral preview buffer kept in memory during rg-mode skimming.")
+
+;; 1. Maintain a single ephemeral preview buffer while skimming
+(defun my/rg-auto-clean-ephemeral-buffer (&rest _)
+  "Track the newly opened preview buffer in rg-mode and kill the previous ephemeral buffer."
+  (when (and (bound-and-true-p next-error-last-buffer)
+             (buffer-live-p next-error-last-buffer)
+             (with-current-buffer next-error-last-buffer
+               (derived-mode-p 'rg-mode)))
+    (let ((source-buf (current-buffer)))
+      (when (and (buffer-file-name source-buf)
+                 (not (eq source-buf next-error-last-buffer)))
+        ;; Kill the previous ephemeral buffer if it exists, differs, and is unmodified
+        (when (and my/rg-ephemeral-buffer
+                   (buffer-live-p my/rg-ephemeral-buffer)
+                   (not (eq my/rg-ephemeral-buffer source-buf))
+                   (not (buffer-modified-p my/rg-ephemeral-buffer)))
+          (kill-buffer my/rg-ephemeral-buffer)
+          (setq my/rg-ephemeral-buffer nil))
+
+        ;; Register the newly opened source buffer as the active ephemeral buffer
+        (setq my/rg-ephemeral-buffer source-buf)))))
+
+(advice-add 'compilation-goto-locus :after #'my/rg-auto-clean-ephemeral-buffer)
+
+;; 2. Promote ephemeral buffer to permanent status when selected via RET
+(defun my/rg-promote-ephemeral-buffer (&rest _)
+  "Remove ephemeral status so the selected buffer is preserved."
+  (setq my/rg-ephemeral-buffer nil))
+
+(advice-add 'compile-goto-error :after #'my/rg-promote-ephemeral-buffer)
+(with-eval-after-load 'rg
+  (advice-add 'rg-hit-select :after #'my/rg-promote-ephemeral-buffer))
+
+;; 3. Cleanup function executed upon quitting
+(defun my/rg-clean-ephemeral-on-quit (&rest _)
+  "Kill any remaining unselected ephemeral buffer when closing the search process."
+  (when (and my/rg-ephemeral-buffer
+             (buffer-live-p my/rg-ephemeral-buffer)
+             (not (buffer-modified-p my/rg-ephemeral-buffer)))
+    (kill-buffer my/rg-ephemeral-buffer)
+    (setq my/rg-ephemeral-buffer nil)))
+
+;; 4. Attach cleanup triggers for M-q (doom/escape), quit-window, and Doom popups
+(advice-add 'quit-window :before #'my/rg-clean-ephemeral-on-quit)
+(advice-add '+popup/quit-window :before #'my/rg-clean-ephemeral-on-quit)
+(advice-add '+popup/close :before #'my/rg-clean-ephemeral-on-quit)
+
+;; Doom Escape Hook (returns nil to allow the escape chain sequence to continue)
+(add-hook 'doom-escape-hook
+          (lambda ()
+            (my/rg-clean-ephemeral-on-quit)
+            nil))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here

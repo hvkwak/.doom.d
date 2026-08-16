@@ -23,8 +23,6 @@
         lsp-idle-delay 0.15
         lsp-ui-sideline-delay 0.1
         lsp-diagnostics-provider :flycheck
-        ;; lsp-ui-sideline-show-diagnostics t
-        ;; lsp-ui-sideline-enable t
         )
   )
 

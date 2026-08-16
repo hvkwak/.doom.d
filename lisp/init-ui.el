@@ -11,7 +11,7 @@
 
 ;;; Fonts
 ;; (setq doom-font (font-spec :family "JetBrains Mono" :size 28.0 )) ;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 20 :weight 'bold))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 32 :weight 'bold))
 
 
 ;;; Display Settings

@@ -72,11 +72,7 @@
         :nvm "f" nil
         :nvm "F" nil
         :nvm "s" nil
-        :nvm "S" nil
-        :nvm "s" nil
-        :nvm "S" nil
-        :nvm "f" nil
-        :nvm "F" nil))
+        :nvm "S" nil))
 
 ;;; C/C++ Mode
 (after! cc-mode
