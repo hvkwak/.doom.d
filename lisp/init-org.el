@@ -27,15 +27,15 @@
   ;;; Set org level colors
   (setq org-n-level-faces 8)
   (custom-set-faces!
-    ;; vivid blues & greens, from normal → bright, tuned for yellow background
-    '(org-level-1 :foreground "#0000FF" :weight bold)  ; normal strong blue
-    '(org-level-2 :foreground "#00AA00" :weight bold)  ; normal strong green
-    '(org-level-3 :foreground "#2563EB" :weight bold)  ; medium-bright blue
-    '(org-level-4 :foreground "#16A34A" :weight bold)  ; medium-bright green
-    '(org-level-5 :foreground "#3B82F6" :weight bold)  ; bright blue
-    '(org-level-6 :foreground "#22C55E" :weight bold)  ; bright green
-    '(org-level-7 :foreground "#60A5FA" :weight bold)  ; very bright blue
-    '(org-level-8 :foreground "#4ADE80" :weight bold)) ; very bright green
+    ;; High-contrast multi-color palette tuned for yellow/cream backgrounds
+    '(org-level-1 :foreground "#B91C1C" :weight bold :height 1.45) ; Crimson Red
+    '(org-level-2 :foreground "#C2410C" :weight bold :height 1.40) ; Burnt Orange
+    '(org-level-3 :foreground "#6B21A8" :weight bold :height 1.35)             ; Deep Purple
+    '(org-level-4 :foreground "#1D4ED8" :weight bold :height 1.30)             ; Strong Royal Blue
+    '(org-level-5 :foreground "#047857" :weight bold :height 1.25)             ; Deep Emerald Green
+    '(org-level-6 :foreground "#0F766E" :weight bold :height 1.20)             ; Dark Teal
+    '(org-level-7 :foreground "#431407" :weight bold :height 1.15)             ; Dark Chocolate Brown
+    '(org-level-8 :foreground "#374151" :weight bold :height 1.1))            ; Slate Dark Gray
 
   ;; If you use `org' and don't want your org files in the default location below,
   ;; change `org-directory'. It must be set before org loads!
