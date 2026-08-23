@@ -11,7 +11,7 @@
 
 ;;; Fonts
 ;; (setq doom-font (font-spec :family "JetBrains Mono" :size 28.0 )) ;
-(setq doom-font (font-spec :family "JetBrains Mono" :size 18 :weight 'bold))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 32 :weight 'bold))
 
 
 ;;; Display Settings
@@ -43,13 +43,13 @@
   )
 
 ;; Default keyboard cursor
-(setq-default cursor-type 'bar)
+;; (setq-default cursor-type 'bar)
 (blink-cursor-mode 1)
 
 ;; Evil mode cursors - different cursor appearance for each Evil state
 (after! evil
   (setq evil-normal-state-cursor   '(box "#202124")
-        evil-insert-state-cursor   '(bar "#202124")
+        evil-insert-state-cursor   '(box "#61afef")
         evil-visual-state-cursor   '(box "#c3e88d")
         evil-replace-state-cursor  '(hbar "orange")
         evil-operator-state-cursor '(hollow "#d0d0d0")

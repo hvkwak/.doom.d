@@ -82,5 +82,6 @@
 (load! "lisp/init-keybinds-modes")
 (load! "lisp/init-keybinds-md")
 (load! "lisp/init-keybinds-org")
+(load! "lisp/init-keybinds-org-agenda")
 (load! "lisp/init-keybinds-treemacs")
 (load! "lisp/init-keybinds-magit")
