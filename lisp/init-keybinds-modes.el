@@ -110,5 +110,23 @@
   (define-key yas-keymap (kbd "S-TAB")     #'yas-prev-field)
   (define-key yas-keymap (kbd "<backtab>") #'yas-prev-field))
 
+;; Date-prompt (small `*Calendar*') navigation: IJKL layout.
+;;
+;; `evil-collection-org-setup' (pulled in by `evil +everywhere') writes an
+;; HJKL scheme into the shared `org-read-date-minibuffer-local-map'.  On a
+;; fresh start it runs AFTER a plain `(after! org ...)' block, so it wins
+;; and our keys only stick after a `doom/reload'.  Fix: assert the keys
+;; now, and re-assert them via `:after' advice every time that setup runs
+;; -- order-independent, no reload needed.
+(after! org
+  (defun my/org-read-date-set-ijkl-keys (&rest _)
+    "Bind M-i/k/j/l in the `org-read-date' date prompt (up/down = week, left/right = day)."
+    (define-key org-read-date-minibuffer-local-map (kbd "M-i") #'org-calendar-backward-week)  ; 위 (1주 전)
+    (define-key org-read-date-minibuffer-local-map (kbd "M-k") #'org-calendar-forward-week)   ; 아래 (1주 후)
+    (define-key org-read-date-minibuffer-local-map (kbd "M-j") #'org-calendar-backward-day)   ; 왼쪽 (1일 전)
+    (define-key org-read-date-minibuffer-local-map (kbd "M-l") #'org-calendar-forward-day))   ; 오른쪽 (1일 후)
+  (my/org-read-date-set-ijkl-keys)
+  (advice-add 'evil-collection-org-setup :after #'my/org-read-date-set-ijkl-keys))
+
 (provide 'init-keybinds-modes)
 ;;; init-keybinds-modes.el ends here

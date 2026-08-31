@@ -9,7 +9,6 @@
 (after! evil-org
 
   ;; ORG-MODE SPECIFIC KEYBINDINGS
-  ;; Add org-specific bindings here (e.g., org-agenda, org-capture, etc.)
   (evil-define-key '(normal insert visual) outline-mode-map
     (kbd "M-j")      nil ;; this becomes backward-char
     (kbd "M-l")      nil ;; this becomes forward-char

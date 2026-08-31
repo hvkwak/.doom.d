@@ -28,8 +28,8 @@
   (setq org-n-level-faces 8)
   (custom-set-faces!
     ;; High-contrast multi-color palett tuned for yellow/cream backgrounds
-    '(org-level-1 :foreground "#B91C1C") ; Crimson Red
-    '(org-level-2 :foreground "#C2410C") ; Burnt Orange
+    '(org-level-1 :foreground "#3730A3")             ; Deep Indigo (distinct from the crimson TODO keyword)
+    '(org-level-2 :foreground "#0369A1")             ; Steel Blue (was burnt orange, too close to the crimson TODO)
     '(org-level-3 :foreground "#6B21A8")             ; Deep Purple
     '(org-level-4 :foreground "#1D4ED8")             ; Strong Royal Blue
     '(org-level-5 :foreground "#047857")             ; Deep Emerald Green
@@ -39,7 +39,9 @@
 
   ;; If you use `org' and don't want your org files in the default location below,
   ;; change `org-directory'. It must be set before org loads!
-  (setq org-directory "~/org/")
+  ;; Home base for capture / new files / refile root. The agenda scans a
+  ;; narrower path -- see `org-agenda-files' in init-org-agenda.el.
+  (setq org-directory "~/Documents/notes/")
 
   ;; startup folded
   (setq org-startup-folded 'overview)

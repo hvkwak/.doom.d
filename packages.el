@@ -61,6 +61,7 @@
 
 ;;; Org-mode
 (package! toc-org)
+(package! org-super-agenda)   ; grouped agenda sections (see lisp/init-org-agenda.el)
 
 ;;; Search
 (package! rg)

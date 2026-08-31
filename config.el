@@ -74,6 +74,7 @@
 (load! "lisp/init-tramp")
 (load! "lisp/init-behavior")
 (load! "lisp/init-org")
+(load! "lisp/init-org-agenda")
 (load! "lisp/init-glsl")
 (load! "lisp/init-modeline")
 
