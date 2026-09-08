@@ -49,6 +49,7 @@
   (setq doom-localleader-alt-key "C-\\")
 
   (map! :leader
+        "t" nil
         "k" nil
         "o" nil
         "q" nil
