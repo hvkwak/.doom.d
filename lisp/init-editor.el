@@ -10,13 +10,27 @@
 
 (defun my-indent-setup ()
   "Set up the TAB key to indent with a single press."
-  (local-set-key (kbd "<tab>") 'indent-for-tab-command))
+  (local-set-key (kbd "<tab>") 'c-indent-line-or-region))
 
 (add-hook 'prog-mode-hook 'my-indent-setup)
 (add-hook 'text-mode-hook 'my-indent-setup)
 
 ;;; Tab & Indentation
 (setq tab-width 4)
+
+(after! cc-mode
+  (c-set-offset 'enum-intro 4)
+  (c-set-offset ' brace-list-intro 4)
+  (c-set-offset 'brace-list-close 0)
+  (c-set-offset 'brace-list-entry 0)
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              ;; deactivate auto fill
+              (auto-fill-mode -1)
+              (c-toggle-auto-newline -1)
+
+              ;; set fill-column extreme big
+              (setq fill-column 999999))))
 
 ;;; Imenu
 (setq imenu-sort-function nil)

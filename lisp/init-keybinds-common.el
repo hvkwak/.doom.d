@@ -221,7 +221,8 @@
         :v "M-j" #'backward-char
         :v "M-l" #'forward-char
         :v "M-/" #'comment-dwim
-        :v "<tab>" #'indent-for-tab-command
+        ;; :v "<tab>" #'indent-for-tab-command
+        :v "<tab>" #'c-indent-line-or-region
         )
   )
 
