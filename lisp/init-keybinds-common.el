@@ -138,7 +138,7 @@
         :nm "H"         #'centaur-tabs-move-current-tab-to-left
         ;; :nm "G"         #'centaur-tabs-move-current-tab-to-right
         :n "C-M-k"         #'kill-current-buffer
-        :n "q"         #'ignore
+        ;; :n "q"         #'ignore
         )
 
   (map! :map evil-motion-state-map
