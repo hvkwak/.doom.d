@@ -3,7 +3,9 @@ Personal Doom Emacs configuration with modular customizations.
 
 ## TODOs
 M-w in visual/insert mode works differently when M-y.
-comments that starts with "//" in .cpp cannot be indented with <tab>
+comments .cpp cannot be indented with <tab>
+getting used to evil-snipe
+
 
 
 ## Key Features

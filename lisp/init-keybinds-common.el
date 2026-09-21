@@ -52,7 +52,7 @@
         "t" nil
         "k" nil
         "o" nil
-        "q" nil
+        ;; "q" nil
         )
 
   (map! :leader

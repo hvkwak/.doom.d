@@ -20,9 +20,11 @@
 
 (after! cc-mode
   (c-set-offset 'enum-intro 4)
-  (c-set-offset ' brace-list-intro 4)
+  (c-set-offset 'comment-intro 0)
+  (c-set-offset 'brace-list-intro 4)
   (c-set-offset 'brace-list-close 0)
   (c-set-offset 'brace-list-entry 0)
+  
   (add-hook 'c-mode-common-hook
             (lambda ()
               ;; deactivate auto fill
