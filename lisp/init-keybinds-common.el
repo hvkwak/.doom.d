@@ -193,6 +193,7 @@
         :i "S-<up>"    nil
         :i "M-SPC"     (cmd! (insert " "))
         :i "C-SPC"     #'set-mark-command
+        :i "M-w"       #'kill-ring-save
         :i "M-y"       #'yank
         :i "M-i"       #'previous-line
         :i "M-k"       #'next-line
@@ -220,6 +221,8 @@
         :v "M-k" #'next-line
         :v "M-j" #'backward-char
         :v "M-l" #'forward-char
+        :v "M-w" #'kill-ring-save
+        :v "M-y" #'evil-paste-after
         :v "M-/" #'comment-dwim
         ;; :v "<tab>" #'indent-for-tab-command
         :v "<tab>" #'c-indent-line-or-region

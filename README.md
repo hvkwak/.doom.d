@@ -59,12 +59,14 @@ Configuration is modularized in `lisp/` directory:
 - `init-keybinds-common.el` - Common keybindings shared across all modes (IJKL model)
 - `init-keybinds-modes.el` - Mode-specific bindings (vterm, vertico, help, image, cc-mode)
 - `init-keybinds-org.el` - Org-mode specific keybindings
+- `init-keybinds-org-agenda.el` - Org-agenda specific keybindings (IJKL navigation, org-read-date prompt)
 - `init-keybinds-md.el` - Markdown-mode specific keybindings
 - `init-keybinds-treemacs.el` - Treemacs specific keybindings
 - `init-keybinds-magit.el` - Magit keybindings adapted to the IJKL model
 
 ### Other Modules
 - `init-org.el` - Org-mode configuration (TOC, LaTeX preview, source blocks)
+- `init-org-agenda.el` - GTD-style agenda setup (TODO workflow, capture templates, refile, custom agenda views, org-super-agenda)
 
 ### Themes
 - `professional-theme` package (see `packages.el`) - Light theme with white background (active)

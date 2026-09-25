@@ -28,7 +28,7 @@
   ;; Dedicated modeline font (controls size and font globally to ensure proper vertical alignment)
   (setq doom-modeline-font (font-spec :family "JetBrains Mono" :size 32 :weight 'medium))
 
-  ;; Modeline height and left bar width (30–32 height works well for a 16px font)
+  ;; Modeline height and left bar width (30–32 height works well for a 32px font)
   (setq doom-modeline-height 32)
   (setq doom-modeline-bar-width 4)
 
