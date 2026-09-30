@@ -10,7 +10,8 @@
 
 (defun my-indent-setup ()
   "Set up the TAB key to indent with a single press."
-  (local-set-key (kbd "<tab>") 'c-indent-line-or-region))
+  (local-set-key (kbd "<tab>") 'c-indent-line-or-region)
+  )
 
 (add-hook 'prog-mode-hook 'my-indent-setup)
 (add-hook 'text-mode-hook 'my-indent-setup)

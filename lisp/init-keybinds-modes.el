@@ -76,10 +76,11 @@
 
 ;;; C/C++ Mode
 (after! cc-mode
-  (map! :map c-mode-base-map
-        :ni "C-d" #'consult-lsp-diagnostics
-        :ni "C-h k" #'describe-key
-        ;; :vi  "<tab>" #'c-indent-line-or-region
+  (map! :map (c-mode-base-map c++-mode-map)
+        :ni "C-d"    #'consult-lsp-diagnostics
+        :ni "C-h k"  #'describe-key
+        :vi  "<tab>" #'c-indent-line-or-region
+        :vi  "TAB"   #'c-indent-line-or-region
         )
   )
 
