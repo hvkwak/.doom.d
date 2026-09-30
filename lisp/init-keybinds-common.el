@@ -224,7 +224,6 @@
         :v "M-w" #'kill-ring-save
         :v "M-y" #'evil-paste-after
         :v "M-/" #'comment-dwim
-        ;; :v "<tab>" #'indent-for-tab-command
         :v "<tab>" #'c-indent-line-or-region
         )
   )

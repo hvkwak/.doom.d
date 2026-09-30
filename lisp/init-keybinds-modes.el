@@ -72,7 +72,8 @@
         :nvm "f" nil
         :nvm "F" nil
         :nvm "s" nil
-        :nvm "S" nil))
+        :nvm "S" nil)
+  )
 
 ;;; C/C++ Mode
 (after! cc-mode
@@ -104,6 +105,11 @@
   (define-key company-active-map (kbd "S-TAB") #'company-select-previous)
   (define-key company-active-map (kbd "<backtab>") #'company-select-previous))
 
+;; company-mode-map remaps `indent-for-tab-command' and `c-indent-line-or-region'
+;; to `company-indent-for-tab-command', hijacking TAB. Drop those remaps.
+(after! company
+  (define-key company-mode-map [remap indent-for-tab-command] nil)
+  (define-key company-mode-map [remap c-indent-line-or-region] nil))
 
 (after! yasnippet
   (define-key yas-keymap (kbd "TAB")       #'yas-next-field)
