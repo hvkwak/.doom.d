@@ -120,28 +120,50 @@ Example: 'material.pecular' + candidate 'materialSpecular'
 (defvar my/rg-ephemeral-buffer nil
   "The single ephemeral preview buffer kept in memory during rg-mode skimming.")
 
-;; 1. Maintain a single ephemeral preview buffer while skimming
-(defun my/rg-auto-clean-ephemeral-buffer (&rest _)
-  "Track the newly opened preview buffer in rg-mode and kill the previous ephemeral buffer."
-  (when (and (bound-and-true-p next-error-last-buffer)
-             (buffer-live-p next-error-last-buffer)
-             (with-current-buffer next-error-last-buffer
-               (derived-mode-p 'rg-mode)))
-    (let ((source-buf (current-buffer)))
-      (when (and (buffer-file-name source-buf)
-                 (not (eq source-buf next-error-last-buffer)))
-        ;; Kill the previous ephemeral buffer if it exists, differs, and is unmodified
-        (when (and my/rg-ephemeral-buffer
-                   (buffer-live-p my/rg-ephemeral-buffer)
-                   (not (eq my/rg-ephemeral-buffer source-buf))
-                   (not (buffer-modified-p my/rg-ephemeral-buffer)))
-          (kill-buffer my/rg-ephemeral-buffer)
-          (setq my/rg-ephemeral-buffer nil))
+(defun my/rg-kill-ephemeral-buffer ()
+  "Safely kill the ephemeral buffer if it exists and is unmodified."
+  (when (and my/rg-ephemeral-buffer
+             (buffer-live-p my/rg-ephemeral-buffer)
+             (not (buffer-modified-p my/rg-ephemeral-buffer)))
+    (kill-buffer my/rg-ephemeral-buffer))
+  (setq my/rg-ephemeral-buffer nil))
 
-        ;; Register the newly opened source buffer as the active ephemeral buffer
-        (setq my/rg-ephemeral-buffer source-buf)))))
+;; 1. Maintain a single ephemeral preview buffer while skimming.
+;; `compilation-find-file' opens the file *before* `compilation-goto-locus'
+;; runs, so whether the buffer is new must be detected there.
+(defvar my/rg--new-buffer nil
+  "Buffer freshly created by the last rg jump, or nil.")
 
-(advice-add 'compilation-goto-locus :after #'my/rg-auto-clean-ephemeral-buffer)
+(defun my/rg--rg-marker-p (marker)
+  "Non-nil if MARKER points into an rg-mode results buffer."
+  (and (markerp marker)
+       (buffer-live-p (marker-buffer marker))
+       (with-current-buffer (marker-buffer marker)
+         (derived-mode-p 'rg-mode))))
+
+(defun my/rg-detect-new-buffer-a (orig-fn marker &rest args)
+  "Remember the result of `compilation-find-file' if it created a new buffer."
+  (let* ((before (buffer-list))
+         (buf (apply orig-fn marker args)))
+    (when (and (my/rg--rg-marker-p marker)
+               (bufferp buf)
+               (not (memq buf before)))
+      (setq my/rg--new-buffer buf))
+    buf))
+
+(defun my/rg-track-ephemeral-buffer-a (msg mk &rest _)
+  "Keep only one unselected, newly opened rg preview buffer alive.
+Buffers that were already open before the search are never killed."
+  (when (my/rg--rg-marker-p msg)
+    (let ((target (and (markerp mk) (marker-buffer mk))))
+      (unless (eq target my/rg-ephemeral-buffer)
+        (my/rg-kill-ephemeral-buffer)
+        (when (and target (eq target my/rg--new-buffer))
+          (setq my/rg-ephemeral-buffer target))))
+    (setq my/rg--new-buffer nil)))
+
+(advice-add 'compilation-find-file :around #'my/rg-detect-new-buffer-a)
+(advice-add 'compilation-goto-locus :after #'my/rg-track-ephemeral-buffer-a)
 
 ;; 2. Promote ephemeral buffer to permanent status when selected via RET
 (defun my/rg-promote-ephemeral-buffer (&rest _)
@@ -155,11 +177,7 @@ Example: 'material.pecular' + candidate 'materialSpecular'
 ;; 3. Cleanup function executed upon quitting
 (defun my/rg-clean-ephemeral-on-quit (&rest _)
   "Kill any remaining unselected ephemeral buffer when closing the search process."
-  (when (and my/rg-ephemeral-buffer
-             (buffer-live-p my/rg-ephemeral-buffer)
-             (not (buffer-modified-p my/rg-ephemeral-buffer)))
-    (kill-buffer my/rg-ephemeral-buffer)
-    (setq my/rg-ephemeral-buffer nil)))
+  (my/rg-kill-ephemeral-buffer))
 
 ;; 4. Attach cleanup triggers for M-q (doom/escape), quit-window, and Doom popups
 (advice-add 'quit-window :before #'my/rg-clean-ephemeral-on-quit)
