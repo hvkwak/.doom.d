@@ -6,6 +6,10 @@
 ;; Enable common keys in org-mode
 (add-hook 'org-mode-hook #'my-enable-common-keys)
 
+;; Drop evil-org's `textobjects' theme: its "ie"/"ae"/"iR"... bindings make "i"
+;; a prefix key in visual state, which conflicts with :v "i" -> previous-line below.
+(setq evil-org-key-theme '(navigation insert additional calendar))
+
 (after! evil-org
 
   ;; ORG-MODE SPECIFIC KEYBINDINGS

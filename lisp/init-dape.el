@@ -62,13 +62,22 @@
     '(dape-source-line-face :background "#a8e6a3" :foreground "black" :extend t)))
 
 (defun my/dape-refresh-hl-line ()
-  "Toggle `hl-line-mode' when dape is over."
-  (when (and (not dape-active-mode)
-             (bound-and-true-p hl-line-mode))
-    (hl-line-mode -1)
-    (hl-line-mode 1)))
+  "Toggle `hl-line-mode' when dape is over.
+`dape-active-mode' is global, so its hook runs in an arbitrary buffer
+\(often the REPL); refresh every buffer that has `hl-line-mode' on."
+  (unless dape-active-mode
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+        (when (bound-and-true-p hl-line-mode)
+          (hl-line-mode -1)
+          (hl-line-mode 1))))))
 
-(add-hook 'dape-active-mode-hook #'my/dape-refresh-hl-line)
+;; Defer: the hook fires mid-shutdown (inside dape's process callback), so a
+;; synchronous toggle happens before dape is fully done and has no effect.
+(add-hook 'dape-active-mode-hook
+          (lambda ()
+            (unless dape-active-mode
+              (run-at-time 0.2 nil #'my/dape-refresh-hl-line))))
 
 (provide 'init-dape)
 ;;; init-dape.el ends here

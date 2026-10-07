@@ -20,7 +20,7 @@
 (setq tab-width 4)
 
 (after! cc-mode
-  (c-set-offset 'enum-intro 4)
+  ;; (c-set-offset 'enum-intro 4) ;; not a valid syntactic symbol
   (c-set-offset 'comment-intro 0)
   (c-set-offset 'brace-list-intro 4)
   (c-set-offset 'brace-list-close 0)
