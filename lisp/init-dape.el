@@ -61,23 +61,20 @@
   (custom-set-faces!
     '(dape-source-line-face :background "#a8e6a3" :foreground "black" :extend t)))
 
-(defun my/dape-refresh-hl-line ()
-  "Toggle `hl-line-mode' when dape is over.
-`dape-active-mode' is global, so its hook runs in an arbitrary buffer
-\(often the REPL); refresh every buffer that has `hl-line-mode' on."
-  (unless dape-active-mode
-    (dolist (buf (buffer-list))
-      (with-current-buffer buf
-        (when (bound-and-true-p hl-line-mode)
-          (hl-line-mode -1)
-          (hl-line-mode 1))))))
+;; Fix hl-line during/after debugging.  After each stop dape tries to fix
+;; hl-line itself, but Doom (on Emacs < 31) redefines `global-hl-line-mode' as a
+;; globalized `hl-line-mode', so dape takes the `global-hl-line-mode' branch and
+;; calls `global-hl-line-highlight'.  That creates a stray global overlay that
+;; nothing ever removes (it stays on the last stopped line after dape quits),
+;; while the real buffer-local hl-line is never moved.  Undo that here.
+(defun my/dape-fix-hl-line-h ()
+  "Remove dape's stray global hl-line overlay; move the local one to point."
+  (when (fboundp 'global-hl-line-unhighlight-all)
+    (global-hl-line-unhighlight-all))
+  (when (bound-and-true-p hl-line-mode)
+    (hl-line-highlight)))
 
-;; Defer: the hook fires mid-shutdown (inside dape's process callback), so a
-;; synchronous toggle happens before dape is fully done and has no effect.
-(add-hook 'dape-active-mode-hook
-          (lambda ()
-            (unless dape-active-mode
-              (run-at-time 0.2 nil #'my/dape-refresh-hl-line))))
+(add-hook 'dape-display-source-hook #'my/dape-fix-hl-line-h)
 
 (provide 'init-dape)
 ;;; init-dape.el ends here
