@@ -52,7 +52,8 @@
         "t" nil
         "k" nil
         "o" nil
-        ;; "q" nil
+        "m" nil
+        "g" nil
         )
 
   (map! :leader
@@ -133,11 +134,14 @@
         ;; :vnm "M-k"       #'next-line
         ;; :vnm "M-j"       #'backward-char
         ;; :vnm "M-l"       #'forward-char
-        :nm "h"         #'centaur-tabs-backward
-        ;; :nm "g"         #'centaur-tabs-forward
-        :nm "H"         #'centaur-tabs-move-current-tab-to-left
-        ;; :nm "G"         #'centaur-tabs-move-current-tab-to-right
-        :n "C-M-k"         #'kill-current-buffer
+        :nm "h"          #'centaur-tabs-backward
+        :nm "H"          #'centaur-tabs-move-current-tab-to-left
+        :n "C-M-k"       #'kill-current-buffer
+        :n "m"           #'evil-record-macro
+        :n "r"           #'evil-repeat
+        :n "."           nil
+        :n "g"           #'evil-ex-search-forward
+        :n "e"          #'evil-execute-macro
         ;; :n "q"         #'ignore
         )
 
@@ -161,6 +165,7 @@
         :n "M-/" #'comment-dwim
         :n "z"   #'undo-fu-only-undo)
 
+
   ;;; Normal prefix "s" prefix
   (map! :map my-common-keys-mode-map
         (:prefix ("s" . "save/snipe/switch/select")
@@ -176,7 +181,7 @@
          :desc "window up"     :n "i" #'evil-window-up
          :desc "window down"   :n "k" #'evil-window-down)
         )
-
+  
   ;;; Motion
   (map! :map my-common-keys-mode-map
         :nm "h" nil
