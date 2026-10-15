@@ -54,6 +54,7 @@
         "o" nil
         "m" nil
         "g" nil
+        "'" nil
         )
 
   (map! :leader
@@ -138,15 +139,18 @@
         :nm "H"          #'centaur-tabs-move-current-tab-to-left
         :n "C-M-k"       #'kill-current-buffer
         :n "m"           #'evil-record-macro
+        :n "q"           nil ;; was once evil-record-macro
         :n "r"           #'evil-repeat
         :n "."           nil
         :n "g"           #'evil-ex-search-forward
+        :n "/"           nil
         :n "e"          #'evil-execute-macro
-        ;; :n "q"         #'ignore
+        :n "b"          #'dape-breakpoint-toggle
         )
 
   (map! :map evil-motion-state-map
         "<C-i>"  nil ;; disable to use C-i evil-scroll-up
+        "'"      nil
         )
   )
 

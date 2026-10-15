@@ -10,7 +10,8 @@
         lsp-ui-doc-show-with-cursor nil
         lsp-ui-doc-position 'right
         lsp-ui-doc-include-signature t
-        lsp-ui-doc-max-height 100
+        lsp-ui-doc-max-height 150
+        lsp-ui-doc-max-width 100
         lsp-ui-sideline-enable t
         lsp-ui-sideline-show-diagnostics t
         ;; lsp-ui-sideline-diagnostic-max-lines 3
