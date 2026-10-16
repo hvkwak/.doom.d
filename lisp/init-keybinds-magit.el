@@ -10,8 +10,10 @@
   (map! :map magit-mode-map
         :n "i" #'previous-line
         :n "k" #'next-line
-        :n "j" #'magit-section-backward
-        :n "l" #'magit-section-forward
+        :n "j" #'backward-char
+        :n "l" #'forward-char
+        :n "u"  #'smart-beginning-of-line
+        :nv "o"  #'move-end-of-line
         :n "M-i" #'previous-line
         :n "M-k" #'next-line
         :n "M-j" #'backward-char
@@ -22,20 +24,23 @@
   (map! :map magit-status-mode-map
         :n "i" #'previous-line
         :n "k" #'next-line
-        :n "j" #'magit-section-backward
-        :n "l" #'magit-section-forward)
+        :n "j" #'backward-char
+        :n "l" #'forward-char
+        )
 
   (map! :map magit-log-mode-map
         :n "i" #'previous-line
         :n "k" #'next-line
-        :n "j" #'magit-section-backward
-        :n "l" #'magit-section-forward)
+        :n "j" #'backward-char
+        :n "l" #'forward-char
+        )
 
   (map! :map magit-diff-mode-map
         :n "i" #'previous-line
         :n "k" #'next-line
-        :n "j" #'magit-section-backward
-        :n "l" #'magit-section-forward))
+        :n "j" #'backward-char
+        :n "l" #'forward-char
+        ))
 
 (provide 'init-keybinds-magit)
 ;;; init-keybinds-magit.el ends here

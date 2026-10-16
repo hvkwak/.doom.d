@@ -143,7 +143,7 @@
         :n "r"           #'evil-repeat
         :n "."           nil
         :n "g"           #'evil-ex-search-forward
-        :n "/"           nil
+        :nm "/"           nil
         :n "e"          #'evil-execute-macro
         :n "b"          #'dape-breakpoint-toggle
         )
