@@ -234,6 +234,7 @@
         :v "M-y" #'evil-paste-after
         :v "M-/" #'comment-dwim
         :v "<tab>" #'c-indent-line-or-region
+        :v "C-i" #'evil-scroll-up
         )
   )
 

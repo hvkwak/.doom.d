@@ -21,6 +21,7 @@
     )
 
   (evil-define-key '(normal insert visual) evil-org-mode-map
+    (kbd "C-i") #'evil-scroll-up
     (kbd "M-<down>") #'org-metadown
     (kbd "M-<up>")   #'org-metaup
     (kbd "C-h") nil ;; frees C-h for C-h help command
