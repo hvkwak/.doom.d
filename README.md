@@ -3,9 +3,7 @@ Personal Doom Emacs configuration with modular customizations.
 
 ## TODOs
 M-w in visual/insert mode works differently when M-y.
-comments .cpp cannot be indented with <tab>
-getting used to evil-snipe
-
+set keybinds for kill-line, kill-word, kill-line-from-here
 
 
 ## Key Features
