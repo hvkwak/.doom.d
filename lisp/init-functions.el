@@ -19,16 +19,15 @@ of the line. Extend the selection when used with the Shift key."
       (move-beginning-of-line 1))))
 
 (defun my/jump-matching-paren ()
-  "Jump to the matching parenthesis/bracket/brace.
-If point is on an opening, go forward. If on a closing, go backward."
+  "Jump to the matching (), [] or {}.
+Works when point is on or just after an opening/closing delimiter.
+\\s( and \\s) match every bracket type the major mode defines."
   (interactive)
   (cond
-   ((looking-at "\\s(") (forward-sexp 1))
-   ((looking-at "\\s{") (forward-sexp 1))
-   ((looking-at "\\s[") (forward-sexp 1))
-   ((looking-back "\\s)" 1) (backward-sexp 1))
-   ((looking-back "\\s}" 1) (backward-sexp 1))
-   ((looking-back "\\s]" 1) (backward-sexp 1))
+   ((looking-at "\\s(")      (forward-sexp 1) (backward-char))   ; on (    -> on )
+   ((looking-at "\\s)")      (forward-char) (backward-sexp 1))   ; on )    -> on (
+   ((looking-back "\\s)" 1)  (backward-sexp 1) (forward-char))   ; after ) -> after (
+   ((looking-back "\\s(" 1)  (backward-char) (forward-sexp 1))   ; after ( -> after )
    (t (user-error "Not on a paren/brace/bracket"))))
 
 ;;; Selection & Region
