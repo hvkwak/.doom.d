@@ -117,7 +117,11 @@
     (kbd "M-u")        #'smart-beginning-of-line
     (kbd "M-o")        #'move-end-of-line
     (kbd "C-f")        #'my/consult-line-dwim
-    (kbd "M-f")        #'my/consult-line-dwim
+    ;; #################
+    ;; (kbd "M-f")        #'my/consult-line-dwim
+    (kbd "M-f")        #'my/consult-line-in-defun
+    (kbd "M-F")        #'widen
+    ;; #################
     (kbd "M-r")        #'rg-dwim
     (kbd "M-'")        #'consult-imenu
     (kbd "M-e")        #'execute-extended-command

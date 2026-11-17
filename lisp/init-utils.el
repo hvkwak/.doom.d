@@ -36,6 +36,17 @@ Typing replaces the selection; empty symbol -> plain `consult-line`."
           (consult-line sym))
       (consult-line))))
 
+;; #################
+(defun my/consult-line-in-defun ()
+  "Search for a word or phrase only inside the current function.
+Like `my/consult-line-dwim', but narrowed to the defun at point.
+The buffer is widened again automatically afterwards."
+  (interactive)
+  (save-restriction
+    (narrow-to-defun)
+    (my/consult-line-dwim)))
+;; #################
+
 ;;; Marginalia
 (use-package! marginalia
   ;; Adds helpful annotations to minibuffer completion results.
