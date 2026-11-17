@@ -107,5 +107,45 @@ isn't inside a defun, e.g. between functions or at top of file."
     (setq-local header-line-format my/defun-sig--prev-header)
     (kill-local-variable 'my/defun-sig--prev-header)))
 
+;; #################
+;;; Centaur-tabs: keep manual tab order across workspace switches
+;; Doom's tab list only shows buffers of the current workspace. Switching
+;; workspaces drops the other workspace's tabs, and when you come back they
+;; are re-added in alphabetical order, losing `centaur-tabs-move-current-tab-*'
+;; reordering. Remember the order per workspace and restore it on return.
+(after! (centaur-tabs persp-mode)
+  (defvar my/tabs-saved-order (make-hash-table :test #'equal)
+    "Workspace name -> list of (GROUP-NAME . BUFFERS) in tab order.")
+
+  (defun my/tabs-save-order-h (&rest _)
+    (when (and (bound-and-true-p centaur-tabs-mode)
+               (bound-and-true-p persp-mode))
+      (puthash (safe-persp-name (get-current-persp))
+               (centaur-tabs-map-tabsets
+                (lambda (ts)
+                  (cons (symbol-name ts) (centaur-tabs-tab-values ts))))
+               my/tabs-saved-order)))
+
+  (defun my/tabs-restore-order-h (&rest _)
+    (when-let* (((bound-and-true-p centaur-tabs-mode))
+                (saved (gethash (safe-persp-name (get-current-persp))
+                                my/tabs-saved-order)))
+      (ignore-errors (centaur-tabs-buffer-update-groups))
+      (dolist (entry saved)
+        (when-let* ((ts (centaur-tabs-get-tabset (car entry)))
+                    (order (cdr entry)))
+          (set ts (cl-stable-sort
+                   (copy-sequence (centaur-tabs-tabs ts)) #'<
+                   :key (lambda (tab)
+                          ;; Buffers new since the save go to the end.
+                          (or (cl-position (car tab) order)
+                              most-positive-fixnum))))
+          (centaur-tabs-set-template ts nil)))
+      (centaur-tabs-display-update)))
+
+  (add-hook 'persp-before-switch-functions #'my/tabs-save-order-h)
+  (add-hook 'persp-activated-functions #'my/tabs-restore-order-h 90))
+;; #################
+
 (provide 'init-behavior)
 ;;; init-behavior.el ends here
