@@ -10,13 +10,13 @@
   )
 
 ;; disable autosave
-(defun my/disable-tramp-autosave-and-lockfiles ()
-  "Disable lockfiles and autosave for TRAMP buffers to avoid fallback encoding."
-  (when (and buffer-file-name (file-remote-p buffer-file-name))
-    (setq-local create-lockfiles nil)
-    (setq-local auto-save-default nil)
-    (auto-save-mode -1)))
-(add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
+;; (defun my/disable-tramp-autosave-and-lockfiles ()
+;;   "Disable lockfiles and autosave for TRAMP buffers to avoid fallback encoding."
+;;   (when (and buffer-file-name (file-remote-p buffer-file-name))
+;;     (setq-local create-lockfiles nil)
+;;     (setq-local auto-save-default nil)
+;;     (auto-save-mode -1)))
+;; (add-hook 'find-file-hook #'my/disable-tramp-autosave-and-lockfiles)
 
 ;; TODO: delete this?
 ;; NOTE: Redefining general--unalias could break silently when general.el updates. This is fragile.

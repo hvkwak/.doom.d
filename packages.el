@@ -74,3 +74,13 @@
 (package! better-jumper :disable t)         ; Using evil's built-in jump list instead
 (package! treemacs-nerd-icons :disable t)   ; Using default treemacs icons
 (package! treemacs-all-the-icons :disable t)
+
+;; MELPA renamed its default branch from master to main (Nov 2026); Doom's
+;; built-in recipe repo still assumes master. Remove once Doom fixes upstream.
+(straight-use-recipes '(melpa :type git :host github :repo "melpa/melpa"
+                              :branch "main" :build nil))
+
+;; Doom pins dirvish to 300b6b2, which doesn't exist in latiagertrutis/dirvish,
+;; so every sync re-clones it and warns. Pin to that fork's current main instead.
+;; Remove once Doom fixes the pin upstream.
+(package! dirvish :pin "9b9ed2d707c8f672eac51b067add047118aba247")
