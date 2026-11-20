@@ -116,10 +116,10 @@
     (kbd "<home>")     #'smart-beginning-of-line
     (kbd "M-u")        #'smart-beginning-of-line
     (kbd "M-o")        #'move-end-of-line
-    (kbd "C-f")        #'my/consult-line-dwim
+    (kbd "M-f")        #'my/consult-line-dwim
     ;; #################
     ;; (kbd "M-f")        #'my/consult-line-dwim
-    (kbd "M-f")        #'my/consult-line-in-defun
+    (kbd "C-f")        #'my/consult-line-in-defun
     (kbd "M-F")        #'widen
     ;; #################
     (kbd "M-r")        #'rg-dwim
@@ -189,6 +189,10 @@
          :desc "window up"     :n "i" #'evil-window-up
          :desc "window down"   :n "k" #'evil-window-down)
         )
+
+(after! evil
+  (define-key evil-operator-state-map (kbd "l") #'evil-end-of-line))
+  
   
   ;;; Motion
   (map! :map my-common-keys-mode-map
